@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Stationery Hub{% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+
+<body class="min-h-screen bg-gray-50 flex flex-col">
+
+    {% include "navbar.html" %}
+
+    <main class="grow">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include "footer.html" %}
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

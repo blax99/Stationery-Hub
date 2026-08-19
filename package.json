@@ -1,0 +1,31 @@
+{
+  "name": "stationery-hub",
+  "version": "1.0.0",
+  "description": "Stationery e-commerce website built with Django.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "django": "python manage.py runserver",
+    "dev": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "start": "concurrently \"npm run django\" \"npm run dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blax99/Stationery-Hub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/blax99/Stationery-Hub/issues"
+  },
+  "homepage": "https://github.com/blax99/Stationery-Hub#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@source "../../templates";
+@source "../../home/templates";
+@source "../../cart/templates";
+@source "../../orders/templates";
+@source "../../payments/templates";
+@source "../../products/templates";
+@source "../../users/templates";
+
+@theme {
+	--color-kraft: #d8c3a5;
+	--color-stamp: #7f1d1d;
+	--color-cream: #fffaf0;
+	--color-ink-soft: #5f5a52;
+	--font-display: Georgia, "Times New Roman", serif;
+}
+
+
