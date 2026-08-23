@@ -13,6 +13,9 @@ from django.views.generic import TemplateView
 class LoginPageView(TemplateView):
     template_name = "users/login.html"
 
+class ForgotPasswordPageView(TemplateView):
+    template_name = "users/forgot-password.html"
+
 User = get_user_model()
 
 

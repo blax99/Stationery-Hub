@@ -1,7 +1,9 @@
 {% extends "base.html" %} {% load static %} {% block title %}Sign In -
 Stationery Hub{% endblock %} {% block content %}
-<div class="min-h-[80vh] flex items-center justify-center bg-gray-50 px-4">
-  <div class="w-full max-w-md">
+<div
+  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] px-4 py-12"
+>
+  <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
     <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">
       Welcome back
     </p>
@@ -44,7 +46,11 @@ Stationery Hub{% endblock %} {% block content %}
           <input type="checkbox" class="rounded" />
           Remember me
         </label>
-        <a href="#" class="text-amber-700 hover:underline">Forgot password?</a>
+        <a
+          href="{% url 'forgot-password' %}"
+          class="text-amber-700 hover:underline"
+          >Forgot password?</a
+        >
       </div>
 
       <button
