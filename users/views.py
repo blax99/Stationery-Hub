@@ -70,3 +70,6 @@ class PasswordResetConfirmView(APIView):
         user.save()
 
         return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+
+class RegisterPageView(TemplateView):
+    template_name = "users/register.html"
