@@ -10,6 +10,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.views.generic import TemplateView
 from .serializers import RegisterSerializer, ProfileSerializer
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 class LoginPageView(TemplateView):
     template_name = "users/login.html"
@@ -78,7 +79,11 @@ class RegisterPageView(TemplateView):
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_object(self):
         return self.request.user
+
+
+class ProfilePageView(TemplateView):
+    template_name = "users/profile.html"
