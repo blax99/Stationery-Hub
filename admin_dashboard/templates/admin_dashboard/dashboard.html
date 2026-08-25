@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Stationery Hub</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white p-6">
+
+        <h1 class="text-2xl font-bold mb-8">
+            Stationery Hub
+        </h1>
+
+        <nav class="space-y-2">
+
+            <a href="#" class="block px-4 py-3 rounded-lg bg-gray-700">
+                Dashboard
+            </a>
+
+            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
+                Products
+            </a>
+
+            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
+                Categories
+            </a>
+
+            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
+                Orders
+            </a>
+
+            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
+                Customers
+            </a>
+
+            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
+                Payments
+            </a>
+
+            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
+                Analytics
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="flex-1">
+
+        <!-- Top Navbar -->
+        <header class="bg-white shadow-sm px-8 py-5 flex justify-between">
+
+            <h2 class="text-xl font-semibold">
+                Admin Dashboard
+            </h2>
+
+            <div>
+                Admin ▼
+            </div>
+
+        </header>
+
+
+        <!-- Dashboard Content -->
+        <section class="p-8">
+
+            <h2 class="text-3xl font-bold mb-2">
+                Dashboard
+            </h2>
+
+            <p class="text-gray-500 mb-8">
+                Overview of your stationery store.
+            </p>
+
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <p class="text-gray-500">Total Orders</p>
+                    <h3 class="text-3xl font-bold mt-2">
+                        1,248
+                    </h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <p class="text-gray-500">Total Revenue</p>
+                    <h3 class="text-3xl font-bold mt-2">
+                        Rs. 485,600
+                    </h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <p class="text-gray-500">Customers</p>
+                    <h3 class="text-3xl font-bold mt-2">
+                        856
+                    </h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <p class="text-gray-500">Products</p>
+                    <h3 class="text-3xl font-bold mt-2">
+                        342
+                    </h3>
+                </div>
+
+            </div>
+
+
+            <!-- Analytics Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+
+                <!-- Sales Chart -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
+
+                    <h3 class="text-lg font-semibold mb-4">
+                        Sales Overview
+                    </h3>
+
+                    <div class="h-72 flex items-center justify-center
+                                bg-gray-50 rounded-lg">
+
+                        <p class="text-gray-400">
+                            Sales Chart will appear here
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Order Statistics -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+
+                    <h3 class="text-lg font-semibold mb-4">
+                        Order Statistics
+                    </h3>
+
+                    <div class="space-y-5">
+
+                        <div class="flex justify-between">
+                            <span>Pending</span>
+                            <span class="font-semibold">24</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Processing</span>
+                            <span class="font-semibold">18</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Completed</span>
+                            <span class="font-semibold">120</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Cancelled</span>
+                            <span class="font-semibold">8</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Recent Orders -->
+            <div class="bg-white rounded-xl shadow-sm mt-8 p-6">
+
+                <h3 class="text-lg font-semibold mb-5">
+                    Recent Orders
+                </h3>
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-left">
+
+                        <thead class="border-b">
+
+                            <tr>
+                                <th class="py-3">Order ID</th>
+                                <th class="py-3">Customer</th>
+                                <th class="py-3">Amount</th>
+                                <th class="py-3">Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr class="border-b">
+                                <td class="py-4">#1001</td>
+                                <td>Ram Sharma</td>
+                                <td>Rs. 1,250</td>
+                                <td>Completed</td>
+                            </tr>
+
+                            <tr class="border-b">
+                                <td class="py-4">#1002</td>
+                                <td>Sita Thapa</td>
+                                <td>Rs. 850</td>
+                                <td>Pending</td>
+                            </tr>
+
+                            <tr>
+                                <td class="py-4">#1003</td>
+                                <td>Hari KC</td>
+                                <td>Rs. 2,400</td>
+                                <td>Processing</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>
