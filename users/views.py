@@ -25,6 +25,19 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        verify_link = f"http://127.0.0.1:8000/api/users/verify-email/?uid={uid}&token={token}"
+
+        send_mail(
+            subject="Verify your email - Stationery Hub",
+            message=f"Click the link to verify your email: {verify_link}",
+            from_email="noreply@stationeryhub.com",
+            recipient_list=[user.email],
+        )
+
 
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
@@ -87,3 +100,24 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 class ProfilePageView(TemplateView):
     template_name = "users/profile.html"
+
+class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        uid = request.GET.get('uid')
+        token = request.GET.get('token')
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return Response({"detail": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not default_token_generator.check_token(user, token):
+            return Response({"detail": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.is_email_verified = True
+        user.save()
+
+        return Response({"detail": "Email verified successfully."}, status=status.HTTP_200_OK)
