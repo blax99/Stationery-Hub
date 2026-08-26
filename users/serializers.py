@@ -22,6 +22,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+    def validate_phone_number(self, value):
+        if value and not value.isdigit():
+            raise serializers.ValidationError("Phone number must contain digits only.")
+        if value and len(value) not in (0, 10):
+            raise serializers.ValidationError("Phone number must be 10 digits.")
+        return value
+
+    def validate_password(self, value):
+        if value.isdigit():
+            raise serializers.ValidationError("Password cannot be entirely numeric.")
+        if value.isalpha():
+            raise serializers.ValidationError("Password must contain at least one number.")
+        return value
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
