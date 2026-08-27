@@ -1,8 +1,13 @@
 // navbar.js
+(() => {
 const searchButton = document.getElementById("searchButton");
 const searchBox = document.getElementById("searchBox");
 const searchInput = document.getElementById("searchInput");
+const menuButton = document.getElementById("menuButton");
+const mobileMenu = document.getElementById("mobileMenu");
+const menuIcon = document.getElementById("menuIcon");
 console.log('navbar');
+
 
 searchButton.addEventListener("click", () => {
     searchBox.classList.remove("hidden");
@@ -17,3 +22,17 @@ document.addEventListener("click", (event) => {
         searchButton.classList.remove("hidden");
     }
 });
+
+
+menuButton.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+
+    if (mobileMenu.classList.contains("hidden")) {
+        menuIcon.classList.remove("fa-xmark");
+        menuIcon.classList.add("fa-bars");
+    } else {
+        menuIcon.classList.remove("fa-bars");
+        menuIcon.classList.add("fa-xmark");
+    }
+});
+})();

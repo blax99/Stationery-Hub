@@ -1,57 +1,126 @@
-<nav class="bg-white shadow-md px-6 py-4">
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
+<nav class="bg-white shadow-md px-4 sm:px-6 py-4">
+  <div class="max-w-7xl mx-auto">
 
-    <!-- Logo -->
-    <div class="text-2xl font-bold text-gray-800">
-      StationeryHub<span class="text-blue-600">.</span>
-    </div>
+    <!-- Main Navbar -->
+    <div class="flex items-center justify-between gap-3">
 
-    <!-- Center Nav Links -->
-    <ul class="hidden md:flex items-center gap-8 text-gray-700 font-medium">
-      <li><a href="#" class="hover:text-blue-600 transition">Home</a></li>
-      <li><a href="#" class="hover:text-blue-600 transition">Products</a></li>
-      <li><a href="#" class="hover:text-blue-600 transition">Categories</a></li>
-    </ul>
-
-    <!-- Right Icons + Sign In -->
-    <div class="flex items-center gap-5">
-
-      <!-- Search -->
-      <!-- Search -->
-      <div class="relative w-8 h-8">
-
-        <!-- Search Icon -->
-        <button id="searchButton" type="button" class="absolute inset-0 flex items-center justify-center
-               text-gray-700 hover:text-blue-600 transition">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-
-        <!-- Search Box -->
-        <div id="searchBox" class="hidden absolute right-0 top-1/2 -translate-y-1/2 z-50">
-          <input type="text" id="searchInput" placeholder="Search..." class="w-64 h-9 text-sm px-4 py-2 border border-gray-300 rounded-full
-                   focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-
+      <!-- Logo -->
+      <div class="text-xl sm:text-2xl font-bold text-gray-800 whitespace-nowrap">
+        StationeryHub<span class="text-blue-600">.</span>
       </div>
 
-      <!-- Wishlist -->
-      <button class="text-gray-700 hover:text-red-500 transition">
-        <i class="fa-regular fa-heart"></i>
-      </button>
+      <!-- Desktop Nav Links -->
+      <ul class="hidden md:flex items-center gap-8 text-gray-700 font-medium">
+        <li>
+          <a href="#" class="hover:text-blue-600 transition">Home</a>
+        </li>
+        <li>
+          <a href="#" class="hover:text-blue-600 transition">Products</a>
+        </li>
+        <li>
+          <a href="#" class="hover:text-blue-600 transition">Categories</a>
+        </li>
+      </ul>
 
-      <!-- Cart -->
-      <button class="relative text-gray-700 hover:text-blue-600 transition">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span
-          class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">2</span>
-      </button>
+      <!-- Right Section -->
+      <div class="flex items-center gap-3 sm:gap-5">
 
-      <!-- Sign In -->
-      <button class="border border-black bg-white text-black px-4 py-1.5 rounded-lg
-               hover:bg-black hover:text-white transition text-sm font-medium">
-        Sign In
-      </button>
+        <!-- Search -->
+        <div class="hidden relative sm:block w-8 h-8">
 
+          <!-- Search Icon -->
+          <button
+            id="searchButton"
+            type="button"
+            class="absolute inset-0 flex items-center justify-center
+                   text-gray-700 hover:text-blue-600 transition cursor-pointer"
+          >
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+
+          <!-- Search Box -->
+          <div
+            id="searchBox"
+            class="hidden absolute right-0 top-1/2 -translate-y-1/2 z-50"
+          >
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search..."
+              class="sm:w-[4vw] md:w-[12vw] lg:w-[22vw] h-9 text-sm px-4 py-2 border border-gray-300
+                     rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+          </div>
+
+        </div>
+
+        <!-- Wishlist -->
+        <button class="text-gray-700 hover:text-red-500 transition cursor-pointer">
+          <i class="fa-regular fa-heart"></i>
+        </button>
+
+        <!-- Cart -->
+        <button class="relative text-gray-700 hover:text-blue-600 transition cursor-pointer">
+          <i class="fa-solid fa-cart-shopping"></i>
+
+          <span
+            class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs
+                   rounded-full h-4 w-4 flex items-center justify-center"
+          >
+            2
+          </span>
+        </button>
+
+        <!-- Sign In -->
+        <button
+          class="hidden sm:block border border-black bg-white text-black
+                 px-3 sm:px-4 py-1.5 rounded-lg
+                 hover:bg-black hover:text-white transition
+                 text-sm font-medium cursor-pointer"
+        >
+          Sign In
+        </button>
+
+        <!-- Mobile Hamburger -->
+        <button
+          id="menuButton"
+          type="button"
+          class="md:hidden text-gray-700 text-xl ml-1"
+          aria-label="Toggle menu"
+        >
+          <i id="menuIcon" class="fa-solid fa-bars"></i>
+        </button>
+
+      </div>
     </div>
+
+    <!-- Mobile Navigation ONLY -->
+    <div
+      id="mobileMenu"
+      class="hidden md:hidden mt-4 border-t pt-4"
+    >
+      <ul class="flex flex-col gap-4 text-gray-700 font-medium">
+
+        <li>
+          <a href="#" class="block hover:text-blue-600 transition">
+            Home
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="block hover:text-blue-600 transition">
+            Products
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="block hover:text-blue-600 transition">
+            Categories
+          </a>
+        </li>
+
+      </ul>
+    </div>
+
   </div>
 </nav>
