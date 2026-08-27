@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from django.views.generic import TemplateView
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from .permissions import IsAdmin
 
 class LoginPageView(TemplateView):
     template_name = "users/login.html"
@@ -121,3 +122,9 @@ class VerifyEmailView(APIView):
         user.save()
 
         return Response({"detail": "Email verified successfully."}, status=status.HTTP_200_OK)
+
+
+class AdminUserListView(generics.ListAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAdmin]
+    queryset = User.objects.all()

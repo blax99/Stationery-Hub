@@ -4,6 +4,8 @@ from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmV
 from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView
 from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView, ProfilePageView
 from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView, ProfilePageView, VerifyEmailView
+from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView, ProfilePageView, VerifyEmailView, AdminUserListView
+
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -17,4 +19,5 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile-page/', ProfilePageView.as_view(), name='profile-page'),
     path('verify-email/', VerifyEmailView.as_view(), name='verify-email'),
+    path('admin/users/', AdminUserListView.as_view(), name='admin-user-list'),
 ]
