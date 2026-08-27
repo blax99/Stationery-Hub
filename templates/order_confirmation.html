@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - Stationery Hub{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto px-4 py-16 text-center">
+
+    <div class="bg-white rounded-lg shadow p-10">
+
+        <div class="text-green-600 text-5xl mb-6">
+            ✓
+        </div>
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            Order Confirmed!
+        </h1>
+
+        <p class="text-gray-600 mb-6">
+            Thank you for your order. Your order has been successfully placed.
+        </p>
+
+        <div class="border-t border-gray-200 pt-6 mb-6">
+            <p class="text-gray-600">
+                Order Number
+            </p>
+
+            <p class="text-xl font-semibold text-gray-800">
+                #ORD-0001
+            </p>
+        </div>
+
+        <a
+            href="/"
+            class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200"
+        >
+            Continue Shopping
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
