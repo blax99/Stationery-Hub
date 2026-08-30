@@ -6,9 +6,12 @@
 
 <div class="max-w-6xl mx-auto px-4 py-10">
 
-    <h1 class="text-3xl font-bold text-gray-800 mb-8">
-        Checkout
-    </h1>
+<h1 class="text-3xl font-bold text-gray-800 mb-8">
+    Checkout
+</h1>
+
+<form method="POST" action="">
+    {% csrf_token %}
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -28,6 +31,7 @@
                     </label>
                     <input
                         type="text"
+                        name="full_name"
                         placeholder="Enter your full name"
                         class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
@@ -40,6 +44,7 @@
                     </label>
                     <input
                         type="email"
+                        name="email"
                         placeholder="Enter your email address"
                         class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
@@ -51,6 +56,7 @@
                         Address
                     </label>
                     <textarea
+                        name="address"
                         rows="3"
                         placeholder="Enter your address"
                         class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -64,6 +70,7 @@
                     </label>
                     <input
                         type="text"
+                        name="city"
                         placeholder="Enter your city"
                         class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
@@ -88,6 +95,7 @@
                     </label>
                     <input
                         type="tel"
+                        name="phone"
                         placeholder="Enter your phone number"
                         class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
@@ -124,7 +132,7 @@
                 </div>
 
                 <button
-                    type="button"
+                    type="submit"
                     class="w-full bg-blue-600 text-white py-3 mt-4 rounded-md font-semibold hover:bg-blue-700 transition duration-200"
                 >
                     Place Order
@@ -135,6 +143,8 @@
         </div>
 
     </div>
+
+</form>
 
 </div>
 
