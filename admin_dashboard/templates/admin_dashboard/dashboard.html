@@ -21,11 +21,11 @@
 
         <nav class="space-y-2">
 
-            <a href="#" class="block px-4 py-3 rounded-lg bg-gray-700">
+            <a href="/dashboard/" class="block px-4 py-3 rounded-lg bg-gray-700">
                 Dashboard
             </a>
 
-            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
+            <a href="/dashboard/products/" class="block px-4 py-3 rounded-lg hover:bg-gray-700">
                 Products
             </a>
 
@@ -86,31 +86,38 @@
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
+                <!-- Total Orders -->
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <p class="text-gray-500">Total Orders</p>
                     <h3 class="text-3xl font-bold mt-2">
-                        1,248
+                        {{ total_orders }}
                     </h3>
                 </div>
 
+
+                <!-- Total Revenue -->
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <p class="text-gray-500">Total Revenue</p>
                     <h3 class="text-3xl font-bold mt-2">
-                        Rs. 485,600
+                        Rs. {{ total_revenue }}
                     </h3>
                 </div>
 
+
+                <!-- Customers -->
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <p class="text-gray-500">Customers</p>
                     <h3 class="text-3xl font-bold mt-2">
-                        856
+                        {{ total_customers }}
                     </h3>
                 </div>
 
+
+                <!-- Products -->
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <p class="text-gray-500">Products</p>
                     <h3 class="text-3xl font-bold mt-2">
-                        342
+                        {{ total_products }}
                     </h3>
                 </div>
 
@@ -150,22 +157,22 @@
 
                         <div class="flex justify-between">
                             <span>Pending</span>
-                            <span class="font-semibold">24</span>
+                            <span class="font-semibold">{{pending_orders}}</span>
                         </div>
 
                         <div class="flex justify-between">
                             <span>Processing</span>
-                            <span class="font-semibold">18</span>
+                            <span class="font-semibold">{{processing_orders}}</span>
                         </div>
 
                         <div class="flex justify-between">
                             <span>Completed</span>
-                            <span class="font-semibold">120</span>
+                            <span class="font-semibold">{{completed_orders}}</span>
                         </div>
 
                         <div class="flex justify-between">
                             <span>Cancelled</span>
-                            <span class="font-semibold">8</span>
+                            <span class="font-semibold">{{cancelled_orders}}</span>
                         </div>
 
                     </div>
