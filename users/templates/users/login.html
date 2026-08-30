@@ -4,9 +4,7 @@ Stationery Hub{% endblock %} {% block content %}
   class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] px-4 py-12"
 >
   <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-    <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">
-      Welcome back
-    </p>
+    <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">Welcome</p>
     <h1 class="text-4xl font-serif mb-8">Sign In</h1>
 
     <div
@@ -32,13 +30,22 @@ Stationery Hub{% endblock %} {% block content %}
         <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
           >Password</label
         >
-        <input
-          type="password"
-          id="password"
-          required
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
-          placeholder="••••••••"
-        />
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            required
+            class="w-full border border-gray-300 rounded px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600"
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            id="toggle-password"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+          >
+            Show
+          </button>
+        </div>
       </div>
 
       <div class="flex items-center justify-between text-sm">
@@ -90,6 +97,19 @@ Stationery Hub{% endblock %} {% block content %}
 </div>
 
 <script>
+  document
+    .getElementById("toggle-password")
+    .addEventListener("click", function () {
+      const passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        this.textContent = "Hide";
+      } else {
+        passwordInput.type = "password";
+        this.textContent = "Show";
+      }
+    });
+
   document
     .getElementById("login-form")
     .addEventListener("submit", async function (e) {
