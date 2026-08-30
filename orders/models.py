@@ -10,6 +10,12 @@ class Order(models.Model):
         ('delivered', 'Delivered'),
     ]
 
+    PAYMENT_STATUS_CHOICES = [ 
+        ('unpaid', 'Unpaid'), 
+        ('paid', 'Paid'), 
+        ('failed', 'Failed'),
+    ]
+
     user = models.ForeignKey(
     settings.AUTH_USER_MODEL,
     on_delete=models.CASCADE,
