@@ -1,0 +1,355 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+
+Shopping Cart
+
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+    <!-- Cart Items -->
+
+    <section class="lg:col-span-2">
+
+      <h1 class="text-3xl font-normal mb-8">
+        Shopping Cart
+      </h1>
+
+
+      <!-- Product 1 -->
+
+      <div
+        class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
+        data-price="34.50"
+      >
+
+        <div class="w-28 h-32 bg-gray-200 shrink-0">
+
+          <img
+            src="https://images.unsplash.com/photo-1517842645767-c639042777db?w=300"
+            alt="Staedtler Watercolor Pencils"
+            class="w-full h-full object-cover"
+          />
+
+        </div>
+
+
+        <div class="flex-1">
+
+          <p class="text-xs tracking-[0.2em] text-gray-500">
+            STAEDTLER
+          </p>
+
+          <h2 class="text-lg font-medium mt-2">
+            Staedtler Watercolor Pencils 36-Set
+          </h2>
+
+          <p class="text-sm text-amber-700 mt-2">
+            On Sale
+          </p>
+
+        </div>
+
+
+        <div class="flex items-center border border-gray-300 h-14">
+
+          <button
+            type="button"
+            class="decrease px-5 text-xl"
+          >
+            −
+          </button>
+
+          <span class="quantity px-3">
+            1
+          </span>
+
+          <button
+            type="button"
+            class="increase px-5 text-xl"
+          >
+            +
+          </button>
+
+        </div>
+
+
+        <p class="w-20 text-lg price">
+          $34.50
+        </p>
+
+
+        <button
+          type="button"
+          class="text-gray-500 text-xl"
+        >
+          🗑
+        </button>
+
+      </div>
+
+
+      <!-- Product 2 -->
+
+      <div
+        class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
+        data-price="16.00"
+      >
+
+        <div class="w-28 h-32 bg-gray-200 shrink-0">
+
+          <img
+            src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300"
+            alt="Midori Notebook"
+            class="w-full h-full object-cover"
+          />
+
+        </div>
+
+
+        <div class="flex-1">
+
+          <p class="text-xs tracking-[0.2em] text-gray-500">
+            MIDORI
+          </p>
+
+          <h2 class="text-lg font-medium mt-2">
+            Midori MD Notebook A5 Blank
+          </h2>
+
+        </div>
+
+
+        <div class="flex items-center border border-gray-300 h-14">
+
+          <button
+            type="button"
+            class="decrease px-5 text-xl"
+          >
+            −
+          </button>
+
+          <span class="quantity px-3">
+            1
+          </span>
+
+          <button
+            type="button"
+            class="increase px-5 text-xl"
+          >
+            +
+          </button>
+
+        </div>
+
+
+        <p class="w-20 text-lg price">
+          $16.00
+        </p>
+
+
+        <button
+          type="button"
+          class="text-gray-500 text-xl"
+        >
+          🗑
+        </button>
+
+      </div>
+
+
+      <!-- Product 3 -->
+
+      <div
+        class="cart-item flex items-center gap-6 py-8 border-t border-b border-gray-200"
+        data-price="31.99"
+      >
+
+        <div class="w-28 h-32 bg-gray-200 shrink-0">
+
+          <img
+            src="https://images.unsplash.com/photo-1585336139667-3b7d7f1a4e0a?w=300"
+            alt="Lamy Safari Fountain Pen"
+            class="w-full h-full object-cover"
+          />
+
+        </div>
+
+
+        <div class="flex-1">
+
+          <p class="text-xs tracking-[0.2em] text-gray-500">
+            LAMY
+          </p>
+
+          <h2 class="text-lg font-medium mt-2">
+            Lamy Safari Fountain Pen — Charcoal
+          </h2>
+
+        </div>
+
+
+        <div class="flex items-center border border-gray-300 h-14">
+
+          <button
+            type="button"
+            class="decrease px-5 text-xl"
+          >
+            −
+          </button>
+
+          <span class="quantity px-3">
+            1
+          </span>
+
+          <button
+            type="button"
+            class="increase px-5 text-xl"
+          >
+            +
+          </button>
+
+        </div>
+
+
+        <p class="w-20 text-lg price">
+          $31.99
+        </p>
+
+
+        <button
+          type="button"
+          class="text-gray-500 text-xl"
+        >
+          🗑
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- Order Summary -->
+
+    <aside class="border border-gray-200 p-8 h-fit">
+
+      <h2 class="text-2xl font-normal mb-10">
+        Order Summary
+      </h2>
+
+
+      <div class="space-y-6">
+
+        <!-- Product 1 Summary -->
+
+        <div class="flex justify-between gap-4">
+
+          <span class="text-gray-500 truncate">
+            Staedtler Watercolor Pencils...
+          </span>
+
+          <span class="summary-price">
+            $34.50
+          </span>
+
+        </div>
+
+
+        <!-- Product 2 Summary -->
+
+        <div class="flex justify-between gap-4">
+
+          <span class="text-gray-500 truncate">
+            Midori MD Notebook A5 Bl...
+          </span>
+
+          <span class="summary-price">
+            $16.00
+          </span>
+
+        </div>
+
+
+        <!-- Product 3 Summary -->
+
+        <div class="flex justify-between gap-4">
+
+          <span class="text-gray-500 truncate">
+            Lamy Safari Fountain Pen...
+          </span>
+
+          <span class="summary-price">
+            $31.99
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="border-t border-gray-200 my-8"></div>
+
+
+      <div class="flex justify-between mb-6">
+
+        <span class="text-gray-500">
+          Subtotal
+        </span>
+
+        <span id="subtotal">
+          $82.49
+        </span>
+
+      </div>
+
+
+      <div class="flex justify-between">
+
+        <span class="text-gray-500">
+          Shipping
+        </span>
+
+        <span class="text-green-700">
+          Free
+        </span>
+
+      </div>
+
+
+      <div class="border-t border-gray-200 my-8"></div>
+
+
+      <div class="flex justify-between text-xl font-medium">
+
+        <span>
+          Total
+        </span>
+
+        <span id="total">
+          $82.49
+        </span>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="w-full bg-slate-800 text-white py-5 mt-8 text-lg font-medium hover:bg-slate-700 transition"
+      >
+        Proceed to Checkout
+      </button>
+
+    </aside>
+
+  </div>
+
+</div>
+
+{% endblock %}
+```
