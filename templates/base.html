@@ -1,3 +1,32 @@
+{% comment %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Stationery Hub{% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+
+<body class="min-h-screen bg-gray-50 flex flex-col">
+
+    {% include "navbar.html" %}
+
+    <main class="grow">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include "footer.html" %}
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html> {% endcomment %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -10,6 +39,13 @@
         {% block title %}Stationery Hub{% endblock %}
     </title>
 
+    <!-- 1. Tailwind CSS CDN (Ensures all classes load immediately) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. Font Awesome Icons (Fixes missing icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Your Compiled CSS -->
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
 
