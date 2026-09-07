@@ -1,32 +1,103 @@
 from django.shortcuts import render
+from django.db.models import Sum
+from products.models import Products, Category
+from orders.models import Order
+from users.models import User
 
 
 
 def dashboard_view(request):
 
-    context = {
-        "total_products": 0,
-        "total_orders": 0,
-        "total_customers": 0,
-        "total_revenue": 0,
+    total_products = Products.objects.count()
 
-        "pending_orders": 0,
-        "processing_orders": 0,
-        "completed_orders": 0,
-        "cancelled_orders": 0,
+    total_orders = Order.objects.count()
+
+    total_customers = User.objects.filter(
+        role="customer"
+    ).count()
+
+    total_revenue = Order.objects.aggregate(
+        total=Sum("total_amount")
+    )["total"] or 0
+
+    pending_orders = Order.objects.filter(
+        status="pending"
+    ).count()
+
+    processing_orders = Order.objects.filter(
+        status="confirmed"
+    ).count()
+
+    completed_orders = Order.objects.filter(
+        status="delivered"
+    ).count()
+
+    cancelled_orders = Order.objects.filter(
+        status="cancelled"
+    ).count()
+
+    context = {
+        "total_products": total_products,
+        "total_orders": total_orders,
+        "total_customers": total_customers,
+        "total_revenue": total_revenue,
+
+        "pending_orders": pending_orders,
+        "processing_orders": processing_orders,
+        "completed_orders": completed_orders,
+        "cancelled_orders": cancelled_orders,
     }
 
-    return render(request, "admin_dashboard/dashboard.html", context)
+    return render(
+        request,
+        "admin_dashboard/dashboard.html",
+        context
+    )
 
 
 def products_view(request):
-    return render(request, "admin_dashboard/products.html")
+    products = Products.objects.select_related("category").all()
+
+    categories = Category.objects.all()
+
+    context = {
+        "products": products,
+        "categories": categories,
+    }
+
+    return render(
+        request,
+        "admin_dashboard/products.html",
+        context
+    )
 
 def inventory_view(request):
-    return render(request, "admin_dashboard/inventory.html")
+
+    products = Products.objects.select_related("category").all()
+
+    context = {
+        "products": products,
+    }
+
+    return render(
+        request,
+        "admin_dashboard/inventory.html",
+        context
+    )
 
 def orders_view(request):
-    return render(request, "admin_dashboard/orders.html")
+
+    orders = Order.objects.select_related("user").all()
+
+    context = {
+        "orders": orders,
+    }
+
+    return render(
+        request,
+        "admin_dashboard/orders.html",
+        context
+    )
 
 def analytics_view(request):
 

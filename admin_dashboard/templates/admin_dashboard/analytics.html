@@ -1,632 +1,937 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Analytics - Stationery Hub</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Plotly -->
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-</head>
 
-<body class="bg-gray-100 text-gray-800">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#2563eb",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
 
-<div class="flex min-h-screen">
-
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-white shadow-md hidden md:block">
-
-        <div class="p-6 border-b">
-            <h1 class="text-2xl font-bold text-indigo-600">
-                Stationery Hub
-            </h1>
-
-            <p class="text-sm text-gray-500 mt-1">
-                Admin Panel
-            </p>
+  <body class="bg-gray-100">
+    <div class="flex min-h-screen">
+      <!-- ========================= SIDEBAR ========================= -->
+      <aside class="w-64 bg-gray-900 text-white fixed h-full">
+        <div class="p-6 border-b border-gray-700">
+          <h1 class="text-2xl font-bold">Stationery Hub</h1>
+          <p class="text-gray-400 text-sm mt-1">Admin Panel</p>
         </div>
 
         <nav class="p-4 space-y-2">
+          <a
+            href="/dashboard/"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            <span>📊</span>
+            <span>Dashboard</span>
+          </a>
 
-            <a href="{% url 'dashboard' %}"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg
-                      hover:bg-indigo-50 hover:text-indigo-600">
-                📊
-                <span>Dashboard</span>
-            </a>
+          <a
+            href="/dashboard/products/"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            <span>📦</span>
+            <span>Products</span>
+          </a>
 
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg
-                      hover:bg-indigo-50 hover:text-indigo-600">
-                📦
-                <span>Products</span>
-            </a>
+          <a
+            href="/dashboard/inventory/"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            <span>📦</span>
+            <span>Inventory</span>
+          </a>
 
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg
-                      hover:bg-indigo-50 hover:text-indigo-600">
-                🗃️
-                <span>Categories</span>
-            </a>
+          <a
+            href="/dashboard/orders/"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            <span>📋</span>
+            <span>Orders</span>
+          </a>
 
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg
-                      hover:bg-indigo-50 hover:text-indigo-600">
-                🛒
-                <span>Orders</span>
-            </a>
-
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg
-                      hover:bg-indigo-50 hover:text-indigo-600">
-                👥
-                <span>Customers</span>
-            </a>
-
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg
-                      hover:bg-indigo-50 hover:text-indigo-600">
-                💳
-                <span>Payments</span>
-            </a>
-
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-lg
-                      bg-indigo-50 text-indigo-600 font-semibold">
-                📈
-                <span>Analytics</span>
-            </a>
-
+          <a
+            href="/dashboard/analytics/"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600 transition"
+          >
+            <span>📈</span>
+            <span>Analytics</span>
+          </a>
         </nav>
-    </aside>
+      </aside>
 
-
-    <!-- MAIN CONTENT -->
-    <main class="flex-1">
-
+      <!-- ========================= MAIN CONTENT ========================= -->
+      <main class="ml-64 flex-1">
         <!-- HEADER -->
-        <header class="bg-white shadow-sm px-6 py-5 flex justify-between items-center">
+        <header
+          class="bg-white shadow-sm px-8 py-5 flex justify-between items-center"
+        >
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">Analytics</h2>
 
-            <div>
-                <h2 class="text-2xl font-bold">
-                    Analytics
-                </h2>
+            <p class="text-gray-500 text-sm mt-1">
+              Monitor your store performance
+            </p>
+          </div>
 
-                <p class="text-gray-500 text-sm mt-1">
-                    Monitor your store performance
-                </p>
-            </div>
-
-            <button
-                class="px-4 py-2 bg-indigo-600 text-white rounded-lg
-                       hover:bg-indigo-700">
-                Export Report
-            </button>
-
+          <button
+            id="exportReportBtn"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition"
+          >
+            Export Report
+          </button>
         </header>
 
+        <!-- CONTENT -->
+        <div class="p-8">
+          <!-- ========================= KPI CARDS ========================= -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8"
+          >
+            <!-- TOTAL REVENUE -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-gray-500 text-sm">Total Revenue</p>
 
-        <!-- PAGE CONTENT -->
-        <section class="p-6">
+                  <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                    Rs. {{ total_revenue }}
+                  </h3>
 
-
-            <!-- STATISTICS -->
-            <div class="grid grid-cols-1 sm:grid-cols-2
-                        lg:grid-cols-4 gap-6 mb-6">
-
-
-                <!-- REVENUE -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
-
-                    <div class="flex justify-between">
-
-                        <div>
-                            <p class="text-gray-500 text-sm">
-                                Total Revenue
-                            </p>
-
-                            <h3 class="text-2xl font-bold mt-2">
-                                Rs. {{ total_revenue }}
-                            </h3>
-
-                            <p class="text-green-600 text-sm mt-2">
-                                Revenue
-                            </p>
-                        </div>
-
-                        <div class="bg-green-100 p-3 rounded-lg text-xl">
-                            💰
-                        </div>
-
-                    </div>
-
+                  <p class="text-sm text-green-600 mt-2">Total sales revenue</p>
                 </div>
 
+                <div class="bg-green-100 text-green-600 p-3 rounded-lg">💰</div>
+              </div>
 
-                <!-- ORDERS -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
-
-                    <div class="flex justify-between">
-
-                        <div>
-                            <p class="text-gray-500 text-sm">
-                                Total Orders
-                            </p>
-
-                            <h3 class="text-2xl font-bold mt-2">
-                                {{ total_orders }}
-                            </h3>
-
-                            <p class="text-blue-600 text-sm mt-2">
-                                All orders
-                            </p>
-                        </div>
-
-                        <div class="bg-blue-100 p-3 rounded-lg text-xl">
-                            🛒
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- CUSTOMERS -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
-
-                    <div class="flex justify-between">
-
-                        <div>
-                            <p class="text-gray-500 text-sm">
-                                Total Customers
-                            </p>
-
-                            <h3 class="text-2xl font-bold mt-2">
-                                {{ total_customers }}
-                            </h3>
-
-                            <p class="text-purple-600 text-sm mt-2">
-                                Registered customers
-                            </p>
-                        </div>
-
-                        <div class="bg-purple-100 p-3 rounded-lg text-xl">
-                            👥
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- PRODUCTS -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
-
-                    <div class="flex justify-between">
-
-                        <div>
-                            <p class="text-gray-500 text-sm">
-                                Total Products
-                            </p>
-
-                            <h3 class="text-2xl font-bold mt-2">
-                                {{ total_products }}
-                            </h3>
-
-                            <p class="text-orange-600 text-sm mt-2">
-                                Available products
-                            </p>
-                        </div>
-
-                        <div class="bg-orange-100 p-3 rounded-lg text-xl">
-                            📦
-                        </div>
-
-                    </div>
-
-                </div>
-
+              <div class="mt-5 bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div
+                  class="bg-green-500 h-2 rounded-full kpi-bar"
+                  data-value="{{ total_revenue }}"
+                ></div>
+              </div>
             </div>
 
+            <!-- TOTAL ORDERS -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-gray-500 text-sm">Total Orders</p>
 
-            <!-- CHARTS -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                  <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                    {{ total_orders }}
+                  </h3>
 
+                  <p class="text-sm text-blue-600 mt-2">Orders placed</p>
+                </div>
 
-                <!-- REVENUE CHART -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="bg-blue-100 text-blue-600 p-3 rounded-lg">🛒</div>
+              </div>
 
-                   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div class="mt-5 bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div
+                  class="bg-blue-500 h-2 rounded-full kpi-bar"
+                  data-value="{{ total_orders }}"
+                ></div>
+              </div>
+            </div>
 
-    <div>
-        <h3 class="text-lg font-semibold">
-            Revenue Overview
-        </h3>
+            <!-- TOTAL CUSTOMERS -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-gray-500 text-sm">Total Customers</p>
 
-        <p id="revenueSubtitle" class="text-sm text-gray-500">
-            Monthly revenue performance
-        </p>
+                  <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                    {{ total_customers }}
+                  </h3>
+
+                  <p class="text-sm text-purple-600 mt-2">
+                    Registered customers
+                  </p>
+                </div>
+
+                <div class="bg-purple-100 text-purple-600 p-3 rounded-lg">
+                  👥
+                </div>
+              </div>
+
+              <div class="mt-5 bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div
+                  class="bg-purple-500 h-2 rounded-full kpi-bar"
+                  data-value="{{ total_customers }}"
+                ></div>
+              </div>
+            </div>
+
+            <!-- TOTAL PRODUCTS -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-gray-500 text-sm">Total Products</p>
+
+                  <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                    {{ total_products }}
+                  </h3>
+
+                  <p class="text-sm text-orange-600 mt-2">
+                    Products in catalog
+                  </p>
+                </div>
+
+                <div class="bg-orange-100 text-orange-600 p-3 rounded-lg">
+                  📦
+                </div>
+              </div>
+
+              <div class="mt-5 bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div
+                  class="bg-orange-500 h-2 rounded-full kpi-bar"
+                  data-value="{{ total_products }}"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================= CHARTS ========================= -->
+
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+            <!-- REVENUE OVERVIEW -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="flex justify-between items-center mb-5">
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-800">
+                    Revenue Overview
+                  </h3>
+
+                  <p id="revenueSubtitle" class="text-sm text-gray-500 mt-1">
+                    Monthly revenue performance
+                  </p>
+                </div>
+
+                <select
+                  id="dateRange"
+                  class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="7">Last 7 Days</option>
+
+                  <option value="30">Last 30 Days</option>
+
+                  <option value="6" selected>Last 6 Months</option>
+
+                  <option value="12">Last 12 Months</option>
+
+                  <option value="year">This Year</option>
+                </select>
+              </div>
+
+              <div id="revenueChart" class="w-full" style="height: 350px"></div>
+            </div>
+
+            <!-- ORDERS OVERVIEW -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="mb-5">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Orders Overview
+                </h3>
+
+                <p id="ordersSubtitle" class="text-sm text-gray-500 mt-1">
+                  Monthly order performance
+                </p>
+              </div>
+
+              <div id="ordersChart" class="w-full" style="height: 350px"></div>
+            </div>
+          </div>
+
+          <!-- ========================= ORDER STATUS + PERFORMANCE ========================= -->
+
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <!-- ORDER STATUS -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="mb-5">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Order Status
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-1">
+                  Current order distribution
+                </p>
+              </div>
+
+              <div
+                id="orderStatusChart"
+                class="w-full"
+                style="height: 350px"
+              ></div>
+            </div>
+
+            <!-- PERFORMANCE SUMMARY -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Performance Summary
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-1">
+                  Current order status breakdown
+                </p>
+              </div>
+
+              <!-- PENDING -->
+              <div class="mb-6">
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">
+                    Pending
+                  </span>
+
+                  <span class="text-sm text-gray-500">
+                    {{ pending_orders }} (<span id="pendingPercentage">0%</span
+                    >)
+                  </span>
+                </div>
+
+                <div class="bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div
+                    id="pendingBar"
+                    class="bg-yellow-500 h-2 rounded-full"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- PROCESSING -->
+              <div class="mb-6">
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">
+                    Processing
+                  </span>
+
+                  <span class="text-sm text-gray-500">
+                    {{ processing_orders }} (<span id="processingPercentage"
+                      >0%</span
+                    >)
+                  </span>
+                </div>
+
+                <div class="bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div
+                    id="processingBar"
+                    class="bg-blue-500 h-2 rounded-full"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- COMPLETED -->
+              <div class="mb-6">
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">
+                    Completed
+                  </span>
+
+                  <span class="text-sm text-gray-500">
+                    {{ completed_orders }} (<span id="completedPercentage"
+                      >0%</span
+                    >)
+                  </span>
+                </div>
+
+                <div class="bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div
+                    id="completedBar"
+                    class="bg-green-500 h-2 rounded-full"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- CANCELLED -->
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">
+                    Cancelled
+                  </span>
+
+                  <span class="text-sm text-gray-500">
+                    {{ cancelled_orders }} (<span id="cancelledPercentage"
+                      >0%</span
+                    >)
+                  </span>
+                </div>
+
+                <div class="bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div
+                    id="cancelledBar"
+                    class="bg-red-500 h-2 rounded-full"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
-    <select
-        id="dateRange"
-        class="border border-gray-300 rounded-lg px-3 py-2 text-sm
-               focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <!-- ========================= JAVASCRIPT ========================= -->
 
-        <option value="7">Last 7 Days</option>
-        <option value="30">Last 30 Days</option>
-        <option value="6" selected>Last 6 Months</option>
-        <option value="12">Last 12 Months</option>
-        <option value="year">This Year</option>
+    <script>
 
-    </select>
+          // ============================================================
+          // ANALYTICS DATA FROM DJANGO
+          // ============================================================
 
-</div>
+          const analyticsData = {{ analytics_data|safe }};
 
-                    <div id="revenueChart" class="w-full h-80"></div>
 
-                </div>
+          // ============================================================
+          // REVENUE + ORDERS CHARTS
+          // ============================================================
 
+          function updateCharts(range) {
 
-                <!-- ORDERS CHART -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
+              const data = analyticsData[range];
 
-                    <h3 class="text-lg font-semibold">
-                        Orders Overview
-                    </h3>
+              if (!data) {
+                  console.warn("No analytics data found for range:", range);
+                  return;
+              }
 
-                    <p id="ordersSubtitle" class="text-sm text-gray-500 mb-4">
-                        Monthly order statistics
-                    </p>
 
-                    <div id="ordersChart" class="w-full h-80"></div>
+              // --------------------------------------------------------
+              // SUBTITLES
+              // --------------------------------------------------------
 
-                </div>
+              const subtitles = {
 
-            </div>
+                  "7": "Daily revenue performance",
 
+                  "30": "Daily revenue performance",
 
-            <!-- BOTTOM SECTION -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  "6": "Monthly revenue performance",
 
+                  "12": "Monthly revenue performance",
 
-                <!-- ORDER STATUS -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
+                  "year": "Monthly revenue performance"
 
-                    <h3 class="text-lg font-semibold">
-                        Order Status
-                    </h3>
+              };
 
-                    <p class="text-sm text-gray-500 mb-4">
-                        Current order distribution
-                    </p>
 
-                    <div id="orderStatusChart" class="w-full h-80"></div>
+              const ordersSubtitles = {
 
-                </div>
+                  "7": "Daily order performance",
 
+                  "30": "Daily order performance",
 
-                <!-- PERFORMANCE -->
-                <div class="bg-white rounded-xl shadow-sm p-6 lg:col-span-2">
+                  "6": "Monthly order performance",
 
-                    <h3 class="text-lg font-semibold mb-5">
-                        Performance Summary
-                    </h3>
+                  "12": "Monthly order performance",
 
+                  "year": "Monthly order performance"
 
-                    <!-- PENDING -->
-                    <div class="mb-6">
+              };
 
-                        <div class="flex justify-between mb-2">
 
-                            <span class="text-sm text-gray-600">
-                                Pending Orders
-                            </span>
+              // --------------------------------------------------------
+              // X-AXIS TITLES
+              // --------------------------------------------------------
 
-                            <span class="text-sm font-semibold">
-                                {{ pending_orders }}
-                            </span>
+              const xAxisTitles = {
 
-                        </div>
+                  "7": "Date",
 
-                        <div class="w-full bg-gray-200 rounded-full h-2">
+                  "30": "Date",
 
-                            <div
-                                class="bg-yellow-500 h-2 rounded-full"
-                                style="width: 13.3%">
-                            </div>
+                  "6": "Month",
 
-                        </div>
+                  "12": "Month",
 
-                    </div>
+                  "year": "Month"
 
+              };
 
-                    <!-- PROCESSING -->
-                    <div class="mb-6">
 
-                        <div class="flex justify-between mb-2">
+              // --------------------------------------------------------
+              // REVENUE CHART
+              // --------------------------------------------------------
 
-                            <span class="text-sm text-gray-600">
-                                Processing Orders
-                            </span>
+              const revenueTrace = {
 
-                            <span class="text-sm font-semibold">
-                                {{ processing_orders }}
-                            </span>
+                  x: data.labels,
 
-                        </div>
+                  y: data.revenue,
 
-                        <div class="w-full bg-gray-200 rounded-full h-2">
+                  type: "scatter",
 
-                            <div
-                                class="bg-blue-500 h-2 rounded-full"
-                                style="width: 20%">
-                            </div>
+                  mode: "lines+markers",
 
-                        </div>
+                  line: {
+                      width: 3
+                  },
 
-                    </div>
+                  marker: {
+                      size: 7
+                  }
 
+              };
 
-                    <!-- COMPLETED -->
-                    <div class="mb-6">
 
-                        <div class="flex justify-between mb-2">
+              const revenueLayout = {
 
-                            <span class="text-sm text-gray-600">
-                                Completed Orders
-                            </span>
+                  title: {
+                      text: "Revenue Performance",
+                      font: {
+                          size: 16
+                      }
+                  },
 
-                            <span class="text-sm font-semibold">
-                                {{ completed_orders }}
-                            </span>
+                  xaxis: {
+                      title: xAxisTitles[range],
+                      showgrid: false
+                  },
 
-                        </div>
+                  yaxis: {
+                      title: "Revenue (Rs.)",
+                      rangemode: "tozero"
+                  },
 
-                        <div class="w-full bg-gray-200 rounded-full h-2">
+                  margin: {
+                      l: 60,
+                      r: 20,
+                      t: 50,
+                      b: 50
+                  },
 
-                            <div
-                                class="bg-green-500 h-2 rounded-full"
-                                style="width: 60%">
-                            </div>
+                  paper_bgcolor: "white",
 
-                        </div>
+                  plot_bgcolor: "white",
 
-                    </div>
+                  hovermode: "x unified",
 
+                  showlegend: false
 
-                    <!-- CANCELLED -->
-                    <div>
+              };
 
-                        <div class="flex justify-between mb-2">
 
-                            <span class="text-sm text-gray-600">
-                                Cancelled Orders
-                            </span>
+              Plotly.react(
+                  "revenueChart",
+                  [revenueTrace],
+                  revenueLayout,
+                  {
+                      responsive: true,
+                      displayModeBar: false
+                  }
+              );
 
-                            <span class="text-sm font-semibold">
-                                {{ cancelled_orders }}
-                            </span>
 
-                        </div>
+              // --------------------------------------------------------
+              // ORDERS CHART
+              // --------------------------------------------------------
 
-                        <div class="w-full bg-gray-200 rounded-full h-2">
+              const ordersTrace = {
 
-                            <div
-                                class="bg-red-500 h-2 rounded-full"
-                                style="width: 6.7%">
-                            </div>
+                  x: data.labels,
 
-                        </div>
+                  y: data.orders,
 
-                    </div>
+                  type: "bar"
 
-                </div>
+              };
 
-            </div>
 
-        </section>
+              const ordersLayout = {
 
-    </main>
+                  title: {
+                      text: "Orders Performance",
+                      font: {
+                          size: 16
+                      }
+                  },
 
-</div>
+                  xaxis: {
+                      title: xAxisTitles[range],
+                      showgrid: false
+                  },
 
+                  yaxis: {
+                      title: "Number of Orders",
+                      rangemode: "tozero"
+                  },
 
-<!-- PLOTLY CHARTS -->
-<script>
+                  margin: {
+                      l: 60,
+                      r: 20,
+                      t: 50,
+                      b: 50
+                  },
 
-    // ==========================
-    // ANALYTICS DATA
-    // ==========================
+                  paper_bgcolor: "white",
 
-    const analyticsData = {{ analytics_data|safe }};
+                  plot_bgcolor: "white",
 
+                  showlegend: false
 
-    // ==========================
-    // REVENUE CHART
-    // ==========================
+              };
 
-    const revenueLayout = {
-        margin: {
-            t: 10,
-            r: 20,
-            l: 50,
-            b: 40
-        },
 
-        xaxis: {
-            title: 'Period'
-        },
+              Plotly.react(
+                  "ordersChart",
+                  [ordersTrace],
+                  ordersLayout,
+                  {
+                      responsive: true,
+                      displayModeBar: false
+                  }
+              );
 
-        yaxis: {
-            title: 'Revenue (Rs.)'
-        },
 
-        paper_bgcolor: 'white',
-        plot_bgcolor: 'white'
-    };
+              // --------------------------------------------------------
+              // UPDATE SUBTITLES
+              // --------------------------------------------------------
 
+              document.getElementById("revenueSubtitle").textContent =
+                  subtitles[range] || "Revenue performance";
 
-    // ==========================
-    // ORDERS CHART
-    // ==========================
 
-    const ordersLayout = {
-        margin: {
-            t: 10,
-            r: 20,
-            l: 50,
-            b: 40
-        },
+              document.getElementById("ordersSubtitle").textContent =
+                  ordersSubtitles[range] || "Order performance";
 
-        xaxis: {
-            title: 'Period'
-        },
+          }
 
-        yaxis: {
-            title: 'Orders'
-        },
 
-        paper_bgcolor: 'white',
-        plot_bgcolor: 'white'
-    };
+          // ============================================================
+          // DATE RANGE SELECTOR
+          // ============================================================
 
+          document
+              .getElementById("dateRange")
+              .addEventListener("change", function () {
 
-    // ==========================
-    // DRAW CHARTS
-    // ==========================
+                  const selectedRange = this.value;
 
-   function updateCharts(range) {
+                  updateCharts(selectedRange);
 
-    const data = analyticsData[range];
+              });
 
-    const subtitles = {
-        "7": "Daily revenue performance",
-        "30": "Weekly revenue performance",
-        "6": "Monthly revenue performance",
-        "12": "Monthly revenue performance",
-        "year": "Monthly revenue performance"
-    };
 
-    const orderSubtitles = {
-        "7": "Daily order statistics",
-        "30": "Weekly order statistics",
-        "6": "Monthly order statistics",
-        "12": "Monthly order statistics",
-        "year": "Monthly order statistics"
-    };
+          // ============================================================
+          // INITIAL CHART LOAD
+          // ============================================================
 
-    document.getElementById("revenueSubtitle").textContent =
-        subtitles[range];
+          updateCharts("6");
 
-    document.getElementById("ordersSubtitle").textContent =
-        orderSubtitles[range];
 
+          // ============================================================
+          // ORDER STATUS DATA
+          // ============================================================
 
-        // Revenue
+          const pendingOrders =
+              Number("{{ pending_orders }}");
 
-        Plotly.react(
-            'revenueChart',
-            [{
-                x: data.labels,
-                y: data.revenue,
-                type: 'scatter',
-                mode: 'lines+markers'
-            }],
-            revenueLayout,
-            {responsive: true}
-        );
 
+          const processingOrders =
+              Number("{{ processing_orders }}");
 
-        // Orders
 
-        Plotly.react(
-            'ordersChart',
-            [{
-                x: data.labels,
-                y: data.orders,
-                type: 'bar'
-            }],
-            ordersLayout,
-            {responsive: true}
-        );
-    }
+          const completedOrders =
+              Number("{{ completed_orders }}");
 
 
-    // ==========================
-    // INITIAL CHART
-    // ==========================
+          const cancelledOrders =
+              Number("{{ cancelled_orders }}");
 
-    updateCharts("6");
 
+          const totalStatusOrders =
+              pendingOrders +
+              processingOrders +
+              completedOrders +
+              cancelledOrders;
 
-    // ==========================
-    // ORDER STATUS DOUGHNUT
-    // ==========================
 
-    const statusData = [{
-        labels: [
-            'Pending',
-            'Processing',
-            'Completed',
-            'Cancelled'
-        ],
+          // ============================================================
+          // ORDER STATUS DONUT CHART
+          // ============================================================
 
-        values: [
-            {{ pending_orders }},
-            {{ processing_orders }},
-            {{ completed_orders }},
-            {{ cancelled_orders }}
-        ],
+          const statusData = [{
 
-        type: 'pie',
+              labels: [
+                  "Pending",
+                  "Processing",
+                  "Completed",
+                  "Cancelled"
+              ],
 
-        hole: 0.45
-    }];
+              values: [
+                  pendingOrders,
+                  processingOrders,
+                  completedOrders,
+                  cancelledOrders
+              ],
 
+              type: "pie",
 
-    const statusLayout = {
+              hole: 0.45
 
-        margin: {
-            t: 10,
-            r: 10,
-            l: 10,
-            b: 10
-        },
+          }];
 
-        showlegend: true,
 
-        responsive: true
-    };
+          const statusLayout = {
 
+              title: {
+                  text: "Order Status Distribution",
+                  font: {
+                      size: 16
+                  }
+              },
 
-    Plotly.newPlot(
-        'orderStatusChart',
-        statusData,
-        statusLayout,
-        {responsive: true}
-    );
+              margin: {
+                  l: 20,
+                  r: 20,
+                  t: 50,
+                  b: 20
+              },
 
+              paper_bgcolor: "white",
 
-    // ==========================
-    // DATE RANGE SELECTOR
-    // ==========================
+              showlegend: true,
 
-    const dateRange = document.getElementById("dateRange");
+              legend: {
+                  orientation: "h",
+                  y: -0.05
+              }
 
+          };
 
-    dateRange.addEventListener("change", function () {
 
-        const selectedRange = this.value;
+          Plotly.newPlot(
+              "orderStatusChart",
+              statusData,
+              statusLayout,
+              {
+                  responsive: true,
+                  displayModeBar: false
+              }
+          );
 
-        updateCharts(selectedRange);
 
-    });
+          // ============================================================
+          // ORDER STATUS PERCENTAGES
+          // ============================================================
 
-</script>
+          function calculatePercentage(value) {
 
-</body>
+              if (totalStatusOrders === 0) {
+                  return 0;
+              }
+
+              return (value / totalStatusOrders) * 100;
+
+          }
+
+
+          const pendingPercentage =
+              calculatePercentage(pendingOrders);
+
+
+          const processingPercentage =
+              calculatePercentage(processingOrders);
+
+
+          const completedPercentage =
+              calculatePercentage(completedOrders);
+
+
+          const cancelledPercentage =
+              calculatePercentage(cancelledOrders);
+
+          document.getElementById("pendingPercentage").textContent =
+              Math.round(pendingPercentage) + "%";
+
+          document.getElementById("processingPercentage").textContent =
+              Math.round(processingPercentage) + "%";
+
+          document.getElementById("completedPercentage").textContent =
+              Math.round(completedPercentage) + "%";
+
+          document.getElementById("cancelledPercentage").textContent =
+              Math.round(cancelledPercentage) + "%";
+
+
+          document.getElementById("pendingBar").style.width =
+              pendingPercentage + "%";
+
+
+          document.getElementById("processingBar").style.width =
+              processingPercentage + "%";
+
+
+          document.getElementById("completedBar").style.width =
+              completedPercentage + "%";
+
+
+          document.getElementById("cancelledBar").style.width =
+              cancelledPercentage + "%";
+
+
+          // ============================================================
+          // KPI BAR VISUALIZATION
+          // ============================================================
+
+          const kpiBars =
+              document.querySelectorAll(".kpi-bar");
+
+
+          const kpiValues = [];
+
+
+          kpiBars.forEach(function (bar) {
+
+              const value =
+                  Number(bar.dataset.value) || 0;
+
+              kpiValues.push(value);
+
+          });
+
+
+          const maxKpiValue =
+              Math.max(...kpiValues);
+
+
+          kpiBars.forEach(function (bar) {
+
+              const value =
+                  Number(bar.dataset.value) || 0;
+
+
+              let percentage = 0;
+
+
+              if (maxKpiValue > 0) {
+
+                  percentage =
+                      (value / maxKpiValue) * 100;
+
+              }
+
+
+              bar.style.width =
+                  percentage + "%";
+
+          });
+
+          // ============================================================
+      // EXPORT ANALYTICS REPORT
+      // ============================================================
+
+      document
+          .getElementById("exportReportBtn")
+          .addEventListener("click", function () {
+
+              const selectedRange =
+                  document.getElementById("dateRange").value;
+
+              const selectedRangeText =
+                  document.getElementById("dateRange")
+                      .options[
+                          document.getElementById("dateRange").selectedIndex
+                      ].text;
+
+
+              const reportData = [
+
+                  ["STATIONERY HUB - ANALYTICS REPORT", ""],
+
+                  ["Report Period", selectedRangeText],
+
+                  ["" ,""],
+
+                  ["KPI", "Value"],
+
+                  ["Total Revenue", "{{ total_revenue }}"],
+
+                  ["Total Orders", "{{ total_orders }}"],
+
+                  ["Total Customers", "{{ total_customers }}"],
+
+                  ["Total Products", "{{ total_products }}"],
+
+                  ["" ,""],
+
+                  ["ORDER STATUS", "Count"],
+
+                  ["Pending Orders", "{{ pending_orders }}"],
+
+                  ["Processing Orders", "{{ processing_orders }}"],
+
+                  ["Completed Orders", "{{ completed_orders }}"],
+
+                  ["Cancelled Orders", "{{ cancelled_orders }}"]
+
+              ];
+
+
+              const csvContent = reportData
+                  .map(row =>
+                      row.map(value =>
+                          `"${String(value).replace(/"/g, '""')}"`
+                      ).join(",")
+                  )
+                  .join("\n");
+
+
+              const blob = new Blob(
+                  [csvContent],
+                  {
+                      type: "text/csv;charset=utf-8;"
+                  }
+              );
+
+
+              const url =
+                  URL.createObjectURL(blob);
+
+
+              const link =
+                  document.createElement("a");
+
+
+              link.setAttribute("href", url);
+
+
+              link.setAttribute(
+                  "download",
+                  "stationery_hub_analytics_report.csv"
+              );
+
+
+              document.body.appendChild(link);
+
+
+              link.click();
+
+
+              document.body.removeChild(link);
+
+
+              URL.revokeObjectURL(url);
+
+          });
+    </script>
+  </body>
 </html>
