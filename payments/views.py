@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from orders.models import Order
+from orders.models import OrderItem
 from .models import KhaltiTransaction
 
 
@@ -23,7 +24,7 @@ def initiate_khalti_payment(request):
         "website_url": settings.KHALTI_WEBSITE_URL,
         "amount": amount_paisa,
         "purchase_order_id": str(order.id),
-        "purchase_order_name": order.order_name,
+        "purchase_order_name": OrderItem.product_name,
         "customer_info": {
             "name": order.user.get_full_name() or order.user.username,
             "email": order.user.email,
