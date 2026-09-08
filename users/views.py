@@ -1,3 +1,4 @@
+
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,6 +13,7 @@ from django.views.generic import TemplateView
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .permissions import IsAdmin
+from django.conf import settings
 
 class LoginPageView(TemplateView):
     template_name = "users/login.html"
@@ -30,7 +32,7 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
-        verify_link = f"http://127.0.0.1:8000/api/users/verify-email/?uid={uid}&token={token}"
+        verify_link = f"{settings.SITE_URL}/api/users/verify-email/?uid={uid}&token={token}"
 
         send_mail(
             subject="Verify your email - Stationery Hub",
@@ -53,8 +55,7 @@ class PasswordResetRequestView(APIView):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
-        reset_link = f"http://127.0.0.1:8000/api/users/password-reset-confirm/?uid={uid}&token={token}"
-
+        reset_link = f"{settings.SITE_URL}/api/users/password-reset-confirm/?uid={uid}&token={token}"
         send_mail(
             subject="Password Reset - Stationery Hub",
             message=f"Click the link to reset your password: {reset_link}",
@@ -63,7 +64,6 @@ class PasswordResetRequestView(APIView):
         )
 
         return Response({"detail": "If this email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
-
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]

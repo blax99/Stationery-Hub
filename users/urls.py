@@ -1,11 +1,10 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView
-from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView
-from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView, ProfilePageView
-from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView, ProfilePageView, VerifyEmailView
-from .views import RegisterView, PasswordResetRequestView, PasswordResetConfirmView, LoginPageView, ForgotPasswordPageView, RegisterPageView, ProfileView, ProfilePageView, VerifyEmailView, AdminUserListView
-
+from .views import (
+    RegisterView, PasswordResetRequestView, PasswordResetConfirmView,
+    LoginPageView, ForgotPasswordPageView, RegisterPageView,
+    ProfileView, ProfilePageView, VerifyEmailView, AdminUserListView
+)
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
