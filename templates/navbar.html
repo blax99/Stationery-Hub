@@ -1,4 +1,4 @@
-<nav class="bg-blue-600 text-white shadow">
+{% comment %} <nav class="bg-blue-600 text-white shadow">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center h-16">
 
@@ -27,6 +27,80 @@
             <a href="/" class="block py-2 hover:text-blue-200">Home</a>
             <a href="#" class="block py-2 hover:text-blue-200">Products</a>
             <a href="#" class="block py-2 hover:text-blue-200">Categories</a>
+            <a href="#" class="block py-2 hover:text-blue-200">Cart</a>
+            <a href="#" class="block py-2 hover:text-blue-200">Login</a>
+        </div>
+
+    </div>
+</nav> {% endcomment %}
+<nav class="bg-blue-600 text-white shadow relative">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+
+            <!-- Logo -->
+            <a href="{% url 'products:product_list' %}" class="text-xl font-bold">
+                Stationery Hub
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-6">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                
+                <!-- Fixed Products Link -->
+                <a href="{% url 'products:product_list' %}" class="hover:text-blue-200">Products</a>
+
+                <!-- Categories Dropdown -->
+                <div class="relative group">
+                    <button class="flex items-center gap-1 hover:text-blue-200 focus:outline-none py-2">
+                        <span>Categories</span>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                        </svg>
+                    </button>
+                    <!-- Dropdown Menu items -->
+                    <div class="absolute left-0 mt-0 w-48 bg-white text-gray-800 rounded-md shadow-lg py-1 hidden group-hover:block z-50">
+                        <a href="{% url 'products:product_list' %}" class="block px-4 py-2 hover:bg-blue-50 text-sm font-semibold border-b">
+                            All Categories
+                        </a>
+                        {% for cat in all_categories %}
+                            <a href="{% url 'products:product_list_by_category' cat.slug %}" class="block px-4 py-2 hover:bg-blue-50 text-sm">
+                                {{ cat.name }}
+                            </a>
+                        {% empty %}
+                            <span class="block px-4 py-2 text-sm text-gray-400">No categories</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <a href="#" class="hover:text-blue-200">Cart</a>
+                <a href="#" class="hover:text-blue-200">Login</a>
+            </div>
+
+            <!-- Mobile Button -->
+            <button id="menu-btn" class="md:hidden text-2xl">
+                ☰
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden pb-4">
+            <a href="/" class="block py-2 hover:text-blue-200">Home</a>
+            <!-- Fixed Products Link -->
+            <a href="{% url 'products:product_list' %}" class="block py-2 hover:text-blue-200">Products</a>
+            
+            <!-- Mobile Categories Section -->
+            <div class="py-2">
+                <span class="block font-semibold text-blue-200 text-sm mb-1">Categories</span>
+                <a href="{% url 'products:product_list' %}" class="block pl-4 py-1 text-sm hover:text-blue-200">
+                    • All Products
+                </a>
+                {% for cat in all_categories %}
+                    <a href="{% url 'products:product_list_by_category' cat.slug %}" class="block pl-4 py-1 text-sm hover:text-blue-200">
+                        • {{ cat.name }}
+                    </a>
+                {% endfor %}
+            </div>
+
             <a href="#" class="block py-2 hover:text-blue-200">Cart</a>
             <a href="#" class="block py-2 hover:text-blue-200">Login</a>
         </div>
