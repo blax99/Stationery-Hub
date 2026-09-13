@@ -22,218 +22,83 @@ Shopping Cart
         Shopping Cart
       </h1>
 
+     {% for item in cart_items %}
+<div
+    class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
+    data-price="{{ item.product.price }}"
+    data-item-id="{{ item.id }}"
+>
+    <div class="w-28 h-32 bg-gray-200 shrink-0">
+        {% if item.product.image %}
+            <img
+                src="{{ item.product.image.url }}"
+                alt="{{ item.product.name }}"
+                class="w-full h-full object-cover"
+            />
+        {% else %}
+            <div class="w-full h-full flex items-center justify-center text-gray-500 text-xs">
+                NO IMAGE
+            </div>
+        {% endif %}
+    </div>
 
-      <!-- Product 1 -->
-
-      <div
-        class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
-        data-price="34.50"
-      >
-
-        <div class="w-28 h-32 bg-gray-200 shrink-0">
-
-          <img
-            src="https://images.unsplash.com/photo-1517842645767-c639042777db?w=300"
-            alt="Staedtler Watercolor Pencils"
-            class="w-full h-full object-cover"
-          />
-
-        </div>
-
-
-        <div class="flex-1">
-
-          <p class="text-xs tracking-[0.2em] text-gray-500">
-            STAEDTLER
-          </p>
-
-          <h2 class="text-lg font-medium mt-2">
-            Staedtler Watercolor Pencils 36-Set
-          </h2>
-
-          <p class="text-sm text-amber-700 mt-2">
-            On Sale
-          </p>
-
-        </div>
-
-
-        <div class="flex items-center border border-gray-300 h-14">
-
-          <button
-            type="button"
-            class="decrease px-5 text-xl"
-          >
-            −
-          </button>
-
-          <span class="quantity px-3">
-            1
-          </span>
-
-          <button
-            type="button"
-            class="increase px-5 text-xl"
-          >
-            +
-          </button>
-
-        </div>
-
-
-        <p class="w-20 text-lg price">
-          $34.50
+    <div class="flex-1">
+        <p class="text-xs tracking-[0.2em] text-gray-500">
+            {{ item.product.category.name }}
         </p>
 
+        <h2 class="text-lg font-medium mt-2">
+            {{ item.product.name }}
+        </h2>
 
+        {% if item.product.in_stock %}
+            <p class="text-sm text-green-700 mt-2">
+                In Stock
+            </p>
+        {% else %}
+            <p class="text-sm text-red-700 mt-2">
+                Out of Stock
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="flex items-center border border-gray-300 h-14">
         <button
-          type="button"
-          class="delete text-gray-500 text-xl"
-        >
-          🗑
-        </button>
-
-      </div>
-
-
-      <!-- Product 2 -->
-
-      <div
-        class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
-        data-price="16.00"
-      >
-
-        <div class="w-28 h-32 bg-gray-200 shrink-0">
-
-          <img
-            src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300"
-            alt="Midori Notebook"
-            class="w-full h-full object-cover"
-          />
-
-        </div>
-
-
-        <div class="flex-1">
-
-          <p class="text-xs tracking-[0.2em] text-gray-500">
-            MIDORI
-          </p>
-
-          <h2 class="text-lg font-medium mt-2">
-            Midori MD Notebook A5 Blank
-          </h2>
-
-        </div>
-
-
-        <div class="flex items-center border border-gray-300 h-14">
-
-          <button
             type="button"
             class="decrease px-5 text-xl"
-          >
-            −
-          </button>
-
-          <span class="quantity px-3">
-            1
-          </span>
-
-          <button
-            type="button"
-            class="increase px-5 text-xl"
-          >
-            +
-          </button>
-
-        </div>
-
-
-        <p class="w-20 text-lg price">
-          $16.00
-        </p>
-
-
-        <button
-          type="button"
-          class=" delete text-gray-500 text-xl"
         >
-          🗑
+            −
         </button>
 
-      </div>
-
-
-      <!-- Product 3 -->
-
-      <div
-        class="cart-item flex items-center gap-6 py-8 border-t border-b border-gray-200"
-        data-price="31.99"
-      >
-
-        <div class="w-28 h-32 bg-gray-200 shrink-0">
-
-          <img
-            src="https://images.unsplash.com/photo-1585336139667-3b7d7f1a4e0a?w=300"
-            alt="Lamy Safari Fountain Pen"
-            class="w-full h-full object-cover"
-          />
-
-        </div>
-
-
-        <div class="flex-1">
-
-          <p class="text-xs tracking-[0.2em] text-gray-500">
-            LAMY
-          </p>
-
-          <h2 class="text-lg font-medium mt-2">
-            Lamy Safari Fountain Pen — Charcoal
-          </h2>
-
-        </div>
-
-
-        <div class="flex items-center border border-gray-300 h-14">
-
-          <button
-            type="button"
-            class="decrease px-5 text-xl"
-          >
-            −
-          </button>
-
-          <span class="quantity px-3">
-            1
-          </span>
-
-          <button
-            type="button"
-            class="increase px-5 text-xl"
-          >
-            +
-          </button>
-
-        </div>
-
-
-        <p class="w-20 text-lg price">
-          $31.99
-        </p>
-
+        <span class="quantity px-3">
+            {{ item.quantity }}
+        </span>
 
         <button
-          type="button"
-          class="delete text-gray-500 text-xl"
+            type="button"
+            class="increase px-5 text-xl"
         >
-          🗑
+            +
         </button>
+    </div>
 
-      </div>
+    <p class="w-20 text-lg price">
+        ${{ item.product.price }}
+    </p>
 
-    </section>
+    <button
+        type="button"
+        class="delete text-gray-500 text-xl"
+    >
+        🗑
+    </button>
+</div>
+{% endfor %}
+
+
+      
+
+    
 
 
     <!-- Order Summary -->

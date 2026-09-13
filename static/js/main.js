@@ -1,4 +1,3 @@
-console.log("MAIN JS IS WORKING");
 
 document.addEventListener("DOMContentLoaded", function () {
 
