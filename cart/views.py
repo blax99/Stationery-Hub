@@ -9,6 +9,10 @@ def cart(request):
     cart = Cart.objects.get(user=user)
     cart_items = cart.items.all()
 
+    print("CART ITEMS:")
+    for item in cart_items:
+        print(item.id, item.product.name, item.quantity)
+
     subtotal = sum(
         item.product.price * item.quantity
         for item in cart_items
@@ -49,6 +53,8 @@ def add_to_cart(request, product_id):
 
 
 def update_cart_quantity(request, item_id):
+    
+
     user = User.objects.get(username="testuser")
     cart = Cart.objects.get(user=user)
 
@@ -56,6 +62,8 @@ def update_cart_quantity(request, item_id):
         id=item_id,
         cart=cart
     )
+
+    
 
     quantity = int(request.POST.get("quantity", 1))
 
@@ -67,5 +75,20 @@ def update_cart_quantity(request, item_id):
 
     cart_item.quantity = quantity
     cart_item.save()
+
+   
+
+    return redirect("cart")
+
+def delete_cart_item(request, item_id):
+    user = User.objects.get(username="testuser")
+    cart = Cart.objects.get(user=user)
+
+    cart_item = CartItem.objects.get(
+        id=item_id,
+        cart=cart
+    )
+
+    cart_item.delete()
 
     return redirect("cart")

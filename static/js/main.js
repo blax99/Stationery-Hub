@@ -73,89 +73,160 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // =========================
-    // INCREASE QUANTITY
-    // =========================
+   // =========================
+// UPDATE CART QUANTITY
+// =========================
 
-    const increaseButtons =
-        document.querySelectorAll(".increase");
+const csrfToken = document.querySelector(
+    "#cart-csrf-form input[name=csrfmiddlewaretoken]"
+)?.value;
 
-    increaseButtons.forEach(function (button) {
+function updateCartQuantity(cartItem, quantity) {
 
-        button.addEventListener("click", function () {
+    const itemId = cartItem.dataset.itemId;
+    const updateUrl = cartItem.dataset.updateUrl;
 
-            const cartItem =
-                button.closest(".cart-item");
+    fetch(updateUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken
+        },
+        body: `quantity=${quantity}`
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to update cart");
+        }
 
-            const quantityElement =
-                cartItem.querySelector(".quantity");
+        return response.text();
+    })
+    .then(() => {
+        console.log(
+            "Cart updated:",
+            itemId,
+            "Quantity:",
+            quantity
+        );
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
 
-            let quantity =
-                Number(quantityElement.textContent.trim());
 
-            quantity++;
+// =========================
+// INCREASE QUANTITY
+// =========================
+
+const increaseButtons =
+    document.querySelectorAll(".increase");
+
+increaseButtons.forEach(function (button) {
+
+    button.addEventListener("click", function () {
+
+        const cartItem =
+            button.closest(".cart-item");
+
+        const quantityElement =
+            cartItem.querySelector(".quantity");
+
+        let quantity =
+            Number(quantityElement.textContent.trim());
+
+        quantity++;
+
+        quantityElement.textContent = quantity;
+
+        updateCartTotal();
+
+        updateCartQuantity(
+            cartItem,
+            quantity
+        );
+    });
+});
+
+
+// =========================
+// DECREASE QUANTITY
+// =========================
+
+const decreaseButtons =
+    document.querySelectorAll(".decrease");
+
+decreaseButtons.forEach(function (button) {
+
+    button.addEventListener("click", function () {
+
+        const cartItem =
+            button.closest(".cart-item");
+
+        const quantityElement =
+            cartItem.querySelector(".quantity");
+
+        let quantity =
+            Number(quantityElement.textContent.trim());
+
+        if (quantity > 1) {
+            quantity--;
 
             quantityElement.textContent = quantity;
 
             updateCartTotal();
-        });
+
+            updateCartQuantity(
+                cartItem,
+                quantity
+            );
+        }
     });
-
-
-    // =========================
-    // DECREASE QUANTITY
-    // =========================
-
-    const decreaseButtons =
-        document.querySelectorAll(".decrease");
-
-    decreaseButtons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            const cartItem =
-                button.closest(".cart-item");
-
-            const quantityElement =
-                cartItem.querySelector(".quantity");
-
-            let quantity =
-                Number(quantityElement.textContent.trim());
-
-            if (quantity > 1) {
-                quantity--;
-            }
-
-            quantityElement.textContent = quantity;
-
-            updateCartTotal();
-        });
-    });
-
+});
 
     // =========================
     // CART DELETE
     // =========================
 
     const deleteButtons =
-        document.querySelectorAll(".delete");
+    document.querySelectorAll(".delete");
 
-    deleteButtons.forEach(function (button) {
+deleteButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
 
-        button.addEventListener("click", function () {
+        const cartItem =
+            button.closest(".cart-item");
 
-            const cartItem =
-                button.closest(".cart-item");
+        const deleteUrl =
+            button.dataset.deleteUrl;
 
-            if (cartItem) {
-                cartItem.remove();
-                updateCartTotal();
+        if (!cartItem || !deleteUrl) {
+            return;
+        }
+
+        fetch(deleteUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken
             }
+        })
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Failed to delete cart item");
+            }
+
+            cartItem.remove();
+            updateCartTotal();
+
+        })
+        .catch(error => {
+            console.error(error);
         });
     });
+});
 
-
-    updateCartTotal();
+    
 
 
     // =========================
