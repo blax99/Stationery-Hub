@@ -1,9 +1,11 @@
 <!doctype html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    ```
     <title>Analytics - Stationery Hub</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,11 +22,14 @@
         },
       };
     </script>
+    ```
   </head>
 
   <body class="bg-gray-100">
     <div class="flex min-h-screen">
+      ```
       <!-- ========================= SIDEBAR ========================= -->
+
       <aside class="w-64 bg-gray-900 text-white fixed h-full">
         <div class="p-6 border-b border-gray-700">
           <h1 class="text-2xl font-bold">Stationery Hub</h1>
@@ -75,8 +80,10 @@
       </aside>
 
       <!-- ========================= MAIN CONTENT ========================= -->
+
       <main class="ml-64 flex-1">
         <!-- HEADER -->
+
         <header
           class="bg-white shadow-sm px-8 py-5 flex justify-between items-center"
         >
@@ -97,12 +104,15 @@
         </header>
 
         <!-- CONTENT -->
+
         <div class="p-8">
           <!-- ========================= KPI CARDS ========================= -->
+
           <div
             class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8"
           >
             <!-- TOTAL REVENUE -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="flex justify-between items-start">
                 <div>
@@ -127,6 +137,7 @@
             </div>
 
             <!-- TOTAL ORDERS -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="flex justify-between items-start">
                 <div>
@@ -151,6 +162,7 @@
             </div>
 
             <!-- TOTAL CUSTOMERS -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="flex justify-between items-start">
                 <div>
@@ -179,6 +191,7 @@
             </div>
 
             <!-- TOTAL PRODUCTS -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="flex justify-between items-start">
                 <div>
@@ -211,6 +224,7 @@
 
           <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
             <!-- REVENUE OVERVIEW -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="flex justify-between items-center mb-5">
                 <div>
@@ -243,6 +257,7 @@
             </div>
 
             <!-- ORDERS OVERVIEW -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="mb-5">
                 <h3 class="text-lg font-semibold text-gray-800">
@@ -262,6 +277,7 @@
 
           <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <!-- ORDER STATUS -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="mb-5">
                 <h3 class="text-lg font-semibold text-gray-800">
@@ -281,6 +297,7 @@
             </div>
 
             <!-- PERFORMANCE SUMMARY -->
+
             <div class="bg-white rounded-xl shadow-sm p-6">
               <div class="mb-6">
                 <h3 class="text-lg font-semibold text-gray-800">
@@ -293,6 +310,7 @@
               </div>
 
               <!-- PENDING -->
+
               <div class="mb-6">
                 <div class="flex justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700">
@@ -315,6 +333,7 @@
               </div>
 
               <!-- PROCESSING -->
+
               <div class="mb-6">
                 <div class="flex justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700">
@@ -338,6 +357,7 @@
               </div>
 
               <!-- COMPLETED -->
+
               <div class="mb-6">
                 <div class="flex justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700">
@@ -361,6 +381,7 @@
               </div>
 
               <!-- CANCELLED -->
+
               <div>
                 <div class="flex justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700">
@@ -392,546 +413,797 @@
 
     <script>
 
-          // ============================================================
-          // ANALYTICS DATA FROM DJANGO
-          // ============================================================
+      // ============================================================
+      // ANALYTICS DATA FROM DJANGO
+      // ============================================================
 
-          const analyticsData = {{ analytics_data|safe }};
+      const analyticsData = {{ analytics_data|safe }};
 
 
-          // ============================================================
-          // REVENUE + ORDERS CHARTS
-          // ============================================================
+      // ============================================================
+      // REVENUE + ORDERS CHARTS
+      // ============================================================
 
-          function updateCharts(range) {
+      function updateCharts(range) {
 
-              const data = analyticsData[range];
+        const data = analyticsData[range];
 
-              if (!data) {
-                  console.warn("No analytics data found for range:", range);
-                  return;
-              }
-
-
-              // --------------------------------------------------------
-              // SUBTITLES
-              // --------------------------------------------------------
-
-              const subtitles = {
-
-                  "7": "Daily revenue performance",
-
-                  "30": "Daily revenue performance",
-
-                  "6": "Monthly revenue performance",
-
-                  "12": "Monthly revenue performance",
-
-                  "year": "Monthly revenue performance"
-
-              };
-
-
-              const ordersSubtitles = {
-
-                  "7": "Daily order performance",
-
-                  "30": "Daily order performance",
-
-                  "6": "Monthly order performance",
-
-                  "12": "Monthly order performance",
-
-                  "year": "Monthly order performance"
-
-              };
-
-
-              // --------------------------------------------------------
-              // X-AXIS TITLES
-              // --------------------------------------------------------
-
-              const xAxisTitles = {
-
-                  "7": "Date",
-
-                  "30": "Date",
-
-                  "6": "Month",
-
-                  "12": "Month",
-
-                  "year": "Month"
-
-              };
-
-
-              // --------------------------------------------------------
-              // REVENUE CHART
-              // --------------------------------------------------------
-
-              const revenueTrace = {
-
-                  x: data.labels,
-
-                  y: data.revenue,
-
-                  type: "scatter",
-
-                  mode: "lines+markers",
-
-                  line: {
-                      width: 3
-                  },
-
-                  marker: {
-                      size: 7
-                  }
-
-              };
-
-
-              const revenueLayout = {
-
-                  title: {
-                      text: "Revenue Performance",
-                      font: {
-                          size: 16
-                      }
-                  },
-
-                  xaxis: {
-                      title: xAxisTitles[range],
-                      showgrid: false
-                  },
-
-                  yaxis: {
-                      title: "Revenue (Rs.)",
-                      rangemode: "tozero"
-                  },
-
-                  margin: {
-                      l: 60,
-                      r: 20,
-                      t: 50,
-                      b: 50
-                  },
-
-                  paper_bgcolor: "white",
-
-                  plot_bgcolor: "white",
-
-                  hovermode: "x unified",
-
-                  showlegend: false
-
-              };
-
-
-              Plotly.react(
-                  "revenueChart",
-                  [revenueTrace],
-                  revenueLayout,
-                  {
-                      responsive: true,
-                      displayModeBar: false
-                  }
-              );
-
-
-              // --------------------------------------------------------
-              // ORDERS CHART
-              // --------------------------------------------------------
-
-              const ordersTrace = {
-
-                  x: data.labels,
-
-                  y: data.orders,
-
-                  type: "bar"
-
-              };
-
-
-              const ordersLayout = {
-
-                  title: {
-                      text: "Orders Performance",
-                      font: {
-                          size: 16
-                      }
-                  },
-
-                  xaxis: {
-                      title: xAxisTitles[range],
-                      showgrid: false
-                  },
-
-                  yaxis: {
-                      title: "Number of Orders",
-                      rangemode: "tozero"
-                  },
-
-                  margin: {
-                      l: 60,
-                      r: 20,
-                      t: 50,
-                      b: 50
-                  },
-
-                  paper_bgcolor: "white",
-
-                  plot_bgcolor: "white",
-
-                  showlegend: false
-
-              };
-
-
-              Plotly.react(
-                  "ordersChart",
-                  [ordersTrace],
-                  ordersLayout,
-                  {
-                      responsive: true,
-                      displayModeBar: false
-                  }
-              );
-
-
-              // --------------------------------------------------------
-              // UPDATE SUBTITLES
-              // --------------------------------------------------------
-
-              document.getElementById("revenueSubtitle").textContent =
-                  subtitles[range] || "Revenue performance";
-
-
-              document.getElementById("ordersSubtitle").textContent =
-                  ordersSubtitles[range] || "Order performance";
-
-          }
-
-
-          // ============================================================
-          // DATE RANGE SELECTOR
-          // ============================================================
-
-          document
-              .getElementById("dateRange")
-              .addEventListener("change", function () {
-
-                  const selectedRange = this.value;
-
-                  updateCharts(selectedRange);
-
-              });
-
-
-          // ============================================================
-          // INITIAL CHART LOAD
-          // ============================================================
-
-          updateCharts("6");
-
-
-          // ============================================================
-          // ORDER STATUS DATA
-          // ============================================================
-
-          const pendingOrders =
-              Number("{{ pending_orders }}");
-
-
-          const processingOrders =
-              Number("{{ processing_orders }}");
-
-
-          const completedOrders =
-              Number("{{ completed_orders }}");
-
-
-          const cancelledOrders =
-              Number("{{ cancelled_orders }}");
-
-
-          const totalStatusOrders =
-              pendingOrders +
-              processingOrders +
-              completedOrders +
-              cancelledOrders;
-
-
-          // ============================================================
-          // ORDER STATUS DONUT CHART
-          // ============================================================
-
-          const statusData = [{
-
-              labels: [
-                  "Pending",
-                  "Processing",
-                  "Completed",
-                  "Cancelled"
-              ],
-
-              values: [
-                  pendingOrders,
-                  processingOrders,
-                  completedOrders,
-                  cancelledOrders
-              ],
-
-              type: "pie",
-
-              hole: 0.45
-
-          }];
-
-
-          const statusLayout = {
-
-              title: {
-                  text: "Order Status Distribution",
-                  font: {
-                      size: 16
-                  }
-              },
-
-              margin: {
-                  l: 20,
-                  r: 20,
-                  t: 50,
-                  b: 20
-              },
-
-              paper_bgcolor: "white",
-
-              showlegend: true,
-
-              legend: {
-                  orientation: "h",
-                  y: -0.05
-              }
-
-          };
-
-
-          Plotly.newPlot(
-              "orderStatusChart",
-              statusData,
-              statusLayout,
-              {
-                  responsive: true,
-                  displayModeBar: false
-              }
+        if (!data) {
+          console.warn(
+            "No analytics data found for range:",
+            range
           );
+          return;
+        }
 
 
-          // ============================================================
-          // ORDER STATUS PERCENTAGES
-          // ============================================================
+        // ------------------------------------------------------------
+        // SUBTITLES
+        // ------------------------------------------------------------
 
-          function calculatePercentage(value) {
+        const subtitles = {
 
-              if (totalStatusOrders === 0) {
-                  return 0;
-              }
+          "7": "Daily revenue performance",
 
-              return (value / totalStatusOrders) * 100;
+          "30": "Daily revenue performance",
+
+          "6": "Monthly revenue performance",
+
+          "12": "Monthly revenue performance",
+
+          "year": "Monthly revenue performance"
+
+        };
+
+
+        const ordersSubtitles = {
+
+          "7": "Daily order performance",
+
+          "30": "Daily order performance",
+
+          "6": "Monthly order performance",
+
+          "12": "Monthly order performance",
+
+          "year": "Monthly order performance"
+
+        };
+
+
+        // ------------------------------------------------------------
+        // X-AXIS TITLES
+        // ------------------------------------------------------------
+
+        const xAxisTitles = {
+
+          "7": "Date",
+
+          "30": "Date",
+
+          "6": "Month",
+
+          "12": "Month",
+
+          "year": "Month"
+
+        };
+
+
+        // ============================================================
+        // REVENUE CHART
+        // ============================================================
+
+        const revenueTrace = {
+
+          x: data.labels,
+
+          y: data.revenue,
+
+          type: "scatter",
+
+          mode: "lines+markers",
+
+          line: {
+            width: 3
+          },
+
+          marker: {
+            size: 7
+          }
+
+        };
+
+
+        const revenueLayout = {
+
+          title: {
+            text: "Revenue Performance",
+            font: {
+              size: 16
+            }
+          },
+
+          xaxis: {
+
+            // IMPORTANT:
+            // Treat Django labels as categories, not dates.
+
+            type: "category",
+
+            title: {
+              text: xAxisTitles[range]
+            },
+
+            showgrid: false,
+
+            tickangle: -45,
+
+            automargin: true,
+
+            tickmode: "auto"
+
+          },
+
+          yaxis: {
+
+            title: {
+              text: "Revenue (Rs.)"
+            },
+
+            rangemode: "tozero"
+
+          },
+
+          margin: {
+
+            l: 60,
+
+            r: 20,
+
+            t: 50,
+
+            b: 80
+
+          },
+
+          paper_bgcolor: "white",
+
+          plot_bgcolor: "white",
+
+          hovermode: "x unified",
+
+          showlegend: false
+
+        };
+
+
+        Plotly.react(
+
+          "revenueChart",
+
+          [revenueTrace],
+
+          revenueLayout,
+
+          {
+            responsive: true,
+            displayModeBar: false
+          }
+
+        );
+
+
+        // ============================================================
+        // ORDERS CHART
+        // ============================================================
+
+        const ordersTrace = {
+
+          x: data.labels,
+
+          y: data.orders,
+
+          type: "bar"
+
+        };
+
+
+        const ordersLayout = {
+
+          title: {
+
+            text: "Orders Performance",
+
+            font: {
+              size: 16
+            }
+
+          },
+
+          xaxis: {
+
+            // IMPORTANT:
+            // Treat Django labels as categories, not dates.
+
+            type: "category",
+
+            title: {
+              text: xAxisTitles[range]
+            },
+
+            showgrid: false,
+
+            tickangle: -45,
+
+            automargin: true,
+
+            tickmode: "auto"
+
+          },
+
+          yaxis: {
+
+            title: {
+              text: "Number of Orders"
+            },
+
+            rangemode: "tozero"
+
+          },
+
+          margin: {
+
+            l: 60,
+
+            r: 20,
+
+            t: 50,
+
+            b: 80
+
+          },
+
+          paper_bgcolor: "white",
+
+          plot_bgcolor: "white",
+
+          showlegend: false
+
+        };
+
+
+        Plotly.react(
+
+          "ordersChart",
+
+          [ordersTrace],
+
+          ordersLayout,
+
+          {
+
+            responsive: true,
+
+            displayModeBar: false
+
+          }
+
+        );
+
+
+        // ------------------------------------------------------------
+        // UPDATE SUBTITLES
+        // ------------------------------------------------------------
+
+        document.getElementById(
+          "revenueSubtitle"
+        ).textContent =
+          subtitles[range] ||
+          "Revenue performance";
+
+
+        document.getElementById(
+          "ordersSubtitle"
+        ).textContent =
+          ordersSubtitles[range] ||
+          "Order performance";
+
+      }
+
+
+      // ============================================================
+      // DATE RANGE SELECTOR
+      // ============================================================
+
+      document
+        .getElementById("dateRange")
+        .addEventListener(
+          "change",
+          function () {
+
+            const selectedRange =
+              this.value;
+
+            updateCharts(selectedRange);
+
+          }
+        );
+
+
+      // ============================================================
+      // INITIAL CHART LOAD
+      // ============================================================
+
+      updateCharts("6");
+
+
+      // ============================================================
+      // ORDER STATUS DATA
+      // ============================================================
+
+      const pendingOrders =
+        Number("{{ pending_orders }}");
+
+      const processingOrders =
+        Number("{{ processing_orders }}");
+
+      const completedOrders =
+        Number("{{ completed_orders }}");
+
+      const cancelledOrders =
+        Number("{{ cancelled_orders }}");
+
+
+      const totalStatusOrders =
+        pendingOrders +
+        processingOrders +
+        completedOrders +
+        cancelledOrders;
+
+
+      // ============================================================
+      // ORDER STATUS DONUT CHART
+      // ============================================================
+
+      const statusData = [
+
+        {
+
+          labels: [
+
+            "Pending",
+
+            "Processing",
+
+            "Completed",
+
+            "Cancelled"
+
+          ],
+
+          values: [
+
+            pendingOrders,
+
+            processingOrders,
+
+            completedOrders,
+
+            cancelledOrders
+
+          ],
+
+          type: "pie",
+
+          hole: 0.45
+
+        }
+
+      ];
+
+
+      const statusLayout = {
+
+        title: {
+
+          text: "Order Status Distribution",
+
+          font: {
+            size: 16
+          }
+
+        },
+
+        margin: {
+
+          l: 20,
+
+          r: 20,
+
+          t: 50,
+
+          b: 20
+
+        },
+
+        paper_bgcolor: "white",
+
+        showlegend: true,
+
+        legend: {
+
+          orientation: "h",
+
+          y: -0.05
+
+        }
+
+      };
+
+
+      Plotly.newPlot(
+
+        "orderStatusChart",
+
+        statusData,
+
+        statusLayout,
+
+        {
+
+          responsive: true,
+
+          displayModeBar: false
+
+        }
+
+      );
+
+
+      // ============================================================
+      // ORDER STATUS PERCENTAGES
+      // ============================================================
+
+      function calculatePercentage(value) {
+
+        if (totalStatusOrders === 0) {
+
+          return 0;
+
+        }
+
+        return (
+          value /
+          totalStatusOrders
+        ) * 100;
+
+      }
+
+
+      const pendingPercentage =
+        calculatePercentage(
+          pendingOrders
+        );
+
+
+      const processingPercentage =
+        calculatePercentage(
+          processingOrders
+        );
+
+
+      const completedPercentage =
+        calculatePercentage(
+          completedOrders
+        );
+
+
+      const cancelledPercentage =
+        calculatePercentage(
+          cancelledOrders
+        );
+
+
+      document.getElementById(
+        "pendingPercentage"
+      ).textContent =
+        Math.round(
+          pendingPercentage
+        ) + "%";
+
+
+      document.getElementById(
+        "processingPercentage"
+      ).textContent =
+        Math.round(
+          processingPercentage
+        ) + "%";
+
+
+      document.getElementById(
+        "completedPercentage"
+      ).textContent =
+        Math.round(
+          completedPercentage
+        ) + "%";
+
+
+      document.getElementById(
+        "cancelledPercentage"
+      ).textContent =
+        Math.round(
+          cancelledPercentage
+        ) + "%";
+
+
+      document.getElementById(
+        "pendingBar"
+      ).style.width =
+        pendingPercentage + "%";
+
+
+      document.getElementById(
+        "processingBar"
+      ).style.width =
+        processingPercentage + "%";
+
+
+      document.getElementById(
+        "completedBar"
+      ).style.width =
+        completedPercentage + "%";
+
+
+      document.getElementById(
+        "cancelledBar"
+      ).style.width =
+        cancelledPercentage + "%";
+
+
+      // ============================================================
+      // KPI BAR VISUALIZATION
+      // ============================================================
+
+      const kpiBars =
+        document.querySelectorAll(
+          ".kpi-bar"
+        );
+
+
+      const kpiValues = [];
+
+
+      kpiBars.forEach(
+        function (bar) {
+
+          const value =
+            Number(
+              bar.dataset.value
+            ) || 0;
+
+          kpiValues.push(value);
+
+        }
+      );
+
+
+      const maxKpiValue =
+        Math.max(...kpiValues);
+
+
+      kpiBars.forEach(
+        function (bar) {
+
+          const value =
+            Number(
+              bar.dataset.value
+            ) || 0;
+
+
+          let percentage = 0;
+
+
+          if (maxKpiValue > 0) {
+
+            percentage =
+              (
+                value /
+                maxKpiValue
+              ) * 100;
 
           }
 
 
-          const pendingPercentage =
-              calculatePercentage(pendingOrders);
+          bar.style.width =
+            percentage + "%";
+
+        }
+      );
 
 
-          const processingPercentage =
-              calculatePercentage(processingOrders);
-
-
-          const completedPercentage =
-              calculatePercentage(completedOrders);
-
-
-          const cancelledPercentage =
-              calculatePercentage(cancelledOrders);
-
-          document.getElementById("pendingPercentage").textContent =
-              Math.round(pendingPercentage) + "%";
-
-          document.getElementById("processingPercentage").textContent =
-              Math.round(processingPercentage) + "%";
-
-          document.getElementById("completedPercentage").textContent =
-              Math.round(completedPercentage) + "%";
-
-          document.getElementById("cancelledPercentage").textContent =
-              Math.round(cancelledPercentage) + "%";
-
-
-          document.getElementById("pendingBar").style.width =
-              pendingPercentage + "%";
-
-
-          document.getElementById("processingBar").style.width =
-              processingPercentage + "%";
-
-
-          document.getElementById("completedBar").style.width =
-              completedPercentage + "%";
-
-
-          document.getElementById("cancelledBar").style.width =
-              cancelledPercentage + "%";
-
-
-          // ============================================================
-          // KPI BAR VISUALIZATION
-          // ============================================================
-
-          const kpiBars =
-              document.querySelectorAll(".kpi-bar");
-
-
-          const kpiValues = [];
-
-
-          kpiBars.forEach(function (bar) {
-
-              const value =
-                  Number(bar.dataset.value) || 0;
-
-              kpiValues.push(value);
-
-          });
-
-
-          const maxKpiValue =
-              Math.max(...kpiValues);
-
-
-          kpiBars.forEach(function (bar) {
-
-              const value =
-                  Number(bar.dataset.value) || 0;
-
-
-              let percentage = 0;
-
-
-              if (maxKpiValue > 0) {
-
-                  percentage =
-                      (value / maxKpiValue) * 100;
-
-              }
-
-
-              bar.style.width =
-                  percentage + "%";
-
-          });
-
-          // ============================================================
+      // ============================================================
       // EXPORT ANALYTICS REPORT
       // ============================================================
 
       document
-          .getElementById("exportReportBtn")
-          .addEventListener("click", function () {
+        .getElementById(
+          "exportReportBtn"
+        )
+        .addEventListener(
+          "click",
+          function () {
 
-              const selectedRange =
-                  document.getElementById("dateRange").value;
-
-              const selectedRangeText =
-                  document.getElementById("dateRange")
-                      .options[
-                          document.getElementById("dateRange").selectedIndex
-                      ].text;
-
-
-              const reportData = [
-
-                  ["STATIONERY HUB - ANALYTICS REPORT", ""],
-
-                  ["Report Period", selectedRangeText],
-
-                  ["" ,""],
-
-                  ["KPI", "Value"],
-
-                  ["Total Revenue", "{{ total_revenue }}"],
-
-                  ["Total Orders", "{{ total_orders }}"],
-
-                  ["Total Customers", "{{ total_customers }}"],
-
-                  ["Total Products", "{{ total_products }}"],
-
-                  ["" ,""],
-
-                  ["ORDER STATUS", "Count"],
-
-                  ["Pending Orders", "{{ pending_orders }}"],
-
-                  ["Processing Orders", "{{ processing_orders }}"],
-
-                  ["Completed Orders", "{{ completed_orders }}"],
-
-                  ["Cancelled Orders", "{{ cancelled_orders }}"]
-
-              ];
+            const selectedRange =
+              document.getElementById(
+                "dateRange"
+              ).value;
 
 
-              const csvContent = reportData
-                  .map(row =>
-                      row.map(value =>
-                          `"${String(value).replace(/"/g, '""')}"`
-                      ).join(",")
-                  )
-                  .join("\n");
-
-
-              const blob = new Blob(
-                  [csvContent],
-                  {
-                      type: "text/csv;charset=utf-8;"
-                  }
+            const dateRangeSelect =
+              document.getElementById(
+                "dateRange"
               );
 
 
-              const url =
-                  URL.createObjectURL(blob);
+            const selectedRangeText =
+              dateRangeSelect
+                .options[
+                  dateRangeSelect.selectedIndex
+                ].text;
 
 
-              const link =
-                  document.createElement("a");
+            const reportData = [
+
+              [
+                "STATIONERY HUB - ANALYTICS REPORT",
+                ""
+              ],
+
+              [
+                "Report Period",
+                selectedRangeText
+              ],
+
+              [
+                "",
+                ""
+              ],
+
+              [
+                "KPI",
+                "Value"
+              ],
+
+              [
+                "Total Revenue",
+                "{{ total_revenue }}"
+              ],
+
+              [
+                "Total Orders",
+                "{{ total_orders }}"
+              ],
+
+              [
+                "Total Customers",
+                "{{ total_customers }}"
+              ],
+
+              [
+                "Total Products",
+                "{{ total_products }}"
+              ],
+
+              [
+                "",
+                ""
+              ],
+
+              [
+                "ORDER STATUS",
+                "Count"
+              ],
+
+              [
+                "Pending Orders",
+                "{{ pending_orders }}"
+              ],
+
+              [
+                "Processing Orders",
+                "{{ processing_orders }}"
+              ],
+
+              [
+                "Completed Orders",
+                "{{ completed_orders }}"
+              ],
+
+              [
+                "Cancelled Orders",
+                "{{ cancelled_orders }}"
+              ]
+
+            ];
 
 
-              link.setAttribute("href", url);
+            const csvContent =
+              reportData
+
+                .map(
+                  row =>
+                    row
+                      .map(
+                        value =>
+                          `"${String(value).replace(
+                            /"/g,
+                            '""'
+                          )}"`
+                      )
+                      .join(",")
+                )
+
+                .join("\n");
 
 
-              link.setAttribute(
-                  "download",
-                  "stationery_hub_analytics_report.csv"
+            const blob =
+              new Blob(
+
+                [csvContent],
+
+                {
+                  type:
+                    "text/csv;charset=utf-8;"
+                }
+
               );
 
 
-              document.body.appendChild(link);
+            const url =
+              URL.createObjectURL(
+                blob
+              );
 
 
-              link.click();
+            const link =
+              document.createElement(
+                "a"
+              );
 
 
-              document.body.removeChild(link);
+            link.setAttribute(
+              "href",
+              url
+            );
 
 
-              URL.revokeObjectURL(url);
+            link.setAttribute(
+              "download",
+              "stationery_hub_analytics_report.csv"
+            );
 
-          });
+
+            document.body.appendChild(
+              link
+            );
+
+
+            link.click();
+
+
+            document.body.removeChild(
+              link
+            );
+
+
+            URL.revokeObjectURL(
+              url
+            );
+
+          }
+        );
     </script>
+    ```
   </body>
 </html>

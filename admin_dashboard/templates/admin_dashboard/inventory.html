@@ -54,6 +54,7 @@
 
       <!-- Main Content -->
       <main class="flex-1 p-8">
+        <form id="csrfForm" class="hidden">{% csrf_token %}</form>
         <!-- Header -->
         <div class="mb-8">
           <h2 class="text-3xl font-bold text-gray-800">Inventory</h2>
@@ -136,7 +137,7 @@
               <tbody id="inventoryTableBody">
                 {% for product in products %}
 
-                <tr class="border-t">
+                <tr class="border-t" data-id="{{ product.id }}">
                   <td class="px-6 py-4">{{ product.name }}</td>
 
                   <td class="px-6 py-4">{{ product.category.name }}</td>
@@ -337,17 +338,48 @@
             return;
           }
 
-          /* Update quantity */
+          /* Update database */
 
-          quantityElement.textContent = quantity;
+          const form = document.createElement("form");
 
-          /* Update status */
+          form.method = "POST";
+          form.action = "";
 
-          updateAllStockStatuses();
+          const csrfToken = document.querySelector(
+            "[name=csrfmiddlewaretoken]",
+          ).value;
 
-          /* Update summary */
+          /* CSRF */
 
-          updateInventorySummary();
+          const csrfInput = document.createElement("input");
+
+          csrfInput.type = "hidden";
+          csrfInput.name = "csrfmiddlewaretoken";
+          csrfInput.value = csrfToken;
+
+          /* Product ID */
+
+          const productIdInput = document.createElement("input");
+
+          productIdInput.type = "hidden";
+          productIdInput.name = "product_id";
+          productIdInput.value = productRow.dataset.id;
+
+          /* Stock */
+
+          const stockInput = document.createElement("input");
+
+          stockInput.type = "hidden";
+          stockInput.name = "stock";
+          stockInput.value = quantity;
+
+          form.appendChild(csrfInput);
+          form.appendChild(productIdInput);
+          form.appendChild(stockInput);
+
+          document.body.appendChild(form);
+
+          form.submit();
         });
       });
 
