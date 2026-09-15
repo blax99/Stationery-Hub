@@ -1,32 +1,52 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Category, Products
+from django.db.models import Count, Q
+from .models import Category, Products  # Matches your model class name
 
 
 def product_list(request, category_slug=None):
-    category = None
-    # Pre-fetch active categories ordered by name
-    categories = Category.objects.all()
-    # Filter available products and join category data using select_related to avoid N+1 queries
+    selected_category = None
+    
+    # Annotate total product count for sidebar category list
+    categories = Category.objects.annotate(
+        total_products=Count('products', filter=Q(products__is_available=True))
+    )
+    
+    # Prefetch relationships to avoid N+1 queries
     products = Products.objects.filter(is_available=True).select_related('category')
 
-    # If a category slug is passed in the URL, filter products by that category
+    # Filter by Category
     if category_slug:
-        category = get_object_or_404(Category, slug=category_slug)
-        products = products.filter(category=category)
+        selected_category = get_object_or_404(Category, slug=category_slug)
+        products = products.filter(category=selected_category)
+
+    # Search Query Filter (?q=...)
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+
+    # Sorting Filter (?sort=...)
+    sort_by = request.GET.get('sort', 'newest')
+    if sort_by == 'price_low':
+        products = products.order_by('price')
+    elif sort_by == 'price_high':
+        products = products.order_by('-price')
+    else:
+        products = products.order_by('-id')
 
     context = {
-        'category': category,
+        'selected_category': selected_category,  # Matches template expectation
         'categories': categories,
         'products': products,
+        'sort_by': sort_by,
     }
-    return render(request, 'products/list.html', context)
+    return render(request, 'products/product_list.html', context)
 
 
 def product_detail(request, slug):
-    # Fetch product by slug ensuring it's available
     product = get_object_or_404(Products, slug=slug, is_available=True)
     
-    # Fetch related products from the same category (excluding the current product)
     related_products = Products.objects.filter(
         category=product.category, 
         is_available=True
@@ -36,4 +56,4 @@ def product_detail(request, slug):
         'product': product,
         'related_products': related_products,
     }
-    return render(request, 'products/detail.html', context)
+    return render(request, 'products/product_detail.html', context)
