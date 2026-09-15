@@ -23,7 +23,7 @@
 #     path('api/users/', include('users.urls')),
 #     path('api/products/', include('products.urls')),
 #     path('api/cart/', include('cart.urls')),
-#     path('api/orders/', include('orders.urls')),
+#     path('api/orders/', include('orders.api_urls')),
 #     path('api/payments/', include('payments.urls')),
 # ]
 
@@ -39,7 +39,7 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/products/', include('products.api_urls')),
     path('api/cart/', include('cart.urls')),
-    path('api/orders/', include('orders.urls')),
+    path('api/orders/', include('orders.api_urls')),
     path('api/payments/', include('payments.urls')),
 ]
 # Serve uploaded media files locally in debug mode
