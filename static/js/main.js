@@ -123,9 +123,7 @@ const increaseButtons =
     document.querySelectorAll(".increase");
 
 increaseButtons.forEach(function (button) {
-
     button.addEventListener("click", function () {
-
         const cartItem =
             button.closest(".cart-item");
 
@@ -134,6 +132,13 @@ increaseButtons.forEach(function (button) {
 
         let quantity =
             Number(quantityElement.textContent.trim());
+
+        const stock =
+            Number(cartItem.dataset.stock);
+
+        if (quantity >= stock) {
+            return;
+        }
 
         quantity++;
 
@@ -147,7 +152,6 @@ increaseButtons.forEach(function (button) {
         );
     });
 });
-
 
 // =========================
 // DECREASE QUANTITY

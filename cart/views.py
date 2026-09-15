@@ -1,12 +1,18 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 from products.models import Products
+
 from .models import Cart, CartItem, Wishlist, WishlistItem
 
+from django.http import JsonResponse
 
 def cart(request):
     user = User.objects.get(username="testuser")
-    cart = Cart.objects.get(user=user)
+    cart, created = Cart.objects.get_or_create(user=user)
     cart_items = cart.items.all()
 
     print("CART ITEMS:")
@@ -53,7 +59,11 @@ def add_to_cart(request, product_id):
 
 
 def update_cart_quantity(request, item_id):
-    
+    if request.method != "POST":
+        return JsonResponse(
+            {"success": False, "error": "Invalid request"},
+            status=400
+        )
 
     user = User.objects.get(username="testuser")
     cart = Cart.objects.get(user=user)
@@ -63,22 +73,36 @@ def update_cart_quantity(request, item_id):
         cart=cart
     )
 
-    
+    try:
+        quantity = int(request.POST.get("quantity", 1))
+    except (TypeError, ValueError):
+        return JsonResponse(
+            {"success": False, "error": "Invalid quantity"},
+            status=400
+        )
 
-    quantity = int(request.POST.get("quantity", 1))
+    stock = cart_item.product.stock
+
+    if stock <= 0:
+        cart_item.delete()
+        return JsonResponse({
+            "success": False,
+            "error": "Product is out of stock"
+        })
 
     if quantity < 1:
         quantity = 1
 
-    if quantity > cart_item.product.stock:
-        quantity = cart_item.product.stock
+    if quantity > stock:
+        quantity = stock
 
     cart_item.quantity = quantity
     cart_item.save()
 
-   
-
-    return redirect("cart")
+    return JsonResponse({
+        "success": True,
+        "quantity": quantity
+    })
 
 def delete_cart_item(request, item_id):
     user = User.objects.get(username="testuser")
