@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}
+Shopping Cart
+{% endblock %}
+
+{% block content %}
+
+<form id="cart-csrf-form" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+        <!-- ========================= -->
+        <!-- CART ITEMS -->
+        <!-- ========================= -->
+
+        <section class="lg:col-span-2">
+
+            <h1 class="text-3xl font-normal mb-8">
+                Shopping Cart
+            </h1>
+
+            {% for item in cart_items %}
+
+            <div
+                class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
+                data-price="{{ item.product.price }}"
+                data-item-id="{{ item.id }}"
+                data-update-url="{% url 'update_cart_quantity' item.id %}"
+            >
+
+                <!-- Product Image -->
+
+                <div class="w-28 h-32 bg-gray-200 shrink-0">
+
+                    {% if item.product.image %}
+
+                        <img
+                            src="{{ item.product.image.url }}"
+                            alt="{{ item.product.name }}"
+                            class="w-full h-full object-cover"
+                        />
+
+                    {% else %}
+
+                        <div class="w-full h-full flex items-center justify-center text-gray-500 text-xs">
+                            NO IMAGE
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Product Information -->
+
+                <div class="flex-1">
+
+                    <p class="text-xs tracking-[0.2em] text-gray-500">
+                        {{ item.product.category.name }}
+                    </p>
+
+                    <h2 class="text-lg font-medium mt-2">
+                        {{ item.product.name }}
+                    </h2>
+
+                    {% if item.product.in_stock %}
+
+                        <p class="text-sm text-green-700 mt-2">
+                            In Stock
+                        </p>
+
+                    {% else %}
+
+                        <p class="text-sm text-red-700 mt-2">
+                            Out of Stock
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Quantity Controls -->
+
+                <div class="flex items-center border border-gray-300 h-14">
+
+                    <button
+                        type="button"
+                        class="decrease px-5 text-xl"
+                    >
+                        −
+                    </button>
+
+                    <span class="quantity px-3">
+                        {{ item.quantity }}
+                    </span>
+
+                    <button
+                        type="button"
+                        class="increase px-5 text-xl"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+
+                <!-- Product Total -->
+
+                <p class="w-20 text-lg price">
+
+                    ${{ item.product.price|floatformat:2 }}
+
+                </p>
+
+
+                <!-- Delete -->
+
+                <button
+                    type="button"
+                    class="delete text-gray-500 text-xl"
+                    data-delete-url="{% url 'delete_cart_item' item.id %}"
+                >
+                    🗑
+                </button>
+
+            </div>
+
+            {% empty %}
+
+            <!-- ========================= -->
+            <!-- EMPTY CART -->
+            <!-- ========================= -->
+
+            <div class="py-16 text-center border-t border-gray-200">
+
+                <h2 class="text-2xl font-normal mb-4">
+                    Your cart is empty
+                </h2>
+
+                <p class="text-gray-500 mb-8">
+                    You haven't added any products to your cart yet.
+                </p>
+
+                <a
+                    href="{% url 'products:product_list' %}"
+                    class="inline-block bg-slate-800 text-white px-8 py-4 hover:bg-slate-700 transition"
+                >
+                    Continue Shopping
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- ORDER SUMMARY -->
+        <!-- ========================= -->
+
+        <aside class="border border-gray-200 p-8 h-fit">
+
+            <h2 class="text-2xl font-normal mb-10">
+                Order Summary
+            </h2>
+
+
+            <!-- Summary Items -->
+
+            <div class="space-y-6">
+
+                {% for item in cart_items %}
+
+                <div class="summary-item flex justify-between gap-4">
+
+                    <span class="text-gray-500 truncate">
+
+                        {{ item.product.name }}
+
+                    </span>
+
+                    <span class="summary-price whitespace-nowrap">
+
+                        ${{ item.product.price|floatformat:2 }}
+
+                    </span>
+
+                </div>
+
+                {% empty %}
+
+                <p class="text-gray-500 text-sm">
+                    No items in your cart.
+                </p>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- Divider -->
+
+            <div class="border-t border-gray-200 my-8"></div>
+
+
+            <!-- Subtotal -->
+
+            <div class="flex justify-between mb-6">
+
+                <span class="text-gray-500">
+                    Subtotal
+                </span>
+
+                <span id="subtotal">
+
+                    {% if cart_items %}
+                        ${{ subtotal|floatformat:2 }}
+                    {% else %}
+                        $0.00
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+
+            <!-- Shipping -->
+
+            <div class="flex justify-between">
+
+                <span class="text-gray-500">
+                    Shipping
+                </span>
+
+                {% if cart_items %}
+
+                    <span class="text-green-700">
+                        Free
+                    </span>
+
+                {% else %}
+
+                    <span class="text-gray-400">
+                        —
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Divider -->
+
+            <div class="border-t border-gray-200 my-8"></div>
+
+
+            <!-- Total -->
+
+            <div class="flex justify-between text-xl font-medium">
+
+                <span>
+                    Total
+                </span>
+
+                <span id="total">
+
+                    {% if cart_items %}
+                        ${{ subtotal|floatformat:2 }}
+                    {% else %}
+                        $0.00
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+
+            <!-- Checkout Button -->
+
+            {% if cart_items %}
+
+                <button
+                    type="button"
+                    class="w-full bg-slate-800 text-white py-5 mt-8 text-lg font-medium hover:bg-slate-700 transition"
+                >
+                    Proceed to Checkout
+                </button>
+
+            {% else %}
+
+                <button
+                    type="button"
+                    disabled
+                    class="w-full bg-gray-300 text-gray-500 py-5 mt-8 text-lg font-medium cursor-not-allowed"
+                >
+                    Proceed to Checkout
+                </button>
+
+            {% endif %}
+
+        </aside>
+
+    </div>
+
+</div>
+
+{% endblock %}

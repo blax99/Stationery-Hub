@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/blax99/Stationery-Hub#readme",
   "dependencies": {
-    "@tailwindcss/cli": "^4.3.3",
-    "tailwindcss": "^4.3.3"
+    "@tailwindcss/cli": "^4.3.3"
   },
   "devDependencies": {
-    "concurrently": "^10.0.5"
+    "concurrently": "^10.0.5",
+    "tailwindcss": "^4.3.3"
   }
 }
