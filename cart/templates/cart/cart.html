@@ -30,6 +30,7 @@ Shopping Cart
                 class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
                 data-price="{{ item.product.price }}"
                 data-item-id="{{ item.id }}"
+                data-stock="{{ item.product.stock }}"
                 data-update-url="{% url 'update_cart_quantity' item.id %}"
             >
 
