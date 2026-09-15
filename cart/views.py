@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from products.models import Products
-from .models import Cart, CartItem, Wishlist, WishlistItem
-from django.http import JsonResponse
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+from products.models import Products
+
+from .models import Cart, CartItem, Wishlist, WishlistItem
+
+from django.http import JsonResponse
 
 def cart(request):
     user = User.objects.get(username="testuser")
-    cart = Cart.objects.get(user=user)
+    cart, created = Cart.objects.get_or_create(user=user)
     cart_items = cart.items.all()
 
     print("CART ITEMS:")
