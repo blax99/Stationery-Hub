@@ -37,10 +37,16 @@ urlpatterns = [
     path('', include('home.urls')),
     path('products/', include('products.urls')),  # Direct route for HTML views
     path('api/users/', include('users.urls')),
-    path('api/cart/', include('cart.urls')),
+    path('api/cart/', include('cart.api_urls')),
     path('api/orders/', include('orders.urls')),
     path('api/payments/', include('payments.urls')),
+    path('cart/', include('cart.urls')),
 ]
+
+urlpatterns += static(
+    settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT
+)
 
 # Serve uploaded media files locally in debug mode
 if settings.DEBUG:

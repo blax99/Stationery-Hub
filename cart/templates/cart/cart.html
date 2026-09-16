@@ -114,10 +114,8 @@ Shopping Cart
                 <!-- Product Total -->
 
                 <p class="w-20 text-lg price">
-
-                    ${{ item.product.price|floatformat:2 }}
-
-                </p>
+    ${{ item.item_total|floatformat:2 }}
+</p>
 
 
                 <!-- Delete -->
@@ -189,7 +187,7 @@ Shopping Cart
 
                     <span class="summary-price whitespace-nowrap">
 
-                        ${{ item.product.price|floatformat:2 }}
+                        ${{ item.item_total|floatformat:2 }}
 
                     </span>
 
