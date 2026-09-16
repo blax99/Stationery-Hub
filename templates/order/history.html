@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+    <h1 class="text-3xl font-bold mb-6">My Orders</h1>
+
+    {% if orders %}
+        <div class="space-y-4">
+
+            {% for order in orders %}
+                <div class="border rounded-lg p-5 bg-white shadow-sm">
+
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-lg font-semibold">
+                            Order #{{ order.id|stringformat:"04d" }}
+                        </h2>
+
+                        <span class="text-sm text-gray-500">
+                            {{ order.created_at|date:"M d, Y" }}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+
+                        <div class="md:col-span-3">
+                            <strong>Order Status:</strong>
+
+                            <div class="flex items-center justify-between mt-3 text-sm">
+
+                                <!-- Pending -->
+                                <div class="text-center">
+                                    <div class="w-8 h-8 mx-auto rounded-full
+                                        {% if order.status == 'pending' or order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}
+                                            bg-blue-600 text-white
+                                        {% else %}
+                                            bg-gray-200 text-gray-500
+                                        {% endif %}
+                                        flex items-center justify-center">
+                                        ✓
+                                    </div>
+                                    <p class="mt-1">Pending</p>
+                                </div>
+
+                                <!-- Pending to Confirmed -->
+                                <div class="flex-1 h-1 mx-2
+                                    {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}
+                                        bg-blue-600
+                                    {% else %}
+                                        bg-gray-200
+                                    {% endif %}">
+                                </div>
+
+                                <!-- Confirmed -->
+                                <div class="text-center">
+                                    <div class="w-8 h-8 mx-auto rounded-full
+                                        {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}
+                                            bg-blue-600 text-white
+                                        {% else %}
+                                            bg-gray-200 text-gray-500
+                                        {% endif %}
+                                        flex items-center justify-center">
+                                        ✓
+                                    </div>
+                                    <p class="mt-1">Confirmed</p>
+                                </div>
+
+                                <!-- Confirmed to Shipped -->
+                                <div class="flex-1 h-1 mx-2
+                                    {% if order.status == 'shipped' or order.status == 'delivered' %}
+                                        bg-blue-600
+                                    {% else %}
+                                        bg-gray-200
+                                    {% endif %}">
+                                </div>
+
+                                <!-- Shipped -->
+                                <div class="text-center">
+                                    <div class="w-8 h-8 mx-auto rounded-full
+                                        {% if order.status == 'shipped' or order.status == 'delivered' %}
+                                            bg-blue-600 text-white
+                                        {% else %}
+                                            bg-gray-200 text-gray-500
+                                        {% endif %}
+                                        flex items-center justify-center">
+                                        ✓
+                                    </div>
+                                    <p class="mt-1">Shipped</p>
+                                </div>
+
+                                <!-- Shipped to Delivered -->
+                                <div class="flex-1 h-1 mx-2
+                                    {% if order.status == 'delivered' %}
+                                        bg-blue-600
+                                    {% else %}
+                                        bg-gray-200
+                                    {% endif %}">
+                                </div>
+
+                                <!-- Delivered -->
+                                <div class="text-center">
+                                    <div class="w-8 h-8 mx-auto rounded-full
+                                        {% if order.status == 'delivered' %}
+                                            bg-blue-600 text-white
+                                        {% else %}
+                                            bg-gray-200 text-gray-500
+                                        {% endif %}
+                                        flex items-center justify-center">
+                                        ✓
+                                    </div>
+                                    <p class="mt-1">Delivered</p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong>Payment:</strong>
+                            {{ order.get_payment_status_display }}
+                        </div>
+
+                        <div>
+                            <strong>Total:</strong>
+                            Rs. {{ order.total_amount }}
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4">
+                        <a
+                            href="{% url 'order_confirmation' order.id %}"
+                            class="inline-block px-4 py-2 rounded bg-blue-600 text-white"
+                        >
+                            View Order
+                        </a>
+                    </div>
+
+                </div>
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="border rounded-lg p-6 text-center">
+            <p class="text-gray-600">You have no orders yet.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
