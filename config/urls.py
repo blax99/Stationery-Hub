@@ -38,7 +38,9 @@ urlpatterns = [
     path('products/', include('products.urls')),  # Direct route for HTML views
     path('api/users/', include('users.urls')),
     path('api/products/', include('products.api_urls')),
-    path('api/cart/', include('cart.urls')),
+path('cart/', include('cart.urls')),  # Direct route for HTML views
+path('api/cart/', include('cart.api_urls')),
+    path('api/cart/', include('cart.api_urls')),
     path('api/orders/', include('orders.api_urls')),
     path('api/payments/', include('payments.urls')),
 ]
