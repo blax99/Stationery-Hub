@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -17,14 +18,14 @@
         <nav class="space-y-3">
           <a
             href="/dashboard/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
           >
             📊 Dashboard
           </a>
 
           <a
             href="/dashboard/products/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
           >
             📦 Products
           </a>
@@ -38,16 +39,22 @@
 
           <a
             href="/dashboard/orders/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
           >
             📋 Orders
           </a>
 
           <a
             href="/dashboard/analytics/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
           >
             📈 Analytics
+          </a>
+          <a
+            href="/dashboard/users/"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            👥 Users
           </a>
         </nav>
       </aside>
@@ -55,6 +62,7 @@
       <!-- Main Content -->
       <main class="flex-1 p-8">
         <form id="csrfForm" class="hidden">{% csrf_token %}</form>
+
         <!-- Header -->
         <div class="mb-8">
           <h2 class="text-3xl font-bold text-gray-800">Inventory</h2>
@@ -64,39 +72,50 @@
 
         <!-- Inventory Summary -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <!-- Total Products -->
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Total Products</p>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Total Products</p>
 
-            <h3 id="totalProducts" class="text-3xl font-bold mt-2">0</h3>
+            <h3
+              id="totalProducts"
+              class="text-3xl font-bold text-gray-800 mt-2"
+            >
+              0
+            </h3>
           </div>
 
-          <!-- Low Stock -->
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Low Stock</p>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Low Stock</p>
 
-            <h3 id="lowStock" class="text-3xl font-bold mt-2">0</h3>
+            <h3 id="lowStock" class="text-3xl font-bold text-gray-800 mt-2">
+              0
+            </h3>
           </div>
 
-          <!-- Out of Stock -->
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Out of Stock</p>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Out of Stock</p>
 
-            <h3 id="outOfStock" class="text-3xl font-bold mt-2">0</h3>
+            <h3 id="outOfStock" class="text-3xl font-bold text-gray-800 mt-2">
+              0
+            </h3>
           </div>
         </div>
 
         <!-- Search and Filter -->
-        <div class="bg-white p-5 rounded-xl shadow mb-6">
+        <div
+          class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
+        >
           <div class="flex gap-4">
             <input
               id="inventorySearch"
               type="text"
               placeholder="Search products..."
-              class="flex-1 border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              class="flex-1 border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
 
-            <select id="stockFilter" class="border rounded-lg px-4 py-3">
+            <select
+              id="stockFilter"
+              class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option>All Stock Status</option>
               <option>In Stock</option>
               <option>Low Stock</option>
@@ -105,7 +124,8 @@
 
             <button
               id="inventorySearchBtn"
-              class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700"
+              type="button"
+              class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
             >
               Search
             </button>
@@ -113,45 +133,74 @@
         </div>
 
         <!-- Inventory Table -->
-        <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div
+          class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100"
+        >
           <div class="p-5 border-b">
-            <h3 class="text-xl font-semibold">Stock Overview</h3>
+            <h3 class="text-xl font-semibold text-gray-800">Stock Overview</h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+              Monitor current stock levels of products
+            </p>
           </div>
 
           <div class="overflow-x-auto">
             <table class="w-full text-left">
-              <thead class="bg-gray-50">
+              <thead class="bg-gray-50 border-b">
                 <tr>
-                  <th class="px-6 py-4">Product</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Product
+                  </th>
 
-                  <th class="px-6 py-4">Category</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Category
+                  </th>
 
-                  <th class="px-6 py-4">Stock</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Stock
+                  </th>
 
-                  <th class="px-6 py-4">Status</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Status
+                  </th>
 
-                  <th class="px-6 py-4">Action</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Action
+                  </th>
                 </tr>
               </thead>
 
               <tbody id="inventoryTableBody">
                 {% for product in products %}
 
-                <tr class="border-t" data-id="{{ product.id }}">
-                  <td class="px-6 py-4">{{ product.name }}</td>
+                <tr
+                  class="border-t hover:bg-gray-50 transition"
+                  data-id="{{ product.id }}"
+                  data-name="{{ product.name }}"
+                >
+                  <td class="px-6 py-4 font-medium text-gray-800">
+                    {{ product.name }}
+                  </td>
 
-                  <td class="px-6 py-4">{{ product.category.name }}</td>
+                  <td class="px-6 py-4 text-gray-600">
+                    {{ product.category.name }}
+                  </td>
 
-                  <td class="px-6 py-4 stock-quantity">{{ product.stock }}</td>
+                  <td class="px-6 py-4 text-gray-700 font-medium">
+                    <span class="stock-quantity"> {{ product.stock }} </span>
+                  </td>
 
                   <td class="px-6 py-4">
-                    <span class="stock-status px-3 py-1 rounded-full text-sm">
+                    <span
+                      class="stock-status px-3 py-1 rounded-full text-sm font-medium"
+                    >
                     </span>
                   </td>
 
                   <td class="px-6 py-4">
                     <button
-                      class="update-stock-btn text-blue-600 hover:underline"
+                      type="button"
+                      class="update-stock-btn text-blue-600 hover:text-blue-800 font-medium transition"
                     >
                       Update Stock
                     </button>
@@ -161,7 +210,7 @@
                 {% empty %}
 
                 <tr>
-                  <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                  <td colspan="5" class="px-6 py-10 text-center text-gray-500">
                     No products found.
                   </td>
                 </tr>
@@ -175,10 +224,6 @@
     </div>
 
     <script>
-      /* ================================
-       ELEMENTS
-    ================================= */
-
       const inventorySearch = document.getElementById("inventorySearch");
 
       const inventorySearchBtn = document.getElementById("inventorySearchBtn");
@@ -187,12 +232,10 @@
 
       const inventoryTableBody = document.getElementById("inventoryTableBody");
 
-      /* ================================
-       UPDATE ALL STOCK STATUSES
-    ================================= */
+      /* Update stock status */
 
       function updateAllStockStatuses() {
-        const products = inventoryTableBody.querySelectorAll("tr");
+        const products = inventoryTableBody.querySelectorAll("tr[data-id]");
 
         products.forEach(function (product) {
           const quantityElement = product.querySelector(".stock-quantity");
@@ -205,40 +248,32 @@
             return;
           }
 
-          /* Out of Stock */
-
           if (quantity === 0) {
             statusElement.textContent = "Out of Stock";
 
             statusElement.className =
-              "stock-status bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm";
+              "stock-status bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium";
           } else if (quantity <= 10) {
-            /* Low Stock */
             statusElement.textContent = "Low Stock";
 
             statusElement.className =
-              "stock-status bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm";
+              "stock-status bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium";
           } else {
-            /* In Stock */
             statusElement.textContent = "In Stock";
 
             statusElement.className =
-              "stock-status bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm";
+              "stock-status bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium";
           }
         });
       }
 
-      /* ================================
-       UPDATE INVENTORY SUMMARY
-    ================================= */
+      /* Update summary */
 
       function updateInventorySummary() {
-        const products = inventoryTableBody.querySelectorAll("tr");
+        const products = inventoryTableBody.querySelectorAll("tr[data-id]");
 
         let total = 0;
-
         let lowStockCount = 0;
-
         let outOfStockCount = 0;
 
         products.forEach(function (product) {
@@ -268,42 +303,38 @@
         document.getElementById("outOfStock").textContent = outOfStockCount;
       }
 
-      /* ================================
-       SEARCH + STOCK FILTER
-    ================================= */
+      /* Search + filter */
 
-      inventorySearchBtn.addEventListener("click", function () {
+      inventorySearchBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+
         const searchText = inventorySearch.value.toLowerCase().trim();
 
-        const selectedStatus = stockFilter.value.toLowerCase();
+        const selectedStatus = stockFilter.value.toLowerCase().trim();
 
-        const products = inventoryTableBody.querySelectorAll("tr");
+        const products = inventoryTableBody.querySelectorAll("tr[data-id]");
 
         products.forEach(function (product) {
-          const productName = product.cells[0].textContent.toLowerCase().trim();
+          const productName = (product.dataset.name || "").toLowerCase().trim();
 
-          const productStatus = product
-            .querySelector(".stock-status")
-            .textContent.toLowerCase()
+          const statusElement = product.querySelector(".stock-status");
+
+          const productStatus = (statusElement?.textContent || "")
+            .toLowerCase()
             .trim();
 
           const matchesSearch = productName.includes(searchText);
 
           const matchesStatus =
+            selectedStatus === "all" ||
             selectedStatus === "all stock status" ||
             productStatus === selectedStatus;
 
-          if (matchesSearch && matchesStatus) {
-            product.style.display = "";
-          } else {
-            product.style.display = "none";
-          }
+          product.style.display = matchesSearch && matchesStatus ? "" : "none";
         });
       });
 
-      /* ================================
-       UPDATE STOCK BUTTONS
-    ================================= */
+      /* Update stock buttons */
 
       const updateStockButtons = document.querySelectorAll(".update-stock-btn");
 
@@ -322,23 +353,17 @@
             currentQuantity,
           );
 
-          /* Cancel */
-
           if (newQuantity === null) {
             return;
           }
 
           const quantity = parseInt(newQuantity);
 
-          /* Invalid input */
-
           if (isNaN(quantity) || quantity < 0) {
             alert("Please enter a valid stock quantity.");
 
             return;
           }
-
-          /* Update database */
 
           const form = document.createElement("form");
 
@@ -349,23 +374,17 @@
             "[name=csrfmiddlewaretoken]",
           ).value;
 
-          /* CSRF */
-
           const csrfInput = document.createElement("input");
 
           csrfInput.type = "hidden";
           csrfInput.name = "csrfmiddlewaretoken";
           csrfInput.value = csrfToken;
 
-          /* Product ID */
-
           const productIdInput = document.createElement("input");
 
           productIdInput.type = "hidden";
           productIdInput.name = "product_id";
           productIdInput.value = productRow.dataset.id;
-
-          /* Stock */
 
           const stockInput = document.createElement("input");
 
@@ -383,12 +402,9 @@
         });
       });
 
-      /* ================================
-       INITIAL PAGE LOAD
-    ================================= */
+      /* Initial page load */
 
       updateAllStockStatuses();
-
       updateInventorySummary();
     </script>
   </body>

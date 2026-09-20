@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate, TruncMonth
 from django.utils import timezone
@@ -8,10 +8,6 @@ from products.models import Products, Category
 from products.forms import ProductForm
 from orders.models import Order
 from users.models import User
-
-# =========================================================
-# DASHBOARD
-# =========================================================
 
 
 def dashboard_view(request):
@@ -32,6 +28,34 @@ def dashboard_view(request):
 
     cancelled_orders = 0
 
+    recent_orders = Order.objects.select_related("user").order_by("-created_at")[:5]
+
+    today = timezone.localdate()
+
+    seven_days_ago = today - timedelta(days=6)
+
+    sales_data = (
+        Order.objects.filter(
+            created_at__date__gte=seven_days_ago, created_at__date__lte=today
+        )
+        .annotate(date=TruncDate("created_at"))
+        .values("date")
+        .annotate(revenue=Sum("total_amount"))
+        .order_by("date")
+    )
+
+    sales_data_dict = {item["date"]: float(item["revenue"] or 0) for item in sales_data}
+
+    sales_labels = []
+    sales_revenue = []
+
+    for i in range(7):
+        current_date = seven_days_ago + timedelta(days=i)
+
+        sales_labels.append(current_date.strftime("%b %d"))
+
+        sales_revenue.append(sales_data_dict.get(current_date, 0))
+
     context = {
         "total_products": total_products,
         "total_orders": total_orders,
@@ -41,14 +65,12 @@ def dashboard_view(request):
         "processing_orders": processing_orders,
         "completed_orders": completed_orders,
         "cancelled_orders": cancelled_orders,
+        "recent_orders": recent_orders,
+        "sales_labels": sales_labels,
+        "sales_revenue": sales_revenue,
     }
 
     return render(request, "admin_dashboard/dashboard.html", context)
-
-
-# =========================================================
-# PRODUCTS
-# =========================================================
 
 
 def products_view(request):
@@ -92,11 +114,6 @@ def products_view(request):
     return render(request, "admin_dashboard/products.html", context)
 
 
-# =========================================================
-# INVENTORY
-# =========================================================
-
-
 def inventory_view(request):
 
     if request.method == "POST":
@@ -106,22 +123,24 @@ def inventory_view(request):
 
         if product_id and stock is not None:
 
-            product = Products.objects.get(id=product_id)
-            product.stock = stock
-            product.save()
+            try:
+                stock = int(stock)
+
+                if stock >= 0:
+                    product = Products.objects.filter(id=product_id).first()
+
+                    if product:
+                        product.stock = stock
+                        product.save()
+
+            except (ValueError, TypeError):
+                pass
 
     products = Products.objects.select_related("category").all()
 
-    context = {
-        "products": products,
-    }
+    context = {"products": products}
 
     return render(request, "admin_dashboard/inventory.html", context)
-
-
-# =========================================================
-# ORDERS
-# =========================================================
 
 
 def orders_view(request):
@@ -131,23 +150,23 @@ def orders_view(request):
         order_id = request.POST.get("order_id")
         action = request.POST.get("action")
 
-        if order_id and action == "approve":
+        if order_id and action:
 
-            order = Order.objects.get(id=order_id)
-            order.status = "confirmed"
-            order.save()
+            order = Order.objects.filter(id=order_id).first()
 
-        elif order_id and action == "ship":
+            if order:
 
-            order = Order.objects.get(id=order_id)
-            order.status = "shipped"
-            order.save()
+                if action == "approve" and order.status == "pending":
+                    order.status = "confirmed"
+                    order.save()
 
-        elif order_id and action == "deliver":
+                elif action == "ship" and order.status == "confirmed":
+                    order.status = "shipped"
+                    order.save()
 
-            order = Order.objects.get(id=order_id)
-            order.status = "delivered"
-            order.save()
+                elif action == "deliver" and order.status == "shipped":
+                    order.status = "delivered"
+                    order.save()
 
     orders = (
         Order.objects.select_related("user", "shipping_address")
@@ -173,16 +192,7 @@ def orders_view(request):
     return render(request, "admin_dashboard/orders.html", context)
 
 
-# =========================================================
-# ANALYTICS
-# =========================================================
-
-
 def analytics_view(request):
-
-    # =====================================================
-    # KPI STATISTICS
-    # =====================================================
 
     total_products = Products.objects.count()
 
@@ -191,10 +201,6 @@ def analytics_view(request):
     total_customers = User.objects.filter(role="customer").count()
 
     total_revenue = Order.objects.aggregate(total=Sum("total_amount"))["total"] or 0
-
-    # =====================================================
-    # ORDER STATUS
-    # =====================================================
 
     pending_orders = Order.objects.filter(status="pending").count()
 
@@ -205,15 +211,15 @@ def analytics_view(request):
     # No cancelled status in the current model
     cancelled_orders = 0
 
-    # =====================================================
-    # CURRENT DATE
-    # =====================================================
-
     today = timezone.localdate()
 
-    # =====================================================
-    # LAST 7 DAYS
-    # =====================================================
+    def get_status_data(queryset):
+        return {
+            "pending": queryset.filter(status="pending").count(),
+            "confirmed": queryset.filter(status="confirmed").count(),
+            "shipped": queryset.filter(status="shipped").count(),
+            "delivered": queryset.filter(status="delivered").count(),
+        }
 
     seven_days_ago = today - timedelta(days=6)
 
@@ -253,10 +259,6 @@ def analytics_view(request):
             revenue_7.append(0)
             orders_7.append(0)
 
-    # =====================================================
-    # LAST 30 DAYS
-    # =====================================================
-
     thirty_days_ago = today - timedelta(days=29)
 
     orders_30_days = Order.objects.filter(
@@ -294,10 +296,6 @@ def analytics_view(request):
 
             revenue_30.append(0)
             orders_30.append(0)
-
-    # =====================================================
-    # LAST 6 MONTHS
-    # =====================================================
 
     six_months_ago = today.replace(day=1) - timedelta(days=150)
 
@@ -356,10 +354,6 @@ def analytics_view(request):
             revenue_6.append(0)
             orders_6.append(0)
 
-    # =====================================================
-    # LAST 12 MONTHS
-    # =====================================================
-
     twelve_months_ago = today.replace(day=1) - timedelta(days=335)
 
     orders_12_months = Order.objects.filter(
@@ -417,10 +411,6 @@ def analytics_view(request):
             revenue_12.append(0)
             orders_12.append(0)
 
-    # =====================================================
-    # THIS YEAR
-    # =====================================================
-
     start_of_year = today.replace(month=1, day=1)
 
     orders_this_year = Order.objects.filter(
@@ -469,10 +459,6 @@ def analytics_view(request):
 
             current_month = current_month.replace(month=current_month.month + 1)
 
-    # =====================================================
-    # ANALYTICS DATA
-    # =====================================================
-
     analytics_data = {
         "7": {
             "labels": labels_7,
@@ -501,10 +487,6 @@ def analytics_view(request):
         },
     }
 
-    # =====================================================
-    # CONTEXT
-    # =====================================================
-
     context = {
         "total_revenue": total_revenue,
         "total_orders": total_orders,
@@ -517,8 +499,88 @@ def analytics_view(request):
         "analytics_data": analytics_data,
     }
 
-    # =====================================================
-    # RENDER
-    # =====================================================
-
     return render(request, "admin_dashboard/analytics.html", context)
+
+
+def users_view(request):
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        # Add user
+        if action == "add":
+            full_name = request.POST.get("full_name", "").strip()
+            email = request.POST.get("email", "").strip()
+            password = request.POST.get("password")
+            role = request.POST.get("role")
+
+            name_parts = full_name.split()
+            first_name = name_parts[0] if name_parts else ""
+            last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+
+            username = email.split("@")[0]
+            original_username = username
+            counter = 1
+
+            while User.objects.filter(username=username).exists():
+                username = f"{original_username}{counter}"
+                counter += 1
+
+            User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                role=role,
+                is_active=True,
+            )
+
+            return redirect("users")
+
+        # Edit user
+        elif action == "edit":
+            user_id = request.POST.get("user_id")
+            user = User.objects.get(id=user_id)
+
+            full_name = request.POST.get("full_name", "").strip()
+            email = request.POST.get("email", "").strip()
+            password = request.POST.get("password")
+            role = request.POST.get("role")
+
+            name_parts = full_name.split()
+
+            user.first_name = name_parts[0] if name_parts else ""
+            user.last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+            user.email = email
+            user.role = role
+
+            if password:
+                user.set_password(password)
+
+            user.save()
+
+            return redirect("users")
+
+        # Delete user
+        elif action == "delete":
+            user_id = request.POST.get("user_id")
+            user = User.objects.get(id=user_id)
+            user.delete()
+
+            return redirect("users")
+
+    users = User.objects.all().order_by("-date_joined")
+
+    total_users = users.count()
+    total_customers = users.filter(role="customer").count()
+    total_admins = users.filter(role="admin").count()
+
+    context = {
+        "users": users,
+        "total_users": total_users,
+        "total_customers": total_customers,
+        "total_admins": total_admins,
+    }
+
+    return render(request, "admin_dashboard/users.html", context)

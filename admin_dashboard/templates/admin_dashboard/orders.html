@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,39 +9,52 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
-  <body class="bg-gray-100">
+  <body class="bg-gray-100 text-gray-800">
     <div class="flex min-h-screen">
       <!-- Sidebar -->
-      <aside class="w-64 bg-gray-900 text-white p-6">
+      <aside class="w-64 bg-gray-900 text-white p-6 shadow-lg">
         <h1 class="text-2xl font-bold mb-8">Stationery Hub</h1>
 
-        <nav class="space-y-3">
+        <nav class="space-y-2">
           <a
             href="/dashboard/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
           >
             📊 Dashboard
           </a>
 
           <a
             href="/dashboard/products/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
           >
             📦 Products
+          </a>
+
+          <a
+            href="/dashboard/inventory/"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            📋 Inventory
           </a>
 
           <a
             href="/dashboard/orders/"
             class="block px-4 py-3 rounded-lg bg-gray-800"
           >
-            📋 Orders
+            🛒 Orders
           </a>
 
           <a
             href="/dashboard/analytics/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
           >
             📈 Analytics
+          </a>
+          <a
+            href="/dashboard/users/"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            👥 Users
           </a>
         </nav>
       </aside>
@@ -48,52 +62,69 @@
       <!-- Main Content -->
       <main class="flex-1 p-8">
         <form id="csrfForm" class="hidden">{% csrf_token %}</form>
+
         <!-- Header -->
         <div class="mb-8">
           <h2 class="text-3xl font-bold text-gray-800">Orders</h2>
-
-          <p class="text-gray-500 mt-1">Manage customer orders</p>
+          <p class="text-gray-500 mt-1">
+            Manage customer orders and track their status
+          </p>
         </div>
 
         <!-- Order Statistics -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Total Orders</p>
-            <h3 class="text-3xl font-bold mt-2">{{total_orders}}</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-8">
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Total Orders</p>
+            <h3 class="text-3xl font-bold mt-2 text-gray-800">
+              {{ total_orders }}
+            </h3>
           </div>
 
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Pending</p>
-            <h3 class="text-3xl font-bold mt-2">{{pending_orders}}</h3>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Pending</p>
+            <h3 class="text-3xl font-bold mt-2 text-yellow-600">
+              {{ pending_orders }}
+            </h3>
           </div>
 
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Confirmed</p>
-            <h3 class="text-3xl font-bold mt-2">{{confirmed_orders}}</h3>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Confirmed</p>
+            <h3 class="text-3xl font-bold mt-2 text-blue-600">
+              {{ confirmed_orders }}
+            </h3>
           </div>
 
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Shipped</p>
-            <h3 class="text-3xl font-bold mt-2">{{shipped_orders}}</h3>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Shipped</p>
+            <h3 class="text-3xl font-bold mt-2 text-purple-600">
+              {{ shipped_orders }}
+            </h3>
           </div>
 
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-gray-500">Delivered</p>
-            <h3 class="text-3xl font-bold mt-2">{{ delivered_orders }}</h3>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Delivered</p>
+            <h3 class="text-3xl font-bold mt-2 text-green-600">
+              {{ delivered_orders }}
+            </h3>
           </div>
         </div>
 
         <!-- Search & Filter -->
-        <div class="bg-white p-5 rounded-xl shadow mb-6">
-          <div class="flex gap-4">
+        <div
+          class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
+        >
+          <div class="flex flex-col lg:flex-row gap-4">
             <input
               id="orderSearch"
               type="text"
               placeholder="Search by order ID or customer..."
-              class="flex-1 border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              class="flex-1 border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
 
-            <select id="orderStatusFilter" class="border rounded-lg px-4 py-3">
+            <select
+              id="orderStatusFilter"
+              class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
               <option>All Status</option>
               <option>Pending</option>
               <option>Confirmed</option>
@@ -103,7 +134,8 @@
 
             <button
               id="orderSearchBtn"
-              class="bg-gray-800 text-white px-6 py-3 rounded-lg"
+              type="button"
+              class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
             >
               Search
             </button>
@@ -111,21 +143,43 @@
         </div>
 
         <!-- Orders Table -->
-        <div class="bg-white rounded-xl shadow overflow-hidden">
-          <div class="p-5 border-b">
+        <div
+          class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+        >
+          <div class="p-5 border-b border-gray-100">
             <h3 class="text-xl font-semibold">Recent Orders</h3>
+            <p class="text-sm text-gray-500 mt-1">
+              View and manage customer orders
+            </p>
           </div>
 
           <div class="overflow-x-auto">
             <table class="w-full text-left">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="px-6 py-4">Order ID</th>
-                  <th class="px-6 py-4">Customer</th>
-                  <th class="px-6 py-4">Date</th>
-                  <th class="px-6 py-4">Total</th>
-                  <th class="px-6 py-4">Status</th>
-                  <th class="px-6 py-4">Actions</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Order ID
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Customer
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Date
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Total
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Status
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold text-gray-600">
+                    Actions
+                  </th>
                 </tr>
               </thead>
 
@@ -133,26 +187,32 @@
                 {% for order in orders %}
 
                 <tr
-                  class="border-t order-row"
+                  class="border-t border-gray-100 order-row hover:bg-gray-50 transition"
                   data-order-id="{{ order.id }}"
                   data-customer="{{ order.user.username|lower }}"
                   data-status="{{ order.get_status_display|lower }}"
                 >
-                  <td class="px-6 py-4 font-medium">#ORD-{{ order.id }}</td>
+                  <td class="px-6 py-4 font-semibold text-gray-800">
+                    #ORD-{{ order.id }}
+                  </td>
 
-                  <td class="px-6 py-4">{{ order.user.username }}</td>
+                  <td class="px-6 py-4 text-gray-700">
+                    {{ order.user.username }}
+                  </td>
 
-                  <td class="px-6 py-4">
+                  <td class="px-6 py-4 text-gray-600">
                     {{ order.created_at|date:"M d, Y" }}
                   </td>
 
-                  <td class="px-6 py-4">Rs. {{ order.total_amount }}</td>
+                  <td class="px-6 py-4 font-medium text-gray-800">
+                    Rs. {{ order.total_amount }}
+                  </td>
 
                   <td class="px-6 py-4">
                     {% if order.status == "pending" %}
 
                     <span
-                      class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm"
+                      class="inline-flex bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium"
                     >
                       Pending
                     </span>
@@ -160,7 +220,7 @@
                     {% elif order.status == "confirmed" %}
 
                     <span
-                      class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm"
+                      class="inline-flex bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
                     >
                       Confirmed
                     </span>
@@ -168,7 +228,7 @@
                     {% elif order.status == "shipped" %}
 
                     <span
-                      class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm"
+                      class="inline-flex bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium"
                     >
                       Shipped
                     </span>
@@ -176,7 +236,7 @@
                     {% elif order.status == "delivered" %}
 
                     <span
-                      class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
+                      class="inline-flex bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium"
                     >
                       Delivered
                     </span>
@@ -184,71 +244,76 @@
                     {% endif %}
                   </td>
 
-                  <td class="px-6 py-4 space-x-3">
-                    <button
-                      type="button"
-                      class="view-order-btn text-blue-600 hover:underline"
-                      data-order-id="{{ order.id }}"
-                      data-customer="{{ order.user.username }}"
-                      data-date="{{ order.created_at|date:'M d, Y' }}"
-                      data-total="{{ order.total_amount }}"
-                      data-status="{{ order.get_status_display }}"
-                      data-items='[
-    {% for item in order.items.all %}
-      {
-        "name": "{{ item.product_name|escapejs }}",
-        "quantity": {{ item.quantity }},
-        "price": "{{ item.price }}"
-      }{% if not forloop.last %},{% endif %}
-    {% endfor %}
-  ]'
-                      data-full-name="{{ order.shipping_address.full_name|default:''|escapejs }}"
-                      data-address="{{ order.shipping_address.address|default:''|escapejs }}"
-                      data-city="{{ order.shipping_address.city|default:''|escapejs }}"
-                      data-phone="{{ order.shipping_address.phone|default:''|escapejs }}"
-                    >
-                      View
-                    </button>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3 whitespace-nowrap">
+                      <button
+                        type="button"
+                        class="view-order-btn text-blue-600 hover:text-blue-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                        data-customer="{{ order.user.username }}"
+                        data-date="{{ order.created_at|date:'M d, Y' }}"
+                        data-total="{{ order.total_amount }}"
+                        data-status="{{ order.get_status_display }}"
+                        data-items='[
+                      {% for item in order.items.all %}
+                      {
+                        "name": "{{ item.product_name|escapejs }}",
+                        "quantity": {{ item.quantity }},
+                        "price": "{{ item.price }}"
+                      }{% if not forloop.last %},{% endif %}
+                      {% endfor %}
+                    ]'
+                        data-full-name="{{ order.shipping_address.full_name|default:''|escapejs }}"
+                        data-address="{{ order.shipping_address.address|default:''|escapejs }}"
+                        data-city="{{ order.shipping_address.city|default:''|escapejs }}"
+                        data-phone="{{ order.shipping_address.phone|default:''|escapejs }}"
+                      >
+                        View
+                      </button>
 
-                    {% if order.status == "pending" %}
-                    <button
-                      type="button"
-                      class="approve-order-btn text-green-600 hover:underline"
-                      data-order-id="{{ order.id }}"
-                    >
-                      Approve
-                    </button>
+                      {% if order.status == "pending" %}
 
-                    {% elif order.status == "confirmed" %}
-                    <button
-                      type="button"
-                      class="ship-order-btn text-blue-600 hover:underline"
-                      data-order-id="{{ order.id }}"
-                    >
-                      Ship
-                    </button>
+                      <button
+                        type="button"
+                        class="approve-order-btn text-green-600 hover:text-green-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                      >
+                        Approve
+                      </button>
 
-                    {% elif order.status == "shipped" %}
-                    <button
-                      type="button"
-                      class="deliver-order-btn text-green-600 hover:underline"
-                      data-order-id="{{ order.id }}"
-                    >
-                      Deliver
-                    </button>
+                      {% elif order.status == "confirmed" %}
 
-                    {% elif order.status == "delivered" %}
-                    <span class="text-gray-500"> Delivered </span>
-                    {% endif %}
+                      <button
+                        type="button"
+                        class="ship-order-btn text-blue-600 hover:text-blue-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                      >
+                        Ship
+                      </button>
 
-                    <button class="text-red-600 hover:underline">Cancel</button>
+                      {% elif order.status == "shipped" %}
+
+                      <button
+                        type="button"
+                        class="deliver-order-btn text-green-600 hover:text-green-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                      >
+                        Deliver
+                      </button>
+
+                      {% elif order.status == "delivered" %}
+
+                      <span class="text-gray-400 font-medium"> Delivered </span>
+
+                      {% endif %}
+                    </div>
                   </td>
                 </tr>
 
                 {% empty %}
 
                 <tr>
-                  <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                  <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                     No orders found.
                   </td>
                 </tr>
@@ -259,72 +324,144 @@
           </div>
         </div>
       </main>
+
       <!-- View Order Modal -->
       <div
         id="viewOrderModal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"
       >
         <div
-          class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+          class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         >
-          <div class="flex justify-between items-center p-6 border-b">
-            <h2 class="text-2xl font-bold text-gray-800">Order Details</h2>
+          <div
+            class="flex justify-between items-center p-6 border-b border-gray-100"
+          >
+            <div>
+              <h2 class="text-2xl font-bold text-gray-800">Order Details</h2>
+              <p class="text-sm text-gray-500 mt-1">
+                Review customer order information
+              </p>
+            </div>
 
             <button
               type="button"
               id="closeViewOrderModal"
-              class="text-gray-500 hover:text-gray-800 text-2xl"
+              class="text-gray-400 hover:text-gray-700 text-2xl transition"
             >
               &times;
             </button>
           </div>
 
           <div class="p-6">
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <div>
+            <!-- Order Information -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
+              <div class="bg-gray-50 rounded-lg p-4">
                 <p class="text-sm text-gray-500">Order ID</p>
-                <p id="viewOrderId" class="font-semibold"></p>
+                <p id="viewOrderId" class="font-semibold mt-1"></p>
               </div>
 
-              <div>
+              <div class="bg-gray-50 rounded-lg p-4">
                 <p class="text-sm text-gray-500">Customer</p>
-                <p id="viewOrderCustomer" class="font-semibold"></p>
+                <p id="viewOrderCustomer" class="font-semibold mt-1"></p>
               </div>
 
-              <div>
+              <div class="bg-gray-50 rounded-lg p-4">
                 <p class="text-sm text-gray-500">Date</p>
-                <p id="viewOrderDate" class="font-semibold"></p>
+                <p id="viewOrderDate" class="font-semibold mt-1"></p>
               </div>
 
-              <div>
+              <div class="bg-gray-50 rounded-lg p-4">
                 <p class="text-sm text-gray-500">Status</p>
-                <p id="viewOrderStatus" class="font-semibold"></p>
+                <p id="viewOrderStatus" class="font-semibold mt-1"></p>
               </div>
             </div>
 
-            <div class="border-t pt-5">
+            <!-- Order Items -->
+            <div class="border-t border-gray-100 pt-5">
               <h3 class="text-lg font-semibold mb-4">Order Items</h3>
 
               <div id="viewOrderItems" class="space-y-3"></div>
             </div>
 
-            <div class="border-t mt-6 pt-5">
+            <!-- Shipping Address -->
+            <div class="border-t border-gray-100 mt-6 pt-5">
               <h3 class="text-lg font-semibold mb-3">Shipping Address</h3>
 
-              <div id="viewShippingAddress" class="text-gray-600"></div>
+              <div
+                id="viewShippingAddress"
+                class="bg-gray-50 rounded-lg p-4 text-gray-600"
+              ></div>
             </div>
 
-            <div class="border-t mt-6 pt-5 text-right">
+            <!-- Total -->
+            <div
+              class="border-t border-gray-100 mt-6 pt-5 flex justify-between items-center"
+            >
               <p class="text-gray-500">Total Amount</p>
-              <p id="viewOrderTotal" class="text-2xl font-bold"></p>
+
+              <p
+                id="viewOrderTotal"
+                class="text-2xl font-bold text-gray-800"
+              ></p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <script>
+      /* Submit order action */
+      function submitOrderAction(orderId, action) {
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = "";
+
+        const csrfToken = document.querySelector(
+          "[name=csrfmiddlewaretoken]",
+        ).value;
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrfmiddlewaretoken";
+        csrfInput.value = csrfToken;
+
+        const orderIdInput = document.createElement("input");
+        orderIdInput.type = "hidden";
+        orderIdInput.name = "order_id";
+        orderIdInput.value = orderId;
+
+        const actionInput = document.createElement("input");
+        actionInput.type = "hidden";
+        actionInput.name = "action";
+        actionInput.value = action;
+
+        form.appendChild(csrfInput);
+        form.appendChild(orderIdInput);
+        form.appendChild(actionInput);
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      /* Approve order */
       const approveButtons = document.querySelectorAll(".approve-order-btn");
 
+      approveButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const orderId = this.dataset.orderId;
+
+          const confirmed = confirm(
+            "Are you sure you want to approve this order?",
+          );
+
+          if (confirmed) {
+            submitOrderAction(orderId, "approve");
+          }
+        });
+      });
+
+      /* Ship order */
       const shipButtons = document.querySelectorAll(".ship-order-btn");
 
       shipButtons.forEach(function (button) {
@@ -335,43 +472,13 @@
             "Are you sure you want to ship this order?",
           );
 
-          if (!confirmed) {
-            return;
+          if (confirmed) {
+            submitOrderAction(orderId, "ship");
           }
-
-          const form = document.createElement("form");
-
-          form.method = "POST";
-          form.action = "";
-
-          const csrfToken = document.querySelector(
-            "[name=csrfmiddlewaretoken]",
-          ).value;
-
-          const csrfInput = document.createElement("input");
-          csrfInput.type = "hidden";
-          csrfInput.name = "csrfmiddlewaretoken";
-          csrfInput.value = csrfToken;
-
-          const orderIdInput = document.createElement("input");
-          orderIdInput.type = "hidden";
-          orderIdInput.name = "order_id";
-          orderIdInput.value = orderId;
-
-          const actionInput = document.createElement("input");
-          actionInput.type = "hidden";
-          actionInput.name = "action";
-          actionInput.value = "ship";
-
-          form.appendChild(csrfInput);
-          form.appendChild(orderIdInput);
-          form.appendChild(actionInput);
-
-          document.body.appendChild(form);
-          form.submit();
         });
       });
 
+      /* Deliver order */
       const deliverButtons = document.querySelectorAll(".deliver-order-btn");
 
       deliverButtons.forEach(function (button) {
@@ -382,46 +489,17 @@
             "Are you sure you want to mark this order as delivered?",
           );
 
-          if (!confirmed) {
-            return;
+          if (confirmed) {
+            submitOrderAction(orderId, "deliver");
           }
-
-          const form = document.createElement("form");
-
-          form.method = "POST";
-          form.action = "";
-
-          const csrfToken = document.querySelector(
-            "[name=csrfmiddlewaretoken]",
-          ).value;
-
-          const csrfInput = document.createElement("input");
-          csrfInput.type = "hidden";
-          csrfInput.name = "csrfmiddlewaretoken";
-          csrfInput.value = csrfToken;
-
-          const orderIdInput = document.createElement("input");
-          orderIdInput.type = "hidden";
-          orderIdInput.name = "order_id";
-          orderIdInput.value = orderId;
-
-          const actionInput = document.createElement("input");
-          actionInput.type = "hidden";
-          actionInput.name = "action";
-          actionInput.value = "deliver";
-
-          form.appendChild(csrfInput);
-          form.appendChild(orderIdInput);
-          form.appendChild(actionInput);
-
-          document.body.appendChild(form);
-          form.submit();
         });
       });
 
+      /* View order */
       const viewButtons = document.querySelectorAll(".view-order-btn");
 
       const viewOrderModal = document.getElementById("viewOrderModal");
+
       const closeViewOrderModal = document.getElementById(
         "closeViewOrderModal",
       );
@@ -461,20 +539,28 @@
             const itemDiv = document.createElement("div");
 
             itemDiv.className =
-              "flex justify-between bg-gray-50 p-3 rounded-lg";
+              "flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100";
 
-            itemDiv.innerHTML = `
-        <div>
-          <p class="font-medium">${item.name}</p>
-          <p class="text-sm text-gray-500">
-            ${item.quantity} × Rs. ${item.price}
-          </p>
-        </div>
+            const itemInfo = document.createElement("div");
 
-        <p class="font-semibold">
-          Rs. ${(item.quantity * parseFloat(item.price)).toFixed(2)}
-        </p>
-      `;
+            const itemName = document.createElement("p");
+            itemName.className = "font-medium text-gray-800";
+            itemName.textContent = item.name;
+
+            const itemDetails = document.createElement("p");
+            itemDetails.className = "text-sm text-gray-500 mt-1";
+            itemDetails.textContent = item.quantity + " × Rs. " + item.price;
+
+            itemInfo.appendChild(itemName);
+            itemInfo.appendChild(itemDetails);
+
+            const itemTotal = document.createElement("p");
+            itemTotal.className = "font-semibold text-gray-800";
+            itemTotal.textContent =
+              "Rs. " + (item.quantity * parseFloat(item.price)).toFixed(2);
+
+            itemDiv.appendChild(itemInfo);
+            itemDiv.appendChild(itemTotal);
 
             itemsContainer.appendChild(itemDiv);
           });
@@ -483,86 +569,64 @@
             "viewShippingAddress",
           );
 
-          shippingContainer.innerHTML = `
-      <p class="font-medium">${fullName || "N/A"}</p>
-      <p>${address || "N/A"}</p>
-      <p>${city || "N/A"}</p>
-      <p>${phone || "N/A"}</p>
-    `;
+          shippingContainer.innerHTML = "";
+
+          const nameElement = document.createElement("p");
+          nameElement.className = "font-medium text-gray-800";
+          nameElement.textContent = fullName || "N/A";
+
+          const addressElement = document.createElement("p");
+          addressElement.textContent = address || "N/A";
+
+          const cityElement = document.createElement("p");
+          cityElement.textContent = city || "N/A";
+
+          const phoneElement = document.createElement("p");
+          phoneElement.textContent = phone || "N/A";
+
+          shippingContainer.appendChild(nameElement);
+          shippingContainer.appendChild(addressElement);
+          shippingContainer.appendChild(cityElement);
+          shippingContainer.appendChild(phoneElement);
 
           viewOrderModal.classList.remove("hidden");
           viewOrderModal.classList.add("flex");
         });
       });
 
-      closeViewOrderModal.addEventListener("click", function () {
+      /* Close modal */
+      function closeOrderModal() {
         viewOrderModal.classList.add("hidden");
         viewOrderModal.classList.remove("flex");
-      });
+      }
+
+      closeViewOrderModal.addEventListener("click", closeOrderModal);
 
       viewOrderModal.addEventListener("click", function (event) {
         if (event.target === viewOrderModal) {
-          viewOrderModal.classList.add("hidden");
-          viewOrderModal.classList.remove("flex");
+          closeOrderModal();
         }
       });
 
-      approveButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-          const orderId = this.dataset.orderId;
-
-          const confirmed = confirm(
-            "Are you sure you want to approve this order?",
-          );
-
-          if (!confirmed) {
-            return;
-          }
-
-          const form = document.createElement("form");
-
-          form.method = "POST";
-          form.action = "";
-
-          const csrfToken = document.querySelector(
-            "[name=csrfmiddlewaretoken]",
-          ).value;
-
-          const csrfInput = document.createElement("input");
-          csrfInput.type = "hidden";
-          csrfInput.name = "csrfmiddlewaretoken";
-          csrfInput.value = csrfToken;
-
-          const orderIdInput = document.createElement("input");
-          orderIdInput.type = "hidden";
-          orderIdInput.name = "order_id";
-          orderIdInput.value = orderId;
-
-          const actionInput = document.createElement("input");
-          actionInput.type = "hidden";
-          actionInput.name = "action";
-          actionInput.value = "approve";
-
-          form.appendChild(csrfInput);
-          form.appendChild(orderIdInput);
-          form.appendChild(actionInput);
-
-          document.body.appendChild(form);
-          form.submit();
-        });
-      });
+      /* Search + filter */
       const orderSearch = document.getElementById("orderSearch");
+
       const orderStatusFilter = document.getElementById("orderStatusFilter");
+
       const orderSearchBtn = document.getElementById("orderSearchBtn");
+
       const orderRows = document.querySelectorAll(".order-row");
 
       function filterOrders() {
         const searchText = orderSearch.value.toLowerCase().trim();
+
         const selectedStatus = orderStatusFilter.value.toLowerCase();
 
         orderRows.forEach(function (row) {
           const orderId = row.dataset.orderId.toLowerCase();
+
           const customer = row.dataset.customer;
+
           const status = row.dataset.status;
 
           const matchesSearch =
@@ -571,21 +635,13 @@
           const matchesStatus =
             selectedStatus === "all status" || status === selectedStatus;
 
-          if (matchesSearch && matchesStatus) {
-            row.style.display = "";
-          } else {
-            row.style.display = "none";
-          }
+          row.style.display = matchesSearch && matchesStatus ? "" : "none";
         });
       }
 
-      orderSearchBtn.addEventListener("click", function () {
-        filterOrders();
-      });
+      orderSearchBtn.addEventListener("click", filterOrders);
 
-      orderStatusFilter.addEventListener("change", function () {
-        filterOrders();
-      });
+      orderStatusFilter.addEventListener("change", filterOrders);
 
       orderSearch.addEventListener("keyup", function (event) {
         if (event.key === "Enter") {

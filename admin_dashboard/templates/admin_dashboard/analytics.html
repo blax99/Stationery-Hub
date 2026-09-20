@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    ```
     <title>Analytics - Stationery Hub</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,15 +21,12 @@
         },
       };
     </script>
-    ```
   </head>
 
-  <body class="bg-gray-100">
+  <body class="bg-gray-100 text-gray-800">
     <div class="flex min-h-screen">
-      ```
-      <!-- ========================= SIDEBAR ========================= -->
-
-      <aside class="w-64 bg-gray-900 text-white fixed h-full">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-gray-900 text-white fixed h-full shadow-lg">
         <div class="p-6 border-b border-gray-700">
           <h1 class="text-2xl font-bold">Stationery Hub</h1>
           <p class="text-gray-400 text-sm mt-1">Admin Panel</p>
@@ -71,19 +67,25 @@
 
           <a
             href="/dashboard/analytics/"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600 transition"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600"
           >
             <span>📈</span>
             <span>Analytics</span>
           </a>
+
+          <a
+            href="/dashboard/users/"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            <span>👥</span>
+            <span>Users</span>
+          </a>
         </nav>
       </aside>
 
-      <!-- ========================= MAIN CONTENT ========================= -->
-
+      <!-- Main Content -->
       <main class="ml-64 flex-1">
-        <!-- HEADER -->
-
+        <!-- Header -->
         <header
           class="bg-white shadow-sm px-8 py-5 flex justify-between items-center"
         >
@@ -103,17 +105,14 @@
           </button>
         </header>
 
-        <!-- CONTENT -->
-
         <div class="p-8">
-          <!-- ========================= KPI CARDS ========================= -->
-
+          <!-- KPI Cards -->
           <div
-            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8"
           >
-            <!-- TOTAL REVENUE -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
               <div class="flex justify-between items-start">
                 <div>
                   <p class="text-gray-500 text-sm">Total Revenue</p>
@@ -136,9 +135,9 @@
               </div>
             </div>
 
-            <!-- TOTAL ORDERS -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
               <div class="flex justify-between items-start">
                 <div>
                   <p class="text-gray-500 text-sm">Total Orders</p>
@@ -161,9 +160,9 @@
               </div>
             </div>
 
-            <!-- TOTAL CUSTOMERS -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
               <div class="flex justify-between items-start">
                 <div>
                   <p class="text-gray-500 text-sm">Total Customers</p>
@@ -190,9 +189,9 @@
               </div>
             </div>
 
-            <!-- TOTAL PRODUCTS -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
               <div class="flex justify-between items-start">
                 <div>
                   <p class="text-gray-500 text-sm">Total Products</p>
@@ -220,13 +219,14 @@
             </div>
           </div>
 
-          <!-- ========================= CHARTS ========================= -->
-
+          <!-- Revenue and Orders Charts -->
           <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
-            <!-- REVENUE OVERVIEW -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
-              <div class="flex justify-between items-center mb-5">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
+              <div
+                class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-5"
+              >
                 <div>
                   <h3 class="text-lg font-semibold text-gray-800">
                     Revenue Overview
@@ -239,16 +239,12 @@
 
                 <select
                   id="dateRange"
-                  class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="7">Last 7 Days</option>
-
                   <option value="30">Last 30 Days</option>
-
                   <option value="6" selected>Last 6 Months</option>
-
                   <option value="12">Last 12 Months</option>
-
                   <option value="year">This Year</option>
                 </select>
               </div>
@@ -256,9 +252,9 @@
               <div id="revenueChart" class="w-full" style="height: 350px"></div>
             </div>
 
-            <!-- ORDERS OVERVIEW -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
               <div class="mb-5">
                 <h3 class="text-lg font-semibold text-gray-800">
                   Orders Overview
@@ -273,12 +269,11 @@
             </div>
           </div>
 
-          <!-- ========================= ORDER STATUS + PERFORMANCE ========================= -->
-
+          <!-- Order Status and Performance -->
           <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <!-- ORDER STATUS -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
               <div class="mb-5">
                 <h3 class="text-lg font-semibold text-gray-800">
                   Order Status
@@ -296,9 +291,9 @@
               ></div>
             </div>
 
-            <!-- PERFORMANCE SUMMARY -->
-
-            <div class="bg-white rounded-xl shadow-sm p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            >
               <div class="mb-6">
                 <h3 class="text-lg font-semibold text-gray-800">
                   Performance Summary
@@ -308,8 +303,6 @@
                   Current order status breakdown
                 </p>
               </div>
-
-              <!-- PENDING -->
 
               <div class="mb-6">
                 <div class="flex justify-between mb-2">
@@ -331,8 +324,6 @@
                   ></div>
                 </div>
               </div>
-
-              <!-- PROCESSING -->
 
               <div class="mb-6">
                 <div class="flex justify-between mb-2">
@@ -356,8 +347,6 @@
                 </div>
               </div>
 
-              <!-- COMPLETED -->
-
               <div class="mb-6">
                 <div class="flex justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700">
@@ -379,8 +368,6 @@
                   ></div>
                 </div>
               </div>
-
-              <!-- CANCELLED -->
 
               <div>
                 <div class="flex justify-between mb-2">
@@ -409,801 +396,366 @@
       </main>
     </div>
 
-    <!-- ========================= JAVASCRIPT ========================= -->
+    {{ analytics_data|json_script:"analytics-data" }}
 
     <script>
+      const analyticsData = JSON.parse(
+        document.getElementById("analytics-data").textContent,
+      );
 
-      // ============================================================
-      // ANALYTICS DATA FROM DJANGO
-      // ============================================================
+      const subtitles = {
+        7: "Daily revenue performance",
+        30: "Daily revenue performance",
+        6: "Monthly revenue performance",
+        12: "Monthly revenue performance",
+        year: "Monthly revenue performance",
+      };
 
-      const analyticsData = {{ analytics_data|safe }};
+      const ordersSubtitles = {
+        7: "Daily order performance",
+        30: "Daily order performance",
+        6: "Monthly order performance",
+        12: "Monthly order performance",
+        year: "Monthly order performance",
+      };
 
+      const xAxisTitles = {
+        7: "Date",
+        30: "Date",
+        6: "Month",
+        12: "Month",
+        year: "Month",
+      };
 
-      // ============================================================
-      // REVENUE + ORDERS CHARTS
-      // ============================================================
-
+      /* Update charts */
       function updateCharts(range) {
-
         const data = analyticsData[range];
 
         if (!data) {
-          console.warn(
-            "No analytics data found for range:",
-            range
-          );
+          console.warn("No analytics data found for range:", range);
           return;
         }
 
-
-        // ------------------------------------------------------------
-        // SUBTITLES
-        // ------------------------------------------------------------
-
-        const subtitles = {
-
-          "7": "Daily revenue performance",
-
-          "30": "Daily revenue performance",
-
-          "6": "Monthly revenue performance",
-
-          "12": "Monthly revenue performance",
-
-          "year": "Monthly revenue performance"
-
-        };
-
-
-        const ordersSubtitles = {
-
-          "7": "Daily order performance",
-
-          "30": "Daily order performance",
-
-          "6": "Monthly order performance",
-
-          "12": "Monthly order performance",
-
-          "year": "Monthly order performance"
-
-        };
-
-
-        // ------------------------------------------------------------
-        // X-AXIS TITLES
-        // ------------------------------------------------------------
-
-        const xAxisTitles = {
-
-          "7": "Date",
-
-          "30": "Date",
-
-          "6": "Month",
-
-          "12": "Month",
-
-          "year": "Month"
-
-        };
-
-
-        // ============================================================
-        // REVENUE CHART
-        // ============================================================
-
         const revenueTrace = {
-
           x: data.labels,
-
           y: data.revenue,
-
           type: "scatter",
-
           mode: "lines+markers",
-
           line: {
-            width: 3
+            width: 3,
           },
-
           marker: {
-            size: 7
-          }
-
+            size: 7,
+          },
+          hovertemplate:
+            "<b>%{x}</b><br>" + "Revenue: Rs. %{y:,.2f}" + "<extra></extra>",
         };
-
 
         const revenueLayout = {
-
           title: {
             text: "Revenue Performance",
             font: {
-              size: 16
-            }
+              size: 16,
+            },
           },
-
           xaxis: {
-
-            // IMPORTANT:
-            // Treat Django labels as categories, not dates.
-
             type: "category",
-
             title: {
-              text: xAxisTitles[range]
+              text: xAxisTitles[range],
+              standoff: 18,
             },
-
             showgrid: false,
-
             tickangle: -45,
-
             automargin: true,
-
-            tickmode: "auto"
-
-          },
-
-          yaxis: {
-
-            title: {
-              text: "Revenue (Rs.)"
+            tickmode: "auto",
+            tickfont: {
+              size: 11,
             },
-
-            rangemode: "tozero"
-
           },
-
+          yaxis: {
+            title: {
+              text: "Revenue (Rs.)",
+              standoff: 10,
+            },
+            rangemode: "tozero",
+            automargin: true,
+          },
           margin: {
-
-            l: 60,
-
+            l: 70,
             r: 20,
-
-            t: 50,
-
-            b: 80
-
+            t: 55,
+            b: 110,
           },
-
           paper_bgcolor: "white",
-
           plot_bgcolor: "white",
-
           hovermode: "x unified",
-
-          showlegend: false
-
+          showlegend: false,
         };
 
-
-        Plotly.react(
-
-          "revenueChart",
-
-          [revenueTrace],
-
-          revenueLayout,
-
-          {
-            responsive: true,
-            displayModeBar: false
-          }
-
-        );
-
-
-        // ============================================================
-        // ORDERS CHART
-        // ============================================================
+        Plotly.react("revenueChart", [revenueTrace], revenueLayout, {
+          responsive: true,
+          displayModeBar: false,
+        });
 
         const ordersTrace = {
-
           x: data.labels,
-
           y: data.orders,
-
-          type: "bar"
-
+          type: "bar",
+          hovertemplate: "<b>%{x}</b><br>" + "Orders: %{y}" + "<extra></extra>",
         };
-
 
         const ordersLayout = {
-
           title: {
-
             text: "Orders Performance",
-
             font: {
-              size: 16
-            }
-
+              size: 16,
+            },
           },
-
           xaxis: {
-
-            // IMPORTANT:
-            // Treat Django labels as categories, not dates.
-
             type: "category",
-
             title: {
-              text: xAxisTitles[range]
+              text: xAxisTitles[range],
+              standoff: 18,
             },
-
             showgrid: false,
-
             tickangle: -45,
-
             automargin: true,
-
-            tickmode: "auto"
-
-          },
-
-          yaxis: {
-
-            title: {
-              text: "Number of Orders"
+            tickmode: "auto",
+            tickfont: {
+              size: 11,
             },
-
-            rangemode: "tozero"
-
           },
-
+          yaxis: {
+            title: {
+              text: "Number of Orders",
+              standoff: 10,
+            },
+            rangemode: "tozero",
+            automargin: true,
+          },
           margin: {
-
-            l: 60,
-
+            l: 70,
             r: 20,
-
-            t: 50,
-
-            b: 80
-
+            t: 55,
+            b: 110,
           },
-
           paper_bgcolor: "white",
-
           plot_bgcolor: "white",
-
-          showlegend: false
-
+          showlegend: false,
         };
 
+        Plotly.react("ordersChart", [ordersTrace], ordersLayout, {
+          responsive: true,
+          displayModeBar: false,
+        });
 
-        Plotly.react(
+        document.getElementById("revenueSubtitle").textContent =
+          subtitles[range] || "Revenue performance";
 
-          "ordersChart",
-
-          [ordersTrace],
-
-          ordersLayout,
-
-          {
-
-            responsive: true,
-
-            displayModeBar: false
-
-          }
-
-        );
-
-
-        // ------------------------------------------------------------
-        // UPDATE SUBTITLES
-        // ------------------------------------------------------------
-
-        document.getElementById(
-          "revenueSubtitle"
-        ).textContent =
-          subtitles[range] ||
-          "Revenue performance";
-
-
-        document.getElementById(
-          "ordersSubtitle"
-        ).textContent =
-          ordersSubtitles[range] ||
-          "Order performance";
-
+        document.getElementById("ordersSubtitle").textContent =
+          ordersSubtitles[range] || "Order performance";
       }
-
-
-      // ============================================================
-      // DATE RANGE SELECTOR
-      // ============================================================
 
       document
         .getElementById("dateRange")
-        .addEventListener(
-          "change",
-          function () {
-
-            const selectedRange =
-              this.value;
-
-            updateCharts(selectedRange);
-
-          }
-        );
-
-
-      // ============================================================
-      // INITIAL CHART LOAD
-      // ============================================================
+        .addEventListener("change", function () {
+          updateCharts(this.value);
+        });
 
       updateCharts("6");
 
-
-      // ============================================================
-      // ORDER STATUS DATA
-      // ============================================================
-
-      const pendingOrders =
-        Number("{{ pending_orders }}");
-
-      const processingOrders =
-        Number("{{ processing_orders }}");
-
-      const completedOrders =
-        Number("{{ completed_orders }}");
-
-      const cancelledOrders =
-        Number("{{ cancelled_orders }}");
-
+      const pendingOrders = Number("{{ pending_orders }}");
+      const processingOrders = Number("{{ processing_orders }}");
+      const completedOrders = Number("{{ completed_orders }}");
+      const cancelledOrders = Number("{{ cancelled_orders }}");
 
       const totalStatusOrders =
-        pendingOrders +
-        processingOrders +
-        completedOrders +
-        cancelledOrders;
+        pendingOrders + processingOrders + completedOrders + cancelledOrders;
 
+      const statusLabels = ["Pending", "Processing", "Completed", "Cancelled"];
 
-      // ============================================================
-      // ORDER STATUS DONUT CHART
-      // ============================================================
-
-      const statusData = [
-
-        {
-
-          labels: [
-
-            "Pending",
-
-            "Processing",
-
-            "Completed",
-
-            "Cancelled"
-
-          ],
-
-          values: [
-
-            pendingOrders,
-
-            processingOrders,
-
-            completedOrders,
-
-            cancelledOrders
-
-          ],
-
-          type: "pie",
-
-          hole: 0.45
-
-        }
-
+      const statusValues = [
+        pendingOrders,
+        processingOrders,
+        completedOrders,
+        cancelledOrders,
       ];
 
+      const filteredStatusLabels = [];
+      const filteredStatusValues = [];
+
+      statusValues.forEach(function (value, index) {
+        if (value > 0) {
+          filteredStatusLabels.push(statusLabels[index]);
+          filteredStatusValues.push(value);
+        }
+      });
+
+      /* Order status chart */
+      const statusData = [
+        {
+          labels: filteredStatusLabels,
+          values: filteredStatusValues,
+          type: "pie",
+          hole: 0.45,
+          textinfo: "label+percent",
+          textposition: "inside",
+          insidetextorientation: "horizontal",
+          automargin: true,
+          hoverinfo: "label+value+percent",
+        },
+      ];
 
       const statusLayout = {
-
         title: {
-
           text: "Order Status Distribution",
-
           font: {
-            size: 16
-          }
-
+            size: 16,
+          },
         },
-
         margin: {
-
           l: 20,
-
           r: 20,
-
-          t: 50,
-
-          b: 20
-
+          t: 55,
+          b: 65,
         },
-
         paper_bgcolor: "white",
-
         showlegend: true,
-
         legend: {
-
           orientation: "h",
-
-          y: -0.05
-
-        }
-
+          y: -0.05,
+          x: 0.5,
+          xanchor: "center",
+        },
       };
 
+      Plotly.newPlot("orderStatusChart", statusData, statusLayout, {
+        responsive: true,
+        displayModeBar: false,
+      });
 
-      Plotly.newPlot(
-
-        "orderStatusChart",
-
-        statusData,
-
-        statusLayout,
-
-        {
-
-          responsive: true,
-
-          displayModeBar: false
-
-        }
-
-      );
-
-
-      // ============================================================
-      // ORDER STATUS PERCENTAGES
-      // ============================================================
-
+      /* Update percentages */
       function calculatePercentage(value) {
-
         if (totalStatusOrders === 0) {
-
           return 0;
-
         }
 
-        return (
-          value /
-          totalStatusOrders
-        ) * 100;
-
+        return (value / totalStatusOrders) * 100;
       }
 
+      const pendingPercentage = calculatePercentage(pendingOrders);
 
-      const pendingPercentage =
-        calculatePercentage(
-          pendingOrders
-        );
+      const processingPercentage = calculatePercentage(processingOrders);
 
+      const completedPercentage = calculatePercentage(completedOrders);
 
-      const processingPercentage =
-        calculatePercentage(
-          processingOrders
-        );
+      const cancelledPercentage = calculatePercentage(cancelledOrders);
 
+      document.getElementById("pendingPercentage").textContent =
+        Math.round(pendingPercentage) + "%";
 
-      const completedPercentage =
-        calculatePercentage(
-          completedOrders
-        );
+      document.getElementById("processingPercentage").textContent =
+        Math.round(processingPercentage) + "%";
 
+      document.getElementById("completedPercentage").textContent =
+        Math.round(completedPercentage) + "%";
 
-      const cancelledPercentage =
-        calculatePercentage(
-          cancelledOrders
-        );
+      document.getElementById("cancelledPercentage").textContent =
+        Math.round(cancelledPercentage) + "%";
 
-
-      document.getElementById(
-        "pendingPercentage"
-      ).textContent =
-        Math.round(
-          pendingPercentage
-        ) + "%";
-
-
-      document.getElementById(
-        "processingPercentage"
-      ).textContent =
-        Math.round(
-          processingPercentage
-        ) + "%";
-
-
-      document.getElementById(
-        "completedPercentage"
-      ).textContent =
-        Math.round(
-          completedPercentage
-        ) + "%";
-
-
-      document.getElementById(
-        "cancelledPercentage"
-      ).textContent =
-        Math.round(
-          cancelledPercentage
-        ) + "%";
-
-
-      document.getElementById(
-        "pendingBar"
-      ).style.width =
+      document.getElementById("pendingBar").style.width =
         pendingPercentage + "%";
 
-
-      document.getElementById(
-        "processingBar"
-      ).style.width =
+      document.getElementById("processingBar").style.width =
         processingPercentage + "%";
 
-
-      document.getElementById(
-        "completedBar"
-      ).style.width =
+      document.getElementById("completedBar").style.width =
         completedPercentage + "%";
 
-
-      document.getElementById(
-        "cancelledBar"
-      ).style.width =
+      document.getElementById("cancelledBar").style.width =
         cancelledPercentage + "%";
 
-
-      // ============================================================
-      // KPI BAR VISUALIZATION
-      // ============================================================
-
-      const kpiBars =
-        document.querySelectorAll(
-          ".kpi-bar"
-        );
-
+      /* KPI bars */
+      const kpiBars = document.querySelectorAll(".kpi-bar");
 
       const kpiValues = [];
 
+      kpiBars.forEach(function (bar) {
+        const value = Number(bar.dataset.value) || 0;
 
-      kpiBars.forEach(
-        function (bar) {
+        kpiValues.push(value);
+      });
 
-          const value =
-            Number(
-              bar.dataset.value
-            ) || 0;
+      const maxKpiValue = Math.max(...kpiValues);
 
-          kpiValues.push(value);
+      kpiBars.forEach(function (bar) {
+        const value = Number(bar.dataset.value) || 0;
 
+        let percentage = 0;
+
+        if (maxKpiValue > 0) {
+          percentage = (value / maxKpiValue) * 100;
         }
-      );
 
+        bar.style.width = percentage + "%";
+      });
 
-      const maxKpiValue =
-        Math.max(...kpiValues);
-
-
-      kpiBars.forEach(
-        function (bar) {
-
-          const value =
-            Number(
-              bar.dataset.value
-            ) || 0;
-
-
-          let percentage = 0;
-
-
-          if (maxKpiValue > 0) {
-
-            percentage =
-              (
-                value /
-                maxKpiValue
-              ) * 100;
-
-          }
-
-
-          bar.style.width =
-            percentage + "%";
-
-        }
-      );
-
-
-      // ============================================================
-      // EXPORT ANALYTICS REPORT
-      // ============================================================
-
+      /* Export report */
       document
-        .getElementById(
-          "exportReportBtn"
-        )
-        .addEventListener(
-          "click",
-          function () {
+        .getElementById("exportReportBtn")
+        .addEventListener("click", function () {
+          const dateRangeSelect = document.getElementById("dateRange");
 
-            const selectedRange =
-              document.getElementById(
-                "dateRange"
-              ).value;
+          const selectedRangeText =
+            dateRangeSelect.options[dateRangeSelect.selectedIndex].text;
 
+          const reportData = [
+            ["STATIONERY HUB - ANALYTICS REPORT", ""],
+            ["Report Period", selectedRangeText],
+            ["", ""],
+            ["KPI", "Value"],
+            ["Total Revenue", "{{ total_revenue }}"],
+            ["Total Orders", "{{ total_orders }}"],
+            ["Total Customers", "{{ total_customers }}"],
+            ["Total Products", "{{ total_products }}"],
+            ["", ""],
+            ["ORDER STATUS", "Count"],
+            ["Pending Orders", "{{ pending_orders }}"],
+            ["Processing Orders", "{{ processing_orders }}"],
+            ["Completed Orders", "{{ completed_orders }}"],
+            ["Cancelled Orders", "{{ cancelled_orders }}"],
+          ];
 
-            const dateRangeSelect =
-              document.getElementById(
-                "dateRange"
-              );
+          const csvContent = reportData
+            .map(function (row) {
+              return row
+                .map(function (value) {
+                  return '"' + String(value).replace(/"/g, '""') + '"';
+                })
+                .join(",");
+            })
+            .join("\n");
 
+          const blob = new Blob([csvContent], {
+            type: "text/csv;charset=utf-8;",
+          });
 
-            const selectedRangeText =
-              dateRangeSelect
-                .options[
-                  dateRangeSelect.selectedIndex
-                ].text;
+          const url = URL.createObjectURL(blob);
 
+          const link = document.createElement("a");
 
-            const reportData = [
+          link.setAttribute("href", url);
 
-              [
-                "STATIONERY HUB - ANALYTICS REPORT",
-                ""
-              ],
+          link.setAttribute("download", "stationery_hub_analytics_report.csv");
 
-              [
-                "Report Period",
-                selectedRangeText
-              ],
+          document.body.appendChild(link);
 
-              [
-                "",
-                ""
-              ],
+          link.click();
 
-              [
-                "KPI",
-                "Value"
-              ],
+          document.body.removeChild(link);
 
-              [
-                "Total Revenue",
-                "{{ total_revenue }}"
-              ],
-
-              [
-                "Total Orders",
-                "{{ total_orders }}"
-              ],
-
-              [
-                "Total Customers",
-                "{{ total_customers }}"
-              ],
-
-              [
-                "Total Products",
-                "{{ total_products }}"
-              ],
-
-              [
-                "",
-                ""
-              ],
-
-              [
-                "ORDER STATUS",
-                "Count"
-              ],
-
-              [
-                "Pending Orders",
-                "{{ pending_orders }}"
-              ],
-
-              [
-                "Processing Orders",
-                "{{ processing_orders }}"
-              ],
-
-              [
-                "Completed Orders",
-                "{{ completed_orders }}"
-              ],
-
-              [
-                "Cancelled Orders",
-                "{{ cancelled_orders }}"
-              ]
-
-            ];
-
-
-            const csvContent =
-              reportData
-
-                .map(
-                  row =>
-                    row
-                      .map(
-                        value =>
-                          `"${String(value).replace(
-                            /"/g,
-                            '""'
-                          )}"`
-                      )
-                      .join(",")
-                )
-
-                .join("\n");
-
-
-            const blob =
-              new Blob(
-
-                [csvContent],
-
-                {
-                  type:
-                    "text/csv;charset=utf-8;"
-                }
-
-              );
-
-
-            const url =
-              URL.createObjectURL(
-                blob
-              );
-
-
-            const link =
-              document.createElement(
-                "a"
-              );
-
-
-            link.setAttribute(
-              "href",
-              url
-            );
-
-
-            link.setAttribute(
-              "download",
-              "stationery_hub_analytics_report.csv"
-            );
-
-
-            document.body.appendChild(
-              link
-            );
-
-
-            link.click();
-
-
-            document.body.removeChild(
-              link
-            );
-
-
-            URL.revokeObjectURL(
-              url
-            );
-
-          }
-        );
+          URL.revokeObjectURL(url);
+        });
     </script>
-    ```
   </body>
 </html>
