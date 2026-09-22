@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count, Q
-from .models import Category, Products  # Matches your model class name
+from .models import Category, Products
 
 
 def product_list(request, category_slug=None):
@@ -8,11 +8,11 @@ def product_list(request, category_slug=None):
     
     # Annotate total product count for sidebar category list
     categories = Category.objects.annotate(
-        total_products=Count('products', filter=Q(products__is_available=True))
+        total_products=Count('products', filter=Q(products__is_available=True, products__stock__gt=0))
     )
     
     # Prefetch relationships to avoid N+1 queries
-    products = Products.objects.filter(is_available=True).select_related('category')
+    products = Products.objects.filter(is_available=True, stock__gt=0).select_related('category')
 
     # Filter by Category
     if category_slug:
@@ -23,7 +23,7 @@ def product_list(request, category_slug=None):
     query = request.GET.get('q')
     if query:
         products = products.filter(
-            Q(title__icontains=query) | Q(description__icontains=query)
+            Q(name__icontains=query) | Q(description__icontains=query)
         )
 
     # Sorting Filter (?sort=...)
@@ -33,10 +33,10 @@ def product_list(request, category_slug=None):
     elif sort_by == 'price_high':
         products = products.order_by('-price')
     else:
-        products = products.order_by('-id')
+        products = products.order_by('-created_at')
 
     context = {
-        'selected_category': selected_category,  # Matches template expectation
+        'selected_category': selected_category,
         'categories': categories,
         'products': products,
         'sort_by': sort_by,
@@ -49,7 +49,8 @@ def product_detail(request, slug):
     
     related_products = Products.objects.filter(
         category=product.category, 
-        is_available=True
+        is_available=True,
+        stock__gt=0
     ).exclude(id=product.id)[:4]
 
     context = {

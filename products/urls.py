@@ -7,7 +7,8 @@ urlpatterns = [
     # All products catalog: /products/
     path('', views.product_list, name='product_list'),
     
-    # Category filter route (Name updated to category_detail): /products/category/<slug>/
+    # Category filter routes
+    path('category/<slug:category_slug>/', views.product_list, name='product_list_by_category'),
     path('category/<slug:category_slug>/', views.product_list, name='category_detail'),
     
     # Single product detail route: /products/<slug>/
