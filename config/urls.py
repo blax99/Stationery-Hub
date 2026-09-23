@@ -43,10 +43,6 @@ urlpatterns = [
     path('cart/', include('cart.urls')),
 ]
 
-urlpatterns += static(
-    settings.MEDIA_URL,
-    document_root=settings.MEDIA_ROOT
-)
 
 # Serve uploaded media files locally in debug mode
 if settings.DEBUG:

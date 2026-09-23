@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect
 
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -14,8 +15,9 @@ from .models import Cart, CartItem, Wishlist, WishlistItem
 
 from django.http import JsonResponse
 
+
 def cart(request):
-    user = User.objects.get(username="testuser")
+    user = request.user
     cart, created = Cart.objects.get_or_create(user=user)
     cart_items = cart.items.all()
 
@@ -32,11 +34,29 @@ def cart(request):
 
 
 def wishlist(request):
-    return render(request, "cart/wishlist.html")
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+    wishlist_items = wishlist.items.select_related("product")
+
+    return render(request, "cart/wishlist.html", {
+        "wishlist": wishlist,
+        "wishlist_items": wishlist_items,
+    })
+
+def remove_from_wishlist(request, item_id):
+    wishlist = Wishlist.objects.get(user=request.user)
+
+    item = WishlistItem.objects.get(
+        id=item_id,
+        wishlist=wishlist
+    )
+
+    item.delete()
+
+    return redirect("wishlist")
 
 
 def add_to_cart(request, product_id):
-    user = User.objects.get(username="testuser")
+    user = request.user
     product = Products.objects.get(id=product_id)
 
     cart, created = Cart.objects.get_or_create(user=user)
@@ -54,6 +74,10 @@ def add_to_cart(request, product_id):
         cart_item.quantity = quantity
 
     cart_item.save()
+    WishlistItem.objects.filter(
+    wishlist__user=user,
+    product=product
+    ).delete()
 
     return redirect("cart")
 
@@ -65,7 +89,7 @@ def update_cart_quantity(request, item_id):
             status=400
         )
 
-    user = User.objects.get(username="testuser")
+    user = request.user
     cart = Cart.objects.get(user=user)
 
     cart_item = CartItem.objects.get(
@@ -105,7 +129,7 @@ def update_cart_quantity(request, item_id):
     })
 
 def delete_cart_item(request, item_id):
-    user = User.objects.get(username="testuser")
+    user = request.user
     cart = Cart.objects.get(user=user)
 
     cart_item = CartItem.objects.get(

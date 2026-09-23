@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}
@@ -21,228 +22,102 @@ Wishlist
             </p>
         </div>
 
-        <span id="wishlist-count" class="text-sm text-gray-500">
-            3 items
+        <span class="text-sm text-gray-500">
+            {{ wishlist_items|length }} items
         </span>
 
     </div>
 
 
     <!-- Wishlist Items -->
-    <section id="wishlist-items" class="space-y-0">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
+        {% for item in wishlist_items %}
 
-        <!-- Product 1 -->
-        <div
-            class="wishlist-item flex items-center gap-6 py-8 border-t border-gray-200"
-            data-price="34.50"
-        >
+        <div class="border border-gray-200 bg-white">
 
             <!-- Product Image -->
-            <div class="w-28 h-32 bg-gray-200 shrink-0">
+            <div class="relative h-72 bg-gray-100">
 
+                {% if item.product.image %}
                 <img
-                    src="https://images.unsplash.com/photo-1517842645767-c639042777db?w=300"
-                    alt="Staedtler Watercolor Pencils"
-                    class="w-full h-full object-cover"
+                    src="{{ item.product.image.url }}"
+                    alt="{{ item.product.name }}"
+                    class="w-full h-full object-contain"
                 >
+                {% endif %}
+
+                <!-- Remove from Wishlist -->
+                <a
+                    href="{% url 'remove_from_wishlist' item.id %}"
+                    class="absolute top-4 right-4 w-9 h-9 bg-white border border-gray-200 flex items-center justify-center text-xl hover:bg-gray-50"
+                >
+                    ×
+                </a>
 
             </div>
 
 
             <!-- Product Information -->
-            <div class="flex-1">
+            <div class="p-5">
 
-                <p class="text-xs tracking-[0.2em] text-gray-500">
-                    STAEDTLER
+                <p class="text-xs tracking-[0.15em] text-gray-500">
+                    {{ item.product.category.name }}
                 </p>
 
                 <h2 class="text-lg font-medium mt-2">
-                    Staedtler Watercolor Pencils 36-Set
+                    {{ item.product.name }}
                 </h2>
 
-                <p class="text-sm text-amber-700 mt-2">
-                    On Sale
+                <p class="text-lg mt-3">
+                    ${{ item.product.price }}
                 </p>
 
-                <p class="text-lg mt-4">
-                    $34.50
-                </p>
 
-            </div>
-
-
-            <!-- Actions -->
-            <div class="flex items-center gap-4">
-
-                <button
-                    type="button"
-                    class="add-to-cart bg-slate-800 text-white px-6 py-3 text-sm hover:bg-slate-700 transition"
+                <!-- Add to Cart -->
+                <a
+                    href="{% url 'add_to_cart' item.product.id %}"
+                    class="block w-full bg-slate-800 text-white py-3 mt-5 text-sm text-center hover:bg-slate-700 transition"
                 >
                     Add to Cart
-                </button>
-
-                <button
-                    type="button"
-                    class="remove-wishlist text-gray-500 text-xl px-3 hover:text-red-600 transition"
-                    aria-label="Remove from wishlist"
-                >
-                    ♡
-                </button>
+                </a>
 
             </div>
 
         </div>
 
 
-        <!-- Product 2 -->
-        <div
-            class="wishlist-item flex items-center gap-6 py-8 border-t border-gray-200"
-            data-price="16.00"
-        >
+        {% empty %}
 
-            <!-- Product Image -->
-            <div class="w-28 h-32 bg-gray-200 shrink-0">
+        <!-- Empty Wishlist -->
+        <div class="col-span-full text-center py-20">
 
-                <img
-                    src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300"
-                    alt="Midori Notebook"
-                    class="w-full h-full object-cover"
-                >
-
+            <div class="text-5xl mb-5">
+                ♡
             </div>
 
+            <h2 class="text-2xl font-normal">
+                Your wishlist is empty
+            </h2>
 
-            <!-- Product Information -->
-            <div class="flex-1">
+            <p class="text-gray-500 mt-3">
+                Save products you love and find them here later.
+            </p>
 
-                <p class="text-xs tracking-[0.2em] text-gray-500">
-                    MIDORI
-                </p>
-
-                <h2 class="text-lg font-medium mt-2">
-                    Midori MD Notebook A5 Blank
-                </h2>
-
-                <p class="text-lg mt-4">
-                    $16.00
-                </p>
-
-            </div>
-
-
-            <!-- Actions -->
-            <div class="flex items-center gap-4">
-
-                <button
-                    type="button"
-                    class="add-to-cart bg-slate-800 text-white px-6 py-3 text-sm hover:bg-slate-700 transition"
-                >
-                    Add to Cart
-                </button>
-
-                <button
-                    type="button"
-                    class="remove-wishlist text-gray-500 text-xl px-3 hover:text-red-600 transition"
-                    aria-label="Remove from wishlist"
-                >
-                    ♡
-                </button>
-
-            </div>
+            <a
+                href="{% url 'products:product_list' %}"
+                class="inline-block bg-slate-800 text-white px-6 py-3 mt-6 text-sm hover:bg-slate-700 transition"
+            >
+                Continue Shopping
+            </a>
 
         </div>
 
-
-        <!-- Product 3 -->
-        <div
-            class="wishlist-item flex items-center gap-6 py-8 border-t border-b border-gray-200"
-            data-price="31.99"
-        >
-
-            <!-- Product Image -->
-            <div class="w-28 h-32 bg-gray-200 shrink-0">
-
-                <img
-                    src="https://images.unsplash.com/photo-1585336139667-3b7d7f1a4e0a?w=300"
-                    alt="Lamy Safari Fountain Pen"
-                    class="w-full h-full object-cover"
-                >
-
-            </div>
-
-
-            <!-- Product Information -->
-            <div class="flex-1">
-
-                <p class="text-xs tracking-[0.2em] text-gray-500">
-                    LAMY
-                </p>
-
-                <h2 class="text-lg font-medium mt-2">
-                    Lamy Safari Fountain Pen — Charcoal
-                </h2>
-
-                <p class="text-lg mt-4">
-                    $31.99
-                </p>
-
-            </div>
-
-
-            <!-- Actions -->
-            <div class="flex items-center gap-4">
-
-                <button
-                    type="button"
-                    class="add-to-cart bg-slate-800 text-white px-6 py-3 text-sm hover:bg-slate-700 transition"
-                >
-                    Add to Cart
-                </button>
-
-                <button
-                    type="button"
-                    class="remove-wishlist text-gray-500 text-xl px-3 hover:text-red-600 transition"
-                    aria-label="Remove from wishlist"
-                >
-                    ♡
-                </button>
-
-            </div>
-
-        </div>
-
+        {% endfor %}
 
     </section>
-
-
-    <!-- Empty Wishlist -->
-    <div
-        id="empty-wishlist"
-        class="hidden text-center py-20"
-    >
-
-        <div class="text-5xl mb-5">
-            ♡
-        </div>
-
-        <h2 class="text-2xl font-normal">
-            Your wishlist is empty
-        </h2>
-
-        <p class="text-gray-500 mt-3">
-            Save products you love and find them here later.
-        </p>
-
-        <a
-            href="#"
-            class="inline-block bg-slate-800 text-white px-6 py-3 mt-6 text-sm hover:bg-slate-700 transition"
-        >
-            Continue Shopping
-        </a>
-
-    </div>
 
 </div>
 
 {% endblock %}
+
