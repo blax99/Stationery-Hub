@@ -1,126 +1,74 @@
-<nav class="bg-white shadow-md px-4 sm:px-6 py-4">
-  <div class="max-w-7xl mx-auto">
+<nav class="bg-blue-600 text-white shadow relative">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
 
-    <!-- Main Navbar -->
-    <div class="flex items-center justify-between gap-3">
+            <!-- Logo -->
+            <a href="{% url 'products:product_list' %}" class="text-xl font-bold">
+                Stationery Hub
+            </a>
 
-      <!-- Logo -->
-      <div class="text-xl sm:text-2xl font-bold text-gray-800 whitespace-nowrap">
-        StationeryHub<span class="text-blue-600">.</span>
-      </div>
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-6">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                
+                <!-- Fixed Products Link -->
+                <a href="{% url 'products:product_list' %}" class="hover:text-blue-200">Products</a>
 
-      <!-- Desktop Nav Links -->
-      <ul class="hidden md:flex items-center gap-8 text-gray-700 font-medium">
-        <li>
-          <a href="#" class="hover:text-blue-600 transition">Home</a>
-        </li>
-        <li>
-          <a href="#" class="hover:text-blue-600 transition">Products</a>
-        </li>
-        <li>
-          <a href="#" class="hover:text-blue-600 transition">Categories</a>
-        </li>
-      </ul>
+                <!-- Categories Dropdown -->
+                <div class="relative group">
+                    <button class="flex items-center gap-1 hover:text-blue-200 focus:outline-none py-2">
+                        <span>Categories</span>
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                        </svg>
+                    </button>
+                    <!-- Dropdown Menu items -->
+                    <div class="absolute left-0 mt-0 w-48 bg-white text-gray-800 rounded-md shadow-lg py-1 hidden group-hover:block z-50">
+                        <a href="{% url 'products:product_list' %}" class="block px-4 py-2 hover:bg-blue-50 text-sm font-semibold border-b">
+                            All Categories
+                        </a>
+                        {% for cat in all_categories %}
+                            <a href="{% url 'products:product_list_by_category' cat.slug %}" class="block px-4 py-2 hover:bg-blue-50 text-sm">
+                                {{ cat.name }}
+                            </a>
+                        {% empty %}
+                            <span class="block px-4 py-2 text-sm text-gray-400">No categories</span>
+                        {% endfor %}
+                    </div>
+                </div>
 
-      <!-- Right Section -->
-      <div class="flex items-center gap-3 sm:gap-5">
+                <a href="#" class="hover:text-blue-200">Cart</a>
+                <a href="#" class="hover:text-blue-200">Login</a>
+            </div>
 
-        <!-- Search -->
-        <div class="hidden relative sm:block w-8 h-8">
-
-          <!-- Search Icon -->
-          <button
-            id="searchButton"
-            type="button"
-            class="absolute inset-0 flex items-center justify-center
-                   text-gray-700 hover:text-blue-600 transition cursor-pointer"
-          >
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-
-          <!-- Search Box -->
-          <div
-            id="searchBox"
-            class="hidden absolute right-0 top-1/2 -translate-y-1/2 z-50"
-          >
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Search..."
-              class="sm:w-[4vw] md:w-[12vw] lg:w-[22vw] h-9 text-sm px-4 py-2 border border-gray-300
-                     rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-          </div>
-
+            <!-- Mobile Button -->
+            <button id="menu-btn" class="md:hidden text-2xl">
+                ☰
+            </button>
         </div>
 
-        <!-- Wishlist -->
-        <button class="text-gray-700 hover:text-red-500 transition cursor-pointer">
-          <i class="fa-regular fa-heart"></i>
-        </button>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden pb-4">
+            <a href="/" class="block py-2 hover:text-blue-200">Home</a>
+            <!-- Fixed Products Link -->
+            <a href="{% url 'products:product_list' %}" class="block py-2 hover:text-blue-200">Products</a>
+            
+            <!-- Mobile Categories Section -->
+            <div class="py-2">
+                <span class="block font-semibold text-blue-200 text-sm mb-1">Categories</span>
+                <a href="{% url 'products:product_list' %}" class="block pl-4 py-1 text-sm hover:text-blue-200">
+                    • All Products
+                </a>
+                {% for cat in all_categories %}
+                    <a href="{% url 'products:product_list_by_category' cat.slug %}" class="block pl-4 py-1 text-sm hover:text-blue-200">
+                        • {{ cat.name }}
+                    </a>
+                {% endfor %}
+            </div>
 
-        <!-- Cart -->
-        <button class="relative text-gray-700 hover:text-blue-600 transition cursor-pointer">
-          <i class="fa-solid fa-cart-shopping"></i>
+            <a href="#" class="block py-2 hover:text-blue-200">Cart</a>
+            <a href="#" class="block py-2 hover:text-blue-200">Login</a>
+        </div>
 
-          <span
-            class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs
-                   rounded-full h-4 w-4 flex items-center justify-center"
-          >
-            2
-          </span>
-        </button>
-
-        <!-- Sign In -->
-        <button
-          class="hidden sm:block border border-black bg-white text-black
-                 px-3 sm:px-4 py-1.5 rounded-lg
-                 hover:bg-black hover:text-white transition
-                 text-sm font-medium cursor-pointer"
-        >
-          Sign In
-        </button>
-
-        <!-- Mobile Hamburger -->
-        <button
-          id="menuButton"
-          type="button"
-          class="md:hidden text-gray-700 text-xl ml-1"
-          aria-label="Toggle menu"
-        >
-          <i id="menuIcon" class="fa-solid fa-bars"></i>
-        </button>
-
-      </div>
     </div>
-
-    <!-- Mobile Navigation ONLY -->
-    <div
-      id="mobileMenu"
-      class="hidden md:hidden mt-4 border-t pt-4"
-    >
-      <ul class="flex flex-col gap-4 text-gray-700 font-medium">
-
-        <li>
-          <a href="#" class="block hover:text-blue-600 transition">
-            Home
-          </a>
-        </li>
-
-        <li>
-          <a href="#" class="block hover:text-blue-600 transition">
-            Products
-          </a>
-        </li>
-
-        <li>
-          <a href="#" class="block hover:text-blue-600 transition">
-            Categories
-          </a>
-        </li>
-
-      </ul>
-    </div>
-
-  </div>
 </nav>

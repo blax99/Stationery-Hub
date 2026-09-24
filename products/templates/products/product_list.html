@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen font-sans text-gray-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Top Header & Breadcrumbs -->
+    <div class="mb-8">
+      <nav class="flex items-center space-x-2 text-xs text-gray-400 uppercase tracking-wider mb-2">
+        <a href="{% url 'products:product_list' %}" class="hover:text-gray-700 transition-colors">Home</a>
+        <span>/</span>
+        <span class="text-gray-900 font-medium">Products</span>
+      </nav>
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-gray-200 pb-4 gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight">
+            {% if selected_category %}{{ selected_category.name }}{% else %}All Products{% endif %}
+          </h1>
+          <p class="text-xs text-gray-500 mt-1">
+            Showing <span class="font-semibold text-gray-800">{{ products|length }}</span> items
+          </p>
+        </div>
+
+        <!-- Sort Control -->
+        <div class="flex items-center space-x-2">
+          <label for="sort" class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Sort:</label>
+          <select 
+            id="sort"
+            onchange="location = this.value;"
+            class="text-xs bg-white border border-gray-300 rounded-md px-3 py-2 font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-[#7A2828] focus:border-[#7A2828]"
+          >
+            <option value="?sort=newest{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" {% if sort_by == 'newest' %}selected{% endif %}>Newest Arrivals</option>
+            <option value="?sort=price_low{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="?sort=price_high{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+      
+      <!-- SIDEBAR FILTERS -->
+      <aside class="lg:col-span-1 space-y-6">
+        
+        <!-- Search Form -->
+        <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Search</h2>
+          <form action="{% url 'products:product_list' %}" method="GET" class="relative flex items-center">
+            <input 
+              type="text" 
+              name="q" 
+              value="{{ request.GET.q|default:'' }}" 
+              placeholder="Search stationery..." 
+              class="w-full text-xs pl-3 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7A2828] focus:border-[#7A2828] transition-all"
+            >
+            <button 
+              type="submit" 
+              class="absolute right-2 text-gray-400 hover:text-[#7A2828] p-1 transition-colors"
+              title="Search"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Categories Navigation Sidebar -->
+        <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Categories</h2>
+          <nav class="space-y-1">
+            <a 
+              href="{% url 'products:product_list' %}" 
+              class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors {% if not selected_category %}bg-[#7A2828]/10 text-[#7A2828] font-semibold{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}"
+            >
+              <span>All Collection</span>
+            </a>
+            
+            {% for category in categories %}
+              <a 
+                href="{% url 'products:product_list_by_category' category.slug %}" 
+                class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors {% if selected_category and selected_category.id == category.id %}bg-[#7A2828]/10 text-[#7A2828] font-semibold{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}"
+              >
+                <span>{{ category.name }}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 font-semibold">
+                  {{ category.total_products|default:"0" }}
+                </span>
+              </a>
+            {% empty %}
+              <p class="text-xs text-gray-400 px-3 py-2">No categories found.</p>
+            {% endfor %}
+          </nav>
+        </div>
+
+      </aside>
+
+      <!-- PRODUCT GRID -->
+      <main class="lg:col-span-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for product in products %}
+            <div class="group bg-white rounded-xl border border-gray-200/80 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between">
+              
+              <div>
+                <!-- Image Wrapper -->
+                <div class="relative bg-gray-50 aspect-square overflow-hidden flex items-center justify-center p-6 border-b border-gray-100">
+                  <a href="{% url 'products:product_detail' product.slug %}" class="w-full h-full flex items-center justify-center">
+                    {% if product.image %}
+                      <img 
+                        src="{{ product.image.url }}" 
+                        alt="{{ product.name }}" 
+                        class="object-contain max-h-full max-w-full group-hover:scale-105 transition-transform duration-500 ease-out"
+                        loading="lazy"
+                      >
+                    {% else %}
+                      <div class="flex flex-col items-center justify-center text-gray-300 space-y-1">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="text-[10px] uppercase font-semibold tracking-wider">No Image</span>
+                      </div>
+                    {% endif %}
+                  </a>
+
+                  {% if not product.in_stock %}
+                    <span class="absolute top-3 left-3 bg-gray-900/80 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded backdrop-blur-sm">
+                      Out of Stock
+                    </span>
+                  {% endif %}
+                </div>
+
+                <!-- Product Details -->
+                <div class="p-5">
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    {{ product.category.name|default:"Stationery" }}
+                  </span>
+                  
+                  <a href="{% url 'products:product_detail' product.slug %}" class="block mt-1">
+                    <h2 class="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-[#7A2828] transition-colors">
+                      {{ product.name }}
+                    </h2>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Price & CTA Footer -->
+              <div class="px-5 pb-5 pt-2 flex items-center justify-between border-t border-gray-50">
+                <span class="text-base font-bold text-gray-900">
+                  Rs. {{ product.price }}
+                </span>
+                
+                {% if product.in_stock %}
+                  <a 
+                    href="{% url 'products:product_detail' product.slug %}" 
+                    class="text-xs bg-[#7A2828] text-white px-3.5 py-2 rounded-lg font-semibold uppercase tracking-wider hover:bg-[#5E1F1F] active:scale-95 transition-all shadow-sm"
+                  >
+                    View Details
+                  </a>
+                {% else %}
+                  <button disabled class="text-xs bg-gray-200 text-gray-500 px-3.5 py-2 rounded-lg font-semibold uppercase tracking-wider cursor-not-allowed">
+                    Sold Out
+                  </button>
+                {% endif %}
+              </div>
+
+            </div>
+          {% empty %}
+            <div class="col-span-full py-16 bg-white rounded-xl border border-gray-200/80 text-center">
+              <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-gray-900">No products found</h3>
+              <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">We couldn't find anything matching your search or filter options.</p>
+              <a href="{% url 'products:product_list' %}" class="inline-block mt-4 text-xs font-semibold text-[#7A2828] hover:underline">
+                Clear Filters
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </main>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
