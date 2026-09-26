@@ -6,308 +6,804 @@ Shopping Cart
 
 {% block content %}
 
-<form id="cart-csrf-form" style="display: none;">
-    {% csrf_token %}
-</form>
-
 <div class="max-w-7xl mx-auto px-6 py-10">
+
+    <div class="mb-10">
+
+        <h1 class="text-3xl font-normal">
+            Shopping Cart
+        </h1>
+
+        <p class="text-sm text-gray-500 mt-2">
+            Review your selected products
+        </p>
+
+    </div>
+
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-        <!-- ========================= -->
         <!-- CART ITEMS -->
-        <!-- ========================= -->
 
-        <section class="lg:col-span-2">
-
-            <h1 class="text-3xl font-normal mb-8">
-                Shopping Cart
-            </h1>
-
-            {% for item in cart_items %}
+        <div class="lg:col-span-2">
 
             <div
-                class="cart-item flex items-center gap-6 py-8 border-t border-gray-200"
-                data-price="{{ item.product.price }}"
-                data-item-id="{{ item.id }}"
-                data-stock="{{ item.product.stock }}"
-                data-update-url="{% url 'update_cart_quantity' item.id %}"
+                id="api-cart-items"
+                class="space-y-5"
             >
 
-                <!-- Product Image -->
-
-                <div class="w-28 h-32 bg-gray-200 shrink-0">
-
-                    {% if item.product.image %}
-
-                        <img
-                            src="{{ item.product.image.url }}"
-                            alt="{{ item.product.name }}"
-                            class="w-full h-full object-cover"
-                        />
-
-                    {% else %}
-
-                        <div class="w-full h-full flex items-center justify-center text-gray-500 text-xs">
-                            NO IMAGE
-                        </div>
-
-                    {% endif %}
-
-                </div>
-
-
-                <!-- Product Information -->
-
-                <div class="flex-1">
-
-                    <p class="text-xs tracking-[0.2em] text-gray-500">
-                        {{ item.product.category.name }}
-                    </p>
-
-                    <h2 class="text-lg font-medium mt-2">
-                        {{ item.product.name }}
-                    </h2>
-
-                    {% if item.product.in_stock %}
-
-                        <p class="text-sm text-green-700 mt-2">
-                            In Stock
-                        </p>
-
-                    {% else %}
-
-                        <p class="text-sm text-red-700 mt-2">
-                            Out of Stock
-                        </p>
-
-                    {% endif %}
-
-                </div>
-
-
-                <!-- Quantity Controls -->
-
-                <div class="flex items-center border border-gray-300 h-14">
-
-                    <button
-                        type="button"
-                        class="decrease px-5 text-xl"
-                    >
-                        −
-                    </button>
-
-                    <span class="quantity px-3">
-                        {{ item.quantity }}
-                    </span>
-
-                    <button
-                        type="button"
-                        class="increase px-5 text-xl"
-                    >
-                        +
-                    </button>
-
-                </div>
-
-
-                <!-- Product Total -->
-
-                <p class="w-20 text-lg price">
-    ${{ item.item_total|floatformat:2 }}
-</p>
-
-
-                <!-- Delete -->
-
-                <button
-                    type="button"
-                    class="delete text-gray-500 text-xl"
-                    data-delete-url="{% url 'delete_cart_item' item.id %}"
-                >
-                    🗑
-                </button>
+                <p class="text-gray-500">
+                    Loading cart...
+                </p>
 
             </div>
 
-            {% empty %}
+        </div>
 
-            <!-- ========================= -->
-            <!-- EMPTY CART -->
-            <!-- ========================= -->
 
-            <div class="py-16 text-center border-t border-gray-200">
+        <!-- ORDER SUMMARY -->
 
-                <h2 class="text-2xl font-normal mb-4">
-                    Your cart is empty
+        <div>
+
+            <div class="border border-gray-200 bg-white p-6">
+
+                <h2 class="text-xl font-medium mb-6">
+                    Order Summary
                 </h2>
 
-                <p class="text-gray-500 mb-8">
-                    You haven't added any products to your cart yet.
-                </p>
 
-                <a
-                    href="{% url 'products:product_list' %}"
-                    class="inline-block bg-slate-800 text-white px-8 py-4 hover:bg-slate-700 transition"
-                >
-                    Continue Shopping
-                </a>
+                <div class="flex justify-between text-sm mb-4">
 
-            </div>
-
-            {% endfor %}
-
-        </section>
-
-
-        <!-- ========================= -->
-        <!-- ORDER SUMMARY -->
-        <!-- ========================= -->
-
-        <aside class="border border-gray-200 p-8 h-fit">
-
-            <h2 class="text-2xl font-normal mb-10">
-                Order Summary
-            </h2>
-
-
-            <!-- Summary Items -->
-
-            <div class="space-y-6">
-
-                {% for item in cart_items %}
-
-                <div class="summary-item flex justify-between gap-4">
-
-                    <span class="text-gray-500 truncate">
-
-                        {{ item.product.name }}
-
+                    <span class="text-gray-500">
+                        Subtotal
                     </span>
 
-                    <span class="summary-price whitespace-nowrap">
-
-                        ${{ item.item_total|floatformat:2 }}
-
+                    <span id="subtotal">
+                        Rs. 0
                     </span>
 
                 </div>
 
-                {% empty %}
 
-                <p class="text-gray-500 text-sm">
-                    No items in your cart.
-                </p>
+                <div class="flex justify-between text-sm mb-4">
 
-                {% endfor %}
+                    <span class="text-gray-500">
+                        Shipping
+                    </span>
 
-            </div>
-
-
-            <!-- Divider -->
-
-            <div class="border-t border-gray-200 my-8"></div>
-
-
-            <!-- Subtotal -->
-
-            <div class="flex justify-between mb-6">
-
-                <span class="text-gray-500">
-                    Subtotal
-                </span>
-
-                <span id="subtotal">
-
-                    {% if cart_items %}
-                        ${{ subtotal|floatformat:2 }}
-                    {% else %}
-                        $0.00
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <!-- Shipping -->
-
-            <div class="flex justify-between">
-
-                <span class="text-gray-500">
-                    Shipping
-                </span>
-
-                {% if cart_items %}
-
-                    <span class="text-green-700">
+                    <span>
                         Free
                     </span>
 
-                {% else %}
-
-                    <span class="text-gray-400">
-                        —
-                    </span>
-
-                {% endif %}
-
-            </div>
+                </div>
 
 
-            <!-- Divider -->
+                <div class="border-t border-gray-200 pt-4">
 
-            <div class="border-t border-gray-200 my-8"></div>
+                    <div class="flex justify-between text-lg font-medium">
 
+                        <span>
+                            Total
+                        </span>
 
-            <!-- Total -->
+                        <span id="total">
+                            Rs. 0
+                        </span>
 
-            <div class="flex justify-between text-xl font-medium">
+                    </div>
 
-                <span>
-                    Total
-                </span>
+                </div>
 
-                <span id="total">
-
-                    {% if cart_items %}
-                        ${{ subtotal|floatformat:2 }}
-                    {% else %}
-                        $0.00
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <!-- Checkout Button -->
-
-            {% if cart_items %}
 
                 <button
                     type="button"
-                    class="w-full bg-slate-800 text-white py-5 mt-8 text-lg font-medium hover:bg-slate-700 transition"
+                    class="w-full bg-slate-800 text-white py-3 mt-6 text-sm hover:bg-slate-700"
                 >
                     Proceed to Checkout
                 </button>
 
-            {% else %}
+            </div>
 
-                <button
-                    type="button"
-                    disabled
-                    class="w-full bg-gray-300 text-gray-500 py-5 mt-8 text-lg font-medium cursor-not-allowed"
-                >
-                    Proceed to Checkout
-                </button>
-
-            {% endif %}
-
-        </aside>
+        </div>
 
     </div>
 
 </div>
+
+
+<script>
+
+function getAccessToken() {
+
+    return localStorage.getItem("access_token");
+
+}
+
+
+async function refreshAccessToken() {
+
+    const refreshToken =
+        localStorage.getItem("refresh_token");
+
+
+    if (!refreshToken) {
+
+        return null;
+
+    }
+
+
+    const response = await fetch(
+        "/api/users/login/refresh/",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                refresh: refreshToken
+            })
+        }
+    );
+
+
+    if (!response.ok) {
+
+        return null;
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    localStorage.setItem(
+        "access_token",
+        data.access
+    );
+
+
+    return data.access;
+
+}
+
+
+async function cartRequest(
+    url,
+    options = {}
+) {
+
+    let token =
+        getAccessToken();
+
+
+    options.headers = {
+
+        ...(options.headers || {}),
+
+        "Authorization":
+            "Bearer " + token
+
+    };
+
+
+    let response =
+        await fetch(
+            url,
+            options
+        );
+
+
+    if (response.status === 401) {
+
+        token =
+            await refreshAccessToken();
+
+
+        if (!token) {
+
+            return response;
+
+        }
+
+
+        options.headers = {
+
+            ...(options.headers || {}),
+
+            "Authorization":
+                "Bearer " + token
+
+        };
+
+
+        response =
+            await fetch(
+                url,
+                options
+            );
+
+    }
+
+
+    return response;
+
+}
+
+
+async function loadCart() {
+
+    const container =
+        document.getElementById(
+            "api-cart-items"
+        );
+
+
+    try {
+
+        const response =
+            await cartRequest(
+                "/api/cart/"
+            );
+
+
+        console.log(
+            "Cart API status:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Cart data:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+
+                <p class="text-red-500">
+                    Unable to load cart.
+                </p>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML = "";
+
+
+        if (data.items.length === 0) {
+
+            container.innerHTML = `
+
+                <div class="text-center py-20">
+
+                    <div class="text-5xl mb-5">
+                        🛒
+                    </div>
+
+                    <h2 class="text-2xl font-normal">
+                        Your cart is empty
+                    </h2>
+
+                    <p class="text-gray-500 mt-3">
+                        Add some products to your cart.
+                    </p>
+
+                </div>
+
+            `;
+
+
+            document.getElementById(
+                "subtotal"
+            ).textContent = "Rs. 0";
+
+
+            document.getElementById(
+                "total"
+            ).textContent = "Rs. 0";
+
+
+            return;
+
+        }
+
+
+        const items = [...data.items].sort((a, b) => a.id - b.id);
+
+        items.forEach(function (item) {
+
+                const cartItem =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                cartItem.className =
+                    "cart-item border border-gray-200 bg-white p-5 flex items-center justify-between";
+
+
+                cartItem.dataset.itemId =
+                    item.id;
+
+
+                cartItem.dataset.price =
+                    item.price;
+
+
+                cartItem.dataset.itemTotal =
+                    item.item_total;
+
+
+                cartItem.innerHTML = `
+
+                    <div class="flex items-center gap-5">
+
+                        <div class="w-24 h-24 bg-gray-100 flex-shrink-0">
+
+                            ${
+                                item.image
+                                ?
+
+                                `
+
+                                    <img
+                                        src="${item.image}"
+                                        alt="${item.product}"
+                                        class="w-full h-full object-contain"
+                                    >
+
+                                `
+
+                                :
+
+                                `
+
+                                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                        No Image
+                                    </div>
+
+                                `
+                            }
+
+                        </div>
+
+
+                        <div>
+
+                            <h3 class="text-lg font-medium">
+                                ${item.product}
+                            </h3>
+
+
+                            <p class="text-sm text-gray-500 mt-1">
+                                Rs. ${item.price}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flex items-center gap-4">
+
+                        <button
+                            type="button"
+                            class="decrease border border-gray-300 w-8 h-8"
+                        >
+                            −
+                        </button>
+
+
+                        <span class="quantity">
+                            ${item.quantity}
+                        </span>
+
+
+                        <button
+                            type="button"
+                            class="increase border border-gray-300 w-8 h-8"
+                        >
+                            +
+                        </button>
+
+
+                        <span class="text-sm font-medium">
+                            Rs. ${item.item_total}
+                        </span>
+
+
+                        <button
+                            type="button"
+                            class="delete text-gray-500 text-xl"
+                        >
+                            🗑
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    cartItem
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "subtotal"
+        ).textContent =
+            "Rs. " + data.subtotal;
+
+
+        document.getElementById(
+            "total"
+        ).textContent =
+            "Rs. " + data.subtotal;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Cart loading error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <p class="text-red-500">
+                Something went wrong while loading the cart.
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+async function updateQuantity(
+    cartItem,
+    change
+) {
+
+    const itemId =
+        cartItem.dataset.itemId;
+
+
+    const quantityElement =
+        cartItem.querySelector(
+            ".quantity"
+        );
+
+
+    const currentQuantity =
+        parseInt(
+            quantityElement.textContent.trim()
+        );
+
+
+    const newQuantity =
+        currentQuantity + change;
+
+
+    if (newQuantity < 1) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await cartRequest(
+                "/api/cart/",
+                {
+
+                    method: "PATCH",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        item_id:
+                            parseInt(itemId),
+
+                        quantity:
+                            newQuantity
+
+                    })
+
+                }
+            );
+
+
+        console.log(
+            "Quantity update status:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Updated cart:",
+            data
+        );
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                data.error ||
+                "Unable to update quantity."
+            );
+
+            return;
+
+        }
+
+
+        await loadCart();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Quantity update error:",
+            error
+        );
+
+    }
+
+}
+
+
+async function deleteCartItem(
+    cartItem,
+    itemId
+) {
+
+    const confirmed =
+        confirm(
+            "Remove this item from your cart?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await cartRequest(
+                "/api/cart/",
+                {
+
+                    method: "DELETE",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        item_id:
+                            parseInt(itemId)
+
+                    })
+
+                }
+            );
+
+
+        console.log(
+            "Delete status:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Delete response:",
+            data
+        );
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                data.error ||
+                "Unable to remove item."
+            );
+
+            return;
+
+        }
+
+
+        await loadCart();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Delete error:",
+            error
+        );
+
+    }
+
+}
+
+
+/*
+    CART BUTTON HANDLING
+*/
+
+const container =
+    document.getElementById(
+        "api-cart-items"
+    );
+
+
+container.addEventListener(
+    "click",
+    function(event) {
+
+
+        /*
+            INCREASE
+        */
+
+        const increaseButton =
+            event.target.closest(
+                ".increase"
+            );
+
+
+        if (increaseButton) {
+
+            const cartItem =
+                increaseButton.closest(
+                    ".cart-item"
+                );
+
+
+            if (cartItem) {
+
+                updateQuantity(
+                    cartItem,
+                    1
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        /*
+            DECREASE
+        */
+
+        const decreaseButton =
+            event.target.closest(
+                ".decrease"
+            );
+
+
+        if (decreaseButton) {
+
+            const cartItem =
+                decreaseButton.closest(
+                    ".cart-item"
+                );
+
+
+            if (cartItem) {
+
+                updateQuantity(
+                    cartItem,
+                    -1
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        /*
+            DELETE
+        */
+
+        const deleteButton =
+            event.target.closest(
+                ".delete"
+            );
+
+
+        if (deleteButton) {
+
+            const cartItem =
+                deleteButton.closest(
+                    ".cart-item"
+                );
+
+
+            if (!cartItem) {
+
+                return;
+
+            }
+
+
+            const itemId =
+                cartItem.dataset.itemId;
+
+
+            deleteCartItem(
+                cartItem,
+                itemId
+            );
+
+        }
+
+    }
+);
+
+
+loadCart();
+
+</script>
 
 {% endblock %}

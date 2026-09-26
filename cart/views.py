@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect
+from .models import Cart, CartItem, Wishlist, WishlistItem
 
 
 from django.contrib.auth import get_user_model
@@ -17,6 +18,13 @@ from django.http import JsonResponse
 
 
 def cart(request):
+    if not request.user.is_authenticated:
+        return render(request, "cart/cart.html", {
+            "cart": None,
+            "cart_items": [],
+            "subtotal": 0,
+        })
+
     user = request.user
     cart, created = Cart.objects.get_or_create(user=user)
     cart_items = cart.items.all()
@@ -34,8 +42,16 @@ def cart(request):
 
 
 def wishlist(request):
-    wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-    wishlist_items = wishlist.items.select_related("product")
+    from users.models import User
+
+    user = User.objects.get(email="carttest@example.com")
+
+    wishlist, created = Wishlist.objects.get_or_create(user=user)
+
+    wishlist_items = wishlist.items.select_related(
+        "product",
+        "product__category"
+    )
 
     return render(request, "cart/wishlist.html", {
         "wishlist": wishlist,
@@ -158,6 +174,7 @@ class CartAPIView(APIView):
                 "price": item.product.price,
                 "quantity": item.quantity,
                 "item_total": item.product.price * item.quantity,
+                "image": item.product.image.url if item.product.image else None,
             })
 
         subtotal = sum(
@@ -328,4 +345,110 @@ class CartAPIView(APIView):
         return Response({
             "success": True,
             "message": "Product removed from cart"
+        })
+
+class WishlistAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        wishlist, created = Wishlist.objects.get_or_create(
+            user=request.user
+        )
+
+        wishlist_items = wishlist.items.select_related(
+            "product",
+            "product__category"
+        )
+
+        items = []
+
+        for item in wishlist_items:
+            items.append({
+                "id": item.id,
+                "product": item.product.name,
+                "product_id": item.product.id,
+                "price": item.product.price,
+                "image": (
+                    item.product.image.url
+                    if item.product.image
+                    else None
+                ),
+                "category": (
+                    item.product.category.name
+                    if item.product.category
+                    else None
+                ),
+            })
+
+
+
+        return Response({
+            "wishlist_id": wishlist.id,
+            "items": items,
+        })
+
+    def post(self, request):
+        product_id = request.data.get("product_id")
+
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"},
+                status=400
+            )
+
+        try:
+            product = Products.objects.get(id=product_id)
+        except Products.DoesNotExist:
+            return Response(
+                {"error": "Product not found"},
+                status=404
+            )
+
+        wishlist, created = Wishlist.objects.get_or_create(
+            user=request.user
+        )
+
+        wishlist_item, created = WishlistItem.objects.get_or_create(
+            wishlist=wishlist,
+            product=product
+        )
+
+        if not created:
+            return Response({
+                "success": True,
+                "message": "Product already in wishlist"
+            })
+
+        return Response({
+            "success": True,
+            "message": "Product added to wishlist",
+            "wishlist_item_id": wishlist_item.id
+        })
+
+    def delete(self, request):
+        item_id = request.data.get("item_id")
+
+        if not item_id:
+            return Response(
+                {"error": "item_id is required"},
+                status=400
+            )
+
+        try:
+            wishlist_item = WishlistItem.objects.get(
+                id=item_id,
+                wishlist__user=request.user
+            )
+        except WishlistItem.DoesNotExist:
+            return Response(
+                {"error": "Wishlist item not found"},
+                status=404
+            )
+
+        wishlist_item.delete()
+
+        return Response({
+            "success": True,
+            "message": "Product removed from wishlist"
         })

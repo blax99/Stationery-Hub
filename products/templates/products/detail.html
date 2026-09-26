@@ -120,10 +120,9 @@
       <div class="mt-8 pt-6 border-t border-[#e5dfd5]">
         {% if product.in_stock %}
         <form
-          action="{% url 'add_to_cart' product.id %}"
-          method="POST"
-          class="flex items-center gap-3"
-        >
+    id="add-to-cart-form"
+    class="flex items-center gap-3"
+>
           {% csrf_token %}
 
           <div class="flex flex-col">
@@ -151,6 +150,15 @@
               <i class="fa-solid fa-cart-shopping text-sm"></i>
               Add to Cart
             </button>
+            <button
+        type="button"
+        id="add-to-wishlist"
+        class="w-14 bg-white border border-gray-900 text-gray-900 hover:bg-gray-100 font-mono text-lg transition duration-150 flex items-center justify-center rounded-sm"
+        title="Add to Wishlist"
+    >
+        ♡
+    </button>
+
           </div>
         </form>
         {% else %}
@@ -204,4 +212,70 @@
   </div>
   {% endif %}
 </div>
+
+<script>
+document.getElementById("add-to-cart-form").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const button = this.querySelector("button");
+    const quantity = document.getElementById("quantity").value;
+    const accessToken = localStorage.getItem("access_token");
+
+    const response = await fetch("/api/cart/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+            product_id: {{ product.id }},
+            quantity: quantity
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        button.textContent = "Added to Cart ✓";
+
+        setTimeout(() => {
+            button.textContent = "Add to Cart";
+        }, 2000);
+    } else {
+        console.log(data);
+    }
+});
+</script>
+<script>
+document.getElementById("add-to-wishlist").addEventListener("click", async function () {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        alert("Please login first.");
+        return;
+    }
+
+    const response = await fetch("/api/wishlist/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            product_id: {{ product.id }}
+        })
+    });
+
+    const data = await response.json();
+
+    console.log("Wishlist:", data);
+
+    if (data.success) {
+        this.textContent = "♥";
+        this.title = "Added to Wishlist";
+    } else {
+        console.log(data);
+    }
+});
+</script>
 {% endblock %}
