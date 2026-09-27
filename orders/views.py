@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from datetime import timedelta
 from .models import Order, ShippingAddress
+
 
 @login_required
 def checkout(request):
@@ -25,6 +27,7 @@ def checkout(request):
 
     return render(request, 'checkout.html')
 
+
 @login_required
 def checkout_confirmation(request, order_id):
     order = get_object_or_404(
@@ -33,11 +36,19 @@ def checkout_confirmation(request, order_id):
         user=request.user
     )
 
+    estimated_delivery_start = order.created_at + timedelta(days=3)
+    estimated_delivery_end = order.created_at + timedelta(days=5)
+
     return render(
         request,
         'order/confirmation.html',
-        {'order': order}
+        {
+            'order': order,
+            'estimated_delivery_start': estimated_delivery_start,
+            'estimated_delivery_end': estimated_delivery_end,
+        }
     )
+
 
 @login_required
 def order_history(request):
@@ -50,3 +61,35 @@ def order_history(request):
         'order/history.html',
         {'orders': orders}
     )
+
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(
+        Order,
+        id=order_id,
+        user=request.user
+    )
+
+    if request.method == "POST":
+        if order.status in ['pending', 'confirmed']:
+            order.status = 'cancelled'
+            order.save()
+
+    return redirect('order_history')
+
+
+@login_required
+def request_return(request, order_id):
+    order = get_object_or_404(
+        Order,
+        id=order_id,
+        user=request.user
+    )
+
+    if request.method == "POST":
+        if order.status == 'delivered':
+            order.status = 'return_requested'
+            order.save()
+
+    return redirect('order_history')

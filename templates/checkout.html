@@ -4,147 +4,391 @@
 
 {% block content %}
 
-<div class="max-w-6xl mx-auto px-4 py-10">
+<style>
 
-<h1 class="text-3xl font-bold text-gray-800 mb-8">
-    Checkout
-</h1>
+    /* ==============================
+       CHECKOUT PAGE
+       UI ONLY
+    ============================== */
 
-<form method="POST" action="">
-    {% csrf_token %}
+    .checkout-page {
+        background-color: #f9fafb;
+        min-height: 100vh;
+        padding: 40px 16px 60px;
+    }
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    .checkout-container {
+        max-width: 1152px;
+        margin: 0 auto;
+    }
 
-        <!-- Shipping Information -->
-        <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+    .checkout-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 32px;
+    }
 
-            <h2 class="text-xl font-semibold text-gray-800 mb-6">
-                Shipping Information
-            </h2>
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 32px;
+        align-items: start;
+    }
 
-            <div class="space-y-5">
+    .checkout-card {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        padding: 26px;
+    }
 
-                <!-- Full Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Full Name
-                    </label>
-                    <input
-                        type="text"
-                        name="full_name"
-                        placeholder="Enter your full name"
-                        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
+    .checkout-card h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0 0 24px;
+    }
+
+    .checkout-field {
+        margin-bottom: 20px;
+    }
+
+    .checkout-field:last-child {
+        margin-bottom: 0;
+    }
+
+    .checkout-field label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 7px;
+    }
+
+    .checkout-field input,
+    .checkout-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 11px 14px;
+        font-size: 0.95rem;
+        color: #111827;
+        background-color: #ffffff;
+        font-family: inherit;
+        transition: border-color 0.2s ease,
+                    box-shadow 0.2s ease;
+    }
+
+    .checkout-field textarea {
+        resize: vertical;
+        min-height: 90px;
+    }
+
+    .checkout-field input::placeholder,
+    .checkout-field textarea::placeholder {
+        color: #9ca3af;
+    }
+
+    .checkout-field input:focus,
+    .checkout-field textarea:focus {
+        outline: none;
+        border-color: #8b2d2d;
+        box-shadow: 0 0 0 2px rgba(139, 45, 45, 0.12);
+    }
+
+    /* Order Summary */
+
+    .order-summary-card {
+        position: sticky;
+        top: 24px;
+    }
+
+    .order-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        color: #4b5563;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+    }
+
+    .order-divider {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 20px 0;
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .place-order-btn {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #8b2d2d;
+        background-color: #8b2d2d;
+        color: #ffffff;
+        padding: 12px;
+        margin-top: 24px;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease,
+                    border-color 0.2s ease;
+    }
+
+    .place-order-btn:hover {
+        background-color: #722424;
+        border-color: #722424;
+    }
+
+    .place-order-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(139, 45, 45, 0.15);
+    }
+
+    /* Responsive */
+
+    @media (max-width: 768px) {
+
+        .checkout-page {
+            padding: 30px 14px 50px;
+        }
+
+        .checkout-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .order-summary-card {
+            position: static;
+        }
+
+        .checkout-title {
+            font-size: 2rem;
+            margin-bottom: 24px;
+        }
+
+        .checkout-card {
+            padding: 20px;
+        }
+    }
+
+</style>
+
+
+<div class="checkout-page">
+
+    <div class="checkout-container">
+
+        <!-- Heading -->
+
+        <h1 class="checkout-title">
+            Checkout
+        </h1>
+
+
+        <form method="POST" action="">
+
+            {% csrf_token %}
+
+
+            <div class="checkout-grid">
+
+                <!-- ==============================
+                     SHIPPING INFORMATION
+                =============================== -->
+
+                <div class="checkout-card">
+
+                    <h2>
+                        Shipping Information
+                    </h2>
+
+
+                    <!-- Full Name -->
+
+                    <div class="checkout-field">
+
+                        <label>
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="full_name"
+                            placeholder="Enter your full name"
+                        >
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="checkout-field">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Enter your email address"
+                        >
+
+                    </div>
+
+
+                    <!-- Address -->
+
+                    <div class="checkout-field">
+
+                        <label>
+                            Address
+                        </label>
+
+                        <textarea
+                            name="address"
+                            rows="3"
+                            placeholder="Enter your address"
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- City -->
+
+                    <div class="checkout-field">
+
+                        <label>
+                            City
+                        </label>
+
+                        <input
+                            type="text"
+                            name="city"
+                            placeholder="Enter your city"
+                        >
+
+                    </div>
+
+
+                    <!-- Postal Code -->
+
+                    <div class="checkout-field">
+
+                        <label>
+                            Postal Code
+                        </label>
+
+                        <input
+                            type="text"
+                            name="postal_code"
+                            placeholder="Enter your postal code"
+                        >
+
+                    </div>
+
+
+                    <!-- Phone -->
+
+                    <div class="checkout-field">
+
+                        <label>
+                            Phone
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="Enter your phone number"
+                        >
+
+                    </div>
+
                 </div>
 
-                <!-- Email -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Enter your email address"
-                        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                </div>
 
-                <!-- Address -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Address
-                    </label>
-                    <textarea
-                        name="address"
-                        rows="3"
-                        placeholder="Enter your address"
-                        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    ></textarea>
-                </div>
+                <!-- ==============================
+                     ORDER SUMMARY
+                =============================== -->
 
-                <!-- City -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        City
-                    </label>
-                    <input
-                        type="text"
-                        name="city"
-                        placeholder="Enter your city"
-                        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                </div>
+                <div class="checkout-card order-summary-card">
 
-                <!-- Postal Code -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Postal Code
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter your postal code"
-                        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                </div>
+                    <h2>
+                        Order Summary
+                    </h2>
 
-                <!-- Phone -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Phone
-                    </label>
-                    <input
-                        type="tel"
-                        name="phone"
-                        placeholder="Enter your phone number"
-                        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+                    <div class="order-row">
+
+                        <span>
+                            Subtotal
+                        </span>
+
+                        <span>
+                            Rs. 0.00
+                        </span>
+
+                    </div>
+
+
+                    <div class="order-row">
+
+                        <span>
+                            Shipping
+                        </span>
+
+                        <span>
+                            Rs. 0.00
+                        </span>
+
+                    </div>
+
+
+                    <hr class="order-divider">
+
+
+                    <div class="order-total">
+
+                        <span>
+                            Total
+                        </span>
+
+                        <span>
+                            Rs. 0.00
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="place-order-btn"
                     >
+                        Place Order
+                    </button>
+
                 </div>
 
             </div>
 
-        </div>
-
-        <!-- Order Summary -->
-        <div class="bg-white rounded-lg shadow p-6 h-fit">
-
-            <h2 class="text-xl font-semibold text-gray-800 mb-6">
-                Order Summary
-            </h2>
-
-            <div class="space-y-4">
-
-                <div class="flex justify-between text-gray-600">
-                    <span>Subtotal</span>
-                    <span>Rs. 0.00</span>
-                </div>
-
-                <div class="flex justify-between text-gray-600">
-                    <span>Shipping</span>
-                    <span>Rs. 0.00</span>
-                </div>
-
-                <hr>
-
-                <div class="flex justify-between text-lg font-bold text-gray-800">
-                    <span>Total</span>
-                    <span>Rs. 0.00</span>
-                </div>
-
-                <button
-                    type="submit"
-                    class="w-full bg-blue-600 text-white py-3 mt-4 rounded-md font-semibold hover:bg-blue-700 transition duration-200"
-                >
-                    Place Order
-                </button>
-
-            </div>
-
-        </div>
+        </form>
 
     </div>
-
-</form>
 
 </div>
 

@@ -1,13 +1,15 @@
 from django.db import models
 from django.conf import settings
 
-
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+        ('return_requested', 'Return Requested'),
+        ('returned', 'Returned'),
     ]
 
     PAYMENT_STATUS_CHOICES = [ 
