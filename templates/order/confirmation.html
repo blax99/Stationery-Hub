@@ -164,10 +164,10 @@
 
     .cancel-order-button {
         display: inline-block;
-        background-color: #ffffff;
-        color: #8b2d2d;
+        background-color: #8b2d2d !important;
+        color: #ffffff !important;
         padding: 11px 30px;
-        border: 1px solid #8b2d2d;
+        border: 1px solid #8b2d2d !important;
         border-radius: 6px;
         font-size: 1rem;
         font-weight: 600;
@@ -179,9 +179,9 @@
     }
 
     .cancel-order-button:hover {
-        background-color: #8b2d2d;
-        color: #ffffff;
-        border-color: #8b2d2d;
+        background-color: #722424 !important;
+        color: #ffffff !important;
+        border-color: #722424 !important;
     }
 
     @media (max-width: 640px) {
@@ -231,13 +231,13 @@
 
             {% if order.status == 'cancelled' %}
 
-                <h1 style="color: #dc2626;">
-                    Order Cancelled
-                </h1>
+            <h1 style="color: #111827;">
+                Order Cancelled
+            </h1>
 
-                <p>
-                    This order has been cancelled.
-                </p>
+            <p>
+                This order has been cancelled.
+            </p>
 
             {% elif order.status == 'return_requested' %}
 
@@ -405,23 +405,27 @@
 
         <!-- ESTIMATED DELIVERY -->
 
-        <div class="confirmation-card">
+        {% if order.status != 'cancelled' and order.status != 'returned' %}
 
-            <h2>
-                Estimated Delivery
-            </h2>
+            <div class="confirmation-card">
 
-            <p class="delivery-date">
-                {{ estimated_delivery_start|date:"F d, Y" }}
-                -
-                {{ estimated_delivery_end|date:"F d, Y" }}
-            </p>
+                <h2>
+                    Estimated Delivery
+                </h2>
 
-            <p class="delivery-note">
-                Your order is expected to arrive within this period.
-            </p>
+                <p class="delivery-date">
+                    {{ estimated_delivery_start|date:"F d, Y" }}
+                    -
+                    {{ estimated_delivery_end|date:"F d, Y" }}
+                </p>
 
-        </div>
+                <p class="delivery-note">
+                    Your order is expected to arrive within this period.
+                </p>
+
+            </div>
+
+        {% endif %}
 
 
         <!-- ACTION BUTTONS -->
