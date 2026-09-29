@@ -231,13 +231,13 @@
 
             {% if order.status == 'cancelled' %}
 
-            <h1 style="color: #111827;">
-                Order Cancelled
-            </h1>
+                <h1 style="color: #111827;">
+                    Order Cancelled
+                </h1>
 
-            <p>
-                This order has been cancelled.
-            </p>
+                <p>
+                    This order has been cancelled.
+                </p>
 
             {% elif order.status == 'return_requested' %}
 
@@ -247,6 +247,16 @@
 
                 <p>
                     Your return request has been submitted.
+                </p>
+
+            {% elif order.status == 'delivered' %}
+
+                <h1 style="color: #111827;">
+                    Order Delivered
+                </h1>
+
+                <p>
+                    Your order has been delivered successfully.
                 </p>
 
             {% elif order.status == 'returned' %}
@@ -405,7 +415,7 @@
 
         <!-- ESTIMATED DELIVERY -->
 
-        {% if order.status != 'cancelled' and order.status != 'returned' %}
+        {% if order.status != 'cancelled' and order.status != 'delivered' and order.status != 'return_requested' and order.status != 'returned' %}
 
             <div class="confirmation-card">
 
@@ -432,7 +442,9 @@
 
         <div class="confirmation-actions">
 
-            {% if order.payment_status != 'paid' and order.status != 'cancelled' and order.status != 'return_requested' and order.status != 'returned' %}
+            <!-- KHALTI PAYMENT -->
+
+            {% if order.payment_status != 'paid' and order.status != 'cancelled' and order.status != 'delivered' and order.status != 'return_requested' and order.status != 'returned' %}
 
                 <button
                     type="button"
@@ -445,6 +457,8 @@
 
             {% endif %}
 
+
+            <!-- CANCEL ORDER -->
 
             {% if order.status == 'pending' or order.status == 'confirmed' %}
 
@@ -468,6 +482,33 @@
 
             {% endif %}
 
+
+            <!-- RETURN ORDER -->
+
+            {% if order.status == 'delivered' %}
+
+                <form
+                    method="POST"
+                    action="{% url 'request_return' order.id %}"
+                    style="margin-bottom: 10px; margin-top: 10px;"
+                    onsubmit="return confirm('Are you sure you want to request a return?');"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="cancel-order-button"
+                    >
+                        Return Order
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            <!-- CONTINUE SHOPPING -->
 
             <div>
 
