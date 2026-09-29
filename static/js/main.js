@@ -109,6 +109,8 @@ function updateCartQuantity(cartItem, quantity) {
             "Quantity:",
             quantity
         );
+
+        updateCartCount();
     })
     .catch(error => {
         console.error(error);
@@ -223,6 +225,7 @@ deleteButtons.forEach(function (button) {
 
             cartItem.remove();
             updateCartTotal();
+            updateCartCount();
 
         })
         .catch(error => {
@@ -410,6 +413,92 @@ deleteButtons.forEach(function (button) {
     }
 
 });
+
+function updateCartCount() {
+    const cartCount = document.getElementById("cart-count");
+
+    if (!cartCount) {
+        return;
+    }
+
+    const accessToken = localStorage.getItem("access_token");
+
+    if (!accessToken) {
+        cartCount.textContent = "0";
+        return;
+    }
+
+    fetch("/api/cart/", {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to fetch cart");
+        }
+
+        return response.json();
+    })
+    .then(data => {
+        const totalQuantity = data.items.reduce(
+            (total, item) => total + Number(item.quantity),
+            0
+        );
+
+        cartCount.textContent = totalQuantity;
+    })
+    .catch(error => {
+        console.error("Cart count error:", error);
+        cartCount.textContent = "0";
+    });
+}
+
+updateCartCount();
+
+function updateWishlistNavCount() {
+    const wishlistNavCount =
+        document.getElementById("wishlist-nav-count");
+
+    if (!wishlistNavCount) {
+        return;
+    }
+
+    const accessToken =
+        localStorage.getItem("access_token");
+
+    if (!accessToken) {
+        wishlistNavCount.textContent = "0";
+        return;
+    }
+
+    fetch("/api/wishlist/", {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to fetch wishlist");
+        }
+
+        return response.json();
+    })
+    .then(data => {
+        wishlistNavCount.textContent =
+            data.items.length;
+    })
+    .catch(error => {
+        console.error(
+            "Wishlist count error:",
+            error
+        );
+
+        wishlistNavCount.textContent = "0";
+    });
+}
+
+updateWishlistNavCount();
 
 
 

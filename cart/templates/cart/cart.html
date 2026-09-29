@@ -8,8 +8,8 @@ Shopping Cart
 
 <div class="max-w-7xl mx-auto px-6 py-10">
 
+    <!-- HEADER -->
     <div class="mb-10">
-
         <h1 class="text-3xl font-normal">
             Shopping Cart
         </h1>
@@ -17,32 +17,55 @@ Shopping Cart
         <p class="text-sm text-gray-500 mt-2">
             Review your selected products
         </p>
-
     </div>
 
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         <!-- CART ITEMS -->
-
         <div class="lg:col-span-2">
 
-            <div
-                id="api-cart-items"
-                class="space-y-5"
-            >
+            <div class="hidden lg:grid grid-cols-[minmax(0,1fr)_140px_140px_40px] gap-5 pb-3 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wide">
 
+    <div>
+        Product
+    </div>
+
+    <div class="text-center">
+        Quantity
+    </div>
+
+    <div class="text-center">
+        Price
+    </div>
+
+    <div></div>
+
+</div>
+
+<div
+    id="api-cart-items"
+    class="space-y-0"
+>
                 <p class="text-gray-500">
                     Loading cart...
                 </p>
+            </div>
 
+            <!-- CONTINUE SHOPPING -->
+            <div class="mt-8">
+                <a
+                    href="{% url 'products:product_list' %}"
+                    class="text-sm text-amber-700 hover:text-amber-900 transition"
+                >
+                    ← Continue Shopping
+                </a>
             </div>
 
         </div>
 
 
         <!-- ORDER SUMMARY -->
-
         <div>
 
             <div class="border border-gray-200 bg-white p-6">
@@ -52,7 +75,19 @@ Shopping Cart
                 </h2>
 
 
-                <div class="flex justify-between text-sm mb-4">
+                <!-- PRODUCT SUMMARY -->
+                <div
+                    id="order-summary-items"
+                    class="space-y-4 pb-5 border-b border-gray-200"
+                >
+                    <p class="text-sm text-gray-400">
+                        Loading...
+                    </p>
+                </div>
+
+
+                <!-- SUBTOTAL -->
+                <div class="flex justify-between text-sm mt-6 mb-4">
 
                     <span class="text-gray-500">
                         Subtotal
@@ -65,20 +100,22 @@ Shopping Cart
                 </div>
 
 
+                <!-- SHIPPING -->
                 <div class="flex justify-between text-sm mb-4">
 
                     <span class="text-gray-500">
                         Shipping
                     </span>
 
-                    <span>
+                    <span class="text-emerald-700">
                         Free
                     </span>
 
                 </div>
 
 
-                <div class="border-t border-gray-200 pt-4">
+                <!-- TOTAL -->
+                <div class="border-t border-gray-200 pt-5">
 
                     <div class="flex justify-between text-lg font-medium">
 
@@ -95,12 +132,15 @@ Shopping Cart
                 </div>
 
 
+                <!-- CHECKOUT -->
                 <button
                     type="button"
-                    class="w-full bg-slate-800 text-white py-3 mt-6 text-sm hover:bg-slate-700"
+                    class="w-full bg-slate-800 text-white py-3 mt-6 text-sm font-medium hover:bg-slate-700 transition"
                 >
                     Proceed to Checkout
                 </button>
+
+            
 
             </div>
 
@@ -112,6 +152,10 @@ Shopping Cart
 
 
 <script>
+
+/* =========================================================
+   JWT
+========================================================= */
 
 function getAccessToken() {
 
@@ -125,11 +169,8 @@ async function refreshAccessToken() {
     const refreshToken =
         localStorage.getItem("refresh_token");
 
-
     if (!refreshToken) {
-
         return null;
-
     }
 
 
@@ -150,9 +191,7 @@ async function refreshAccessToken() {
 
 
     if (!response.ok) {
-
         return null;
-
     }
 
 
@@ -171,6 +210,10 @@ async function refreshAccessToken() {
 }
 
 
+/* =========================================================
+   CART REQUEST
+========================================================= */
+
 async function cartRequest(
     url,
     options = {}
@@ -181,12 +224,10 @@ async function cartRequest(
 
 
     options.headers = {
-
         ...(options.headers || {}),
 
         "Authorization":
             "Bearer " + token
-
     };
 
 
@@ -197,6 +238,11 @@ async function cartRequest(
         );
 
 
+    /*
+        If access token expired,
+        refresh it and try again.
+    */
+
     if (response.status === 401) {
 
         token =
@@ -204,19 +250,15 @@ async function cartRequest(
 
 
         if (!token) {
-
             return response;
-
         }
 
 
         options.headers = {
-
             ...(options.headers || {}),
 
             "Authorization":
                 "Bearer " + token
-
         };
 
 
@@ -234,11 +276,21 @@ async function cartRequest(
 }
 
 
+/* =========================================================
+   LOAD CART
+========================================================= */
+
 async function loadCart() {
 
     const container =
         document.getElementById(
             "api-cart-items"
+        );
+
+
+    const summaryContainer =
+        document.getElementById(
+            "order-summary-items"
         );
 
 
@@ -265,26 +317,45 @@ async function loadCart() {
             data
         );
 
+        const cartCount = document.getElementById("cart-count");
+
+        if (cartCount) {
+            const totalQuantity = data.items.reduce(
+                (total, item) => total + Number(item.quantity),
+                0
+            );
+
+            cartCount.textContent = totalQuantity;
+        }
+
 
         if (!response.ok) {
 
             container.innerHTML = `
-
                 <p class="text-red-500">
                     Unable to load cart.
                 </p>
-
             `;
 
-            return;
+            summaryContainer.innerHTML = "";
 
+            return;
         }
 
 
         container.innerHTML = "";
 
+        summaryContainer.innerHTML = "";
 
-        if (data.items.length === 0) {
+
+        /* =================================================
+           EMPTY CART
+        ================================================= */
+
+        if (
+            !data.items ||
+            data.items.length === 0
+        ) {
 
             container.innerHTML = `
 
@@ -307,6 +378,13 @@ async function loadCart() {
             `;
 
 
+            summaryContainer.innerHTML = `
+                <p class="text-sm text-gray-400">
+                    No items
+                </p>
+            `;
+
+
             document.getElementById(
                 "subtotal"
             ).textContent = "Rs. 0";
@@ -318,13 +396,25 @@ async function loadCart() {
 
 
             return;
-
         }
 
 
-        const items = [...data.items].sort((a, b) => a.id - b.id);
+        /* =================================================
+           SORT ITEMS
+        ================================================= */
 
-        items.forEach(function (item) {
+        const items =
+            [...data.items].sort(
+                (a, b) => a.id - b.id
+            );
+
+
+        /* =================================================
+           CART ITEMS
+        ================================================= */
+
+        items.forEach(
+            function(item) {
 
                 const cartItem =
                     document.createElement(
@@ -333,7 +423,17 @@ async function loadCart() {
 
 
                 cartItem.className =
-                    "cart-item border border-gray-200 bg-white p-5 flex items-center justify-between";
+    `
+    cart-item
+    border-b
+    border-gray-200
+    py-6
+    grid
+    grid-cols-1
+    lg:grid-cols-[minmax(0,1fr)_140px_140px_40px]
+    gap-5
+    items-center
+    `;
 
 
                 cartItem.dataset.itemId =
@@ -350,90 +450,132 @@ async function loadCart() {
 
                 cartItem.innerHTML = `
 
-                    <div class="flex items-center gap-5">
+                    <!-- PRODUCT -->
+                    <div class="flex items-center gap-4 min-w-0">
 
-                        <div class="w-24 h-24 bg-gray-100 flex-shrink-0">
+                        <!-- IMAGE -->
+                        <div
+                            class="w-20 h-24 bg-gray-100 flex-shrink-0"
+                        >
 
                             ${
                                 item.image
+
                                 ?
 
                                 `
-
+                                <div class="w-20 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
                                     <img
                                         src="${item.image}"
                                         alt="${item.product}"
-                                        class="w-full h-full object-contain"
+                                        class="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-105"
+                                        
                                     >
-
+                                </div>    
                                 `
 
                                 :
 
                                 `
-
-                                    <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                        No Image
-                                    </div>
-
+                                <div
+                                    class="w-full h-full flex items-center justify-center text-xs text-gray-400"
+                                >
+                                    No Image
+                                </div>
                                 `
                             }
 
                         </div>
 
 
-                        <div>
+                        <!-- PRODUCT INFO -->
+                        <div class="min-w-0">
 
-                            <h3 class="text-lg font-medium">
+                            <h3
+                                class="text-base font-medium text-gray-900"
+                            >
                                 ${item.product}
                             </h3>
 
 
-                            <p class="text-sm text-gray-500 mt-1">
+                            <p
+                                class="text-sm text-gray-500 mt-1"
+                            >
                                 Rs. ${item.price}
                             </p>
+
+
+                           
 
                         </div>
 
                     </div>
 
 
-                    <div class="flex items-center gap-4">
+                    <!-- QUANTITY -->
+                    <div
+    class="flex items-center justify-center border border-gray-200 w-full h-9"
+>
 
                         <button
                             type="button"
-                            class="decrease border border-gray-300 w-8 h-8"
+                            class="decrease w-9 h-9 flex items-center justify-center hover:bg-gray-50"
+                            aria-label="Decrease quantity"
                         >
                             −
                         </button>
 
 
-                        <span class="quantity">
+                        <span
+                            class="quantity w-9 text-center text-sm"
+                        >
                             ${item.quantity}
                         </span>
 
 
                         <button
                             type="button"
-                            class="increase border border-gray-300 w-8 h-8"
+                            class="increase w-9 h-9 flex items-center justify-center hover:bg-gray-50"
+                            aria-label="Increase quantity"
                         >
                             +
                         </button>
 
-
-                        <span class="text-sm font-medium">
-                            Rs. ${item.item_total}
-                        </span>
-
-
-                        <button
-                            type="button"
-                            class="delete text-gray-500 text-xl"
-                        >
-                            🗑
-                        </button>
-
                     </div>
+
+
+                    <!-- ITEM TOTAL -->
+                    <span
+    class="text-sm font-medium text-center w-full"
+>
+    Rs. ${item.item_total}
+</span>
+
+
+                    <!-- DELETE -->
+                    <button
+                        type="button"
+                        class="delete text-gray-400 hover:text-red-600 transition"
+                        title="Remove from cart"
+                        aria-label="Remove from cart"
+                    >
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="w-5 h-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0115.916 21H8.084a2.25 2.25 0 01-2.244-1.327L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.57 0c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0C7.91 2.148 7 3.132 7 4.312v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                            />
+                        </svg>
+
+                    </button>
 
                 `;
 
@@ -442,9 +584,50 @@ async function loadCart() {
                     cartItem
                 );
 
+
+                /* =================================================
+                   ORDER SUMMARY ITEM
+                ================================================= */
+
+                const summaryItem =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                summaryItem.className =
+                    "flex justify-between gap-4 text-sm";
+
+
+                summaryItem.innerHTML = `
+
+                    <span
+                        class="text-gray-500 truncate"
+                        title="${item.product}"
+                    >
+                        ${item.product}
+                    </span>
+
+                    <span
+                        class="font-medium whitespace-nowrap"
+                    >
+                        Rs. ${item.item_total}
+                    </span>
+
+                `;
+
+
+                summaryContainer.appendChild(
+                    summaryItem
+                );
+
             }
         );
 
+
+        /* =================================================
+           TOTALS
+        ================================================= */
 
         document.getElementById(
             "subtotal"
@@ -459,6 +642,7 @@ async function loadCart() {
 
     }
 
+
     catch (error) {
 
         console.error(
@@ -470,7 +654,10 @@ async function loadCart() {
         container.innerHTML = `
 
             <p class="text-red-500">
-                Something went wrong while loading the cart.
+
+                Something went wrong
+                while loading the cart.
+
             </p>
 
         `;
@@ -479,6 +666,10 @@ async function loadCart() {
 
 }
 
+
+/* =========================================================
+   UPDATE QUANTITY
+========================================================= */
 
 async function updateQuantity(
     cartItem,
@@ -506,9 +697,7 @@ async function updateQuantity(
 
 
     if (newQuantity < 1) {
-
         return;
-
     }
 
 
@@ -522,10 +711,8 @@ async function updateQuantity(
                     method: "PATCH",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body: JSON.stringify({
@@ -569,13 +756,13 @@ async function updateQuantity(
             );
 
             return;
-
         }
 
 
         await loadCart();
 
     }
+
 
     catch (error) {
 
@@ -589,6 +776,10 @@ async function updateQuantity(
 }
 
 
+/* =========================================================
+   DELETE CART ITEM
+========================================================= */
+
 async function deleteCartItem(
     cartItem,
     itemId
@@ -601,9 +792,7 @@ async function deleteCartItem(
 
 
     if (!confirmed) {
-
         return;
-
     }
 
 
@@ -617,10 +806,8 @@ async function deleteCartItem(
                     method: "DELETE",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body: JSON.stringify({
@@ -661,13 +848,13 @@ async function deleteCartItem(
             );
 
             return;
-
         }
 
 
         await loadCart();
 
     }
+
 
     catch (error) {
 
@@ -681,9 +868,9 @@ async function deleteCartItem(
 }
 
 
-/*
-    CART BUTTON HANDLING
-*/
+/* =========================================================
+   CART BUTTON HANDLING
+========================================================= */
 
 const container =
     document.getElementById(
@@ -696,9 +883,9 @@ container.addEventListener(
     function(event) {
 
 
-        /*
-            INCREASE
-        */
+        /* =========================
+           INCREASE
+        ========================= */
 
         const increaseButton =
             event.target.closest(
@@ -729,9 +916,9 @@ container.addEventListener(
         }
 
 
-        /*
-            DECREASE
-        */
+        /* =========================
+           DECREASE
+        ========================= */
 
         const decreaseButton =
             event.target.closest(
@@ -762,9 +949,9 @@ container.addEventListener(
         }
 
 
-        /*
-            DELETE
-        */
+        /* =========================
+           DELETE
+        ========================= */
 
         const deleteButton =
             event.target.closest(
@@ -781,9 +968,7 @@ container.addEventListener(
 
 
             if (!cartItem) {
-
                 return;
-
             }
 
 
@@ -801,6 +986,10 @@ container.addEventListener(
     }
 );
 
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
 
 loadCart();
 

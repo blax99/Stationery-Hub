@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}
@@ -5,11 +6,9 @@ Wishlist
 {% endblock %}
 
 {% block content %}
-
 <div class="max-w-7xl mx-auto px-6 py-10">
 
     <div class="flex items-center justify-between mb-10">
-
         <div>
             <h1 class="text-3xl font-normal">
                 My Wishlist
@@ -23,17 +22,21 @@ Wishlist
         <span id="wishlist-count" class="text-sm text-gray-500">
             0 items
         </span>
-
     </div>
 
 
+    <!-- Wishlist Items -->
     <section
         id="wishlist-items"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
     >
+        <p class="col-span-full text-center text-gray-500 py-20">
+            Loading wishlist...
+        </p>
     </section>
 
 
+    <!-- Empty Wishlist -->
     <div id="empty-wishlist" class="text-center py-20 hidden">
 
         <div class="text-5xl mb-5">
@@ -61,266 +64,441 @@ Wishlist
 
 
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const token = localStorage.getItem("access_token");
 
-    const wishlistItems = document.getElementById("wishlist-items");
-    const emptyWishlist = document.getElementById("empty-wishlist");
-    const wishlistCount = document.getElementById("wishlist-count");
+    const wishlistItems =
+        document.getElementById("wishlist-items");
 
+    const emptyWishlist =
+        document.getElementById("empty-wishlist");
+
+    const wishlistCount =
+        document.getElementById("wishlist-count");
+
+
+    /*
+    ========================================
+    UPDATE WISHLIST COUNT
+    ========================================
+    */
+
+    function updateWishlistCount(count) {
+        wishlistCount.textContent =
+            count + " items";
+    }
+
+
+    /*
+    ========================================
+    SHOW EMPTY WISHLIST
+    ========================================
+    */
+
+    function showEmptyWishlist() {
+        emptyWishlist.classList.remove("hidden");
+    }
+
+
+    /*
+    ========================================
+    HIDE EMPTY WISHLIST
+    ========================================
+    */
+
+    function hideEmptyWishlist() {
+        emptyWishlist.classList.add("hidden");
+    }
+
+
+    /*
+    ========================================
+    LOAD WISHLIST
+    ========================================
+    */
+
+    function loadWishlist() {
+
+        fetch("/api/wishlist/", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+
+        .then(function (response) {
+
+            if (!response.ok) {
+                throw new Error(
+                    "Failed to load wishlist"
+                );
+            }
+
+            return response.json();
+        })
+
+        .then(function (data) {
+
+            wishlistItems.innerHTML = "";
+
+            updateWishlistCount(data.items.length);
+
+            const wishlistNavCount =
+                document.getElementById("wishlist-nav-count");
+
+            if(wishlistNavCount) {
+                wishlistNavCount.textContent = data.items.length;
+            }
+
+
+
+            if (data.items.length === 0) {
+                showEmptyWishlist();
+                return;
+            }
+
+            hideEmptyWishlist();
+
+            data.items.forEach(function (item) {
+                createWishlistCard(item);
+            });
+
+            setupRemoveButtons();
+            setupAddToCartButtons();
+
+        })
+
+        .catch(function (error) {
+
+            console.error(
+                "Wishlist error:",
+                error
+            );
+
+            wishlistItems.innerHTML = `
+                <p class="col-span-full text-center text-red-500 py-20">
+                    Failed to load wishlist.
+                </p>
+            `;
+        });
+    }
+
+
+    /*
+    ========================================
+    CREATE WISHLIST CARD
+    ========================================
+    */
+
+    function createWishlistCard(item) {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "wishlist-card border border-gray-200 bg-white relative";
+
+
+        const imageHTML = item.image
+            ?
+            `
+            <div class="w-full h-48 flex items-center justify-center overflow-hidden mb-4">
+                <img
+                    src="${item.image}"
+                    alt="${item.product}"
+                    class="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-105"
+                >
+            </div>
+            `
+            :
+            `
+                <div
+                    class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 mb-4"
+                >
+                    No Image
+                </div>
+            `;
+
+
+        const categoryHTML = item.category
+            ?
+            `
+                <p class="text-sm text-gray-500 mt-1">
+                    ${item.category}
+                </p>
+            `
+            :
+            "";
+
+
+        card.innerHTML = `
+
+            <div class="p-4">
+
+                ${imageHTML}
+
+                <h3 class="text-lg font-normal">
+                    ${item.product}
+                </h3>
+
+                ${categoryHTML}
+
+                <p class="text-lg mt-3">
+                    Rs. ${item.price}
+                </p>
+
+                <div class="mt-5">
+
+                    <button
+                        type="button"
+                        class="add-to-cart w-full bg-slate-800 text-white py-2 text-sm hover:bg-slate-700 transition"
+                        data-product-id="${item.product_id}"
+                    >
+                        Move to Cart
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Remove Wishlist -->
+
+            <button
+    type="button"
+    class="remove-wishlist absolute top-3 right-3
+           w-8 h-8 rounded-full
+           flex items-center justify-center
+           bg-gray-100 text-gray-500
+           hover:bg-red-50 hover:text-red-600
+           transition duration-200
+           text-lg font-medium"
+    data-item-id="${item.id}"
+    title="Remove from wishlist"
+>
+    ×
+</button>
+        `;
+
+
+        wishlistItems.appendChild(card);
+    }
+
+
+    /*
+    ========================================
+    REMOVE FROM WISHLIST
+    ========================================
+    */
+
+    function setupRemoveButtons() {
+
+        document
+            .querySelectorAll(".remove-wishlist")
+            .forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const itemId =
+                            this.dataset.itemId;
+
+
+                        fetch("/api/wishlist/", {
+                            method: "DELETE",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "Authorization":
+                                    "Bearer " + token
+                            },
+
+                            body: JSON.stringify({
+                                item_id: itemId
+                            })
+                        })
+
+                        .then(function (response) {
+
+                            if (!response.ok) {
+                                throw new Error(
+                                    "Failed to remove wishlist item"
+                                );
+                            }
+
+                            return response.json();
+                        })
+
+                        .then(function (data) {
+
+                            console.log(
+                                "Wishlist:",
+                                data
+                            );
+
+
+                            button
+                                .closest(".wishlist-card")
+                                .remove();
+
+
+                            const remainingItems =
+                                document.querySelectorAll(
+                                    ".remove-wishlist"
+                                ).length;
+
+
+                            updateWishlistCount(
+                                remainingItems
+                            );
+
+                            const wishlistNavCount =
+                                document.getElementById("wishlist-nav-count");
+
+                            if (wishlistNavCount) {
+                                wishlistNavCount.textContent =
+                                    remainingItems;
+                            }
+
+
+                            if (remainingItems === 0) {
+                                showEmptyWishlist();
+                            }
+
+                        })
+
+                        .catch(function (error) {
+
+                            console.error(
+                                "Remove wishlist error:",
+                                error
+                            );
+
+                        });
+                    }
+                );
+            });
+    }
+
+
+    /*
+    ========================================
+    ADD TO CART
+    ========================================
+    */
+
+    function setupAddToCartButtons() {
+
+        document
+            .querySelectorAll(".add-to-cart")
+            .forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const productId =
+                            this.dataset.productId;
+
+
+                        fetch("/api/cart/", {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "Authorization":
+                                    "Bearer " + token
+                            },
+
+                            body: JSON.stringify({
+                                product_id: productId,
+                                quantity: 1
+                            })
+                        })
+
+                        .then(function (response) {
+
+                            if (!response.ok) {
+                                throw new Error(
+                                    "Failed to add product to cart"
+                                );
+                            }
+
+                            return response.json();
+                        })
+
+                        .then(function (data) {
+
+                            console.log(
+                                "Cart:",
+                                data
+                            );
+
+
+                            button.textContent =
+                                "Added to Cart";
+
+
+                            button.classList.remove(
+                                "bg-slate-800",
+                                "hover:bg-slate-700"
+                            );
+
+
+                            button.classList.add(
+                                "bg-green-700"
+                            );
+
+                        })
+
+                        .catch(function (error) {
+
+                            console.error(
+                                "Add to cart error:",
+                                error
+                            );
+
+                        });
+                    }
+                );
+            });
+    }
+
+
+    /*
+    ========================================
+    CHECK LOGIN
+    ========================================
+    */
 
     if (!token) {
 
-        emptyWishlist.classList.remove("hidden");
+        wishlistItems.innerHTML = "";
+
+        updateWishlistCount(0);
+
+        showEmptyWishlist();
 
         return;
     }
 
 
-    // Load Wishlist
-    fetch("/api/wishlist/", {
-        method: "GET",
-        headers: {
-            "Authorization": "Bearer " + token
-        }
-    })
-
-    .then(function (response) {
-
-        if (!response.ok) {
-            throw new Error("Failed to load wishlist");
-        }
-
-        return response.json();
-    })
-
-    .then(function (data) {
-
-        wishlistItems.innerHTML = "";
-
-        wishlistCount.textContent =
-            data.items.length + " items";
-
-
-        if (data.items.length === 0) {
-
-            emptyWishlist.classList.remove("hidden");
-
-            return;
-        }
-
-
-        emptyWishlist.classList.add("hidden");
-
-
-        data.items.forEach(function (item) {
-
-            const card = document.createElement("div");
-
-            card.className =
-                "wishlist-card border border-gray-200 bg-white";
-
-
-            card.innerHTML = `
-
-                <div class="relative h-72 bg-gray-100">
-
-                    ${
-                        item.image
-                        ? `
-                            <img
-                                src="${item.image}"
-                                alt="${item.product}"
-                                class="w-full h-full object-contain"
-                            >
-                          `
-                        : ""
-                    }
-
-
-                    <button
-                        type="button"
-                        class="remove-wishlist absolute top-4 right-4 w-9 h-9 bg-white border border-gray-200 flex items-center justify-center text-xl hover:bg-gray-50"
-                        data-item-id="${item.id}"
-                    >
-                        ×
-                    </button>
-
-                </div>
-
-
-                <div class="p-5">
-
-                    <p class="text-xs tracking-[0.15em] text-gray-500">
-                        ${item.category || ""}
-                    </p>
-
-                    <h2 class="text-lg font-medium mt-2">
-                        ${item.product}
-                    </h2>
-
-                    <p class="text-lg mt-3">
-                        Rs. ${Number(item.price).toFixed(2)}
-                    </p>
-
-
-                    <button
-                        type="button"
-                        class="add-to-cart block w-full bg-slate-800 text-white py-3 mt-5 text-sm text-center hover:bg-slate-700 transition"
-                        data-product-id="${item.product_id}"
-                    >
-                        Add to Cart
-                    </button>
-
-                </div>
-
-            `;
-
-
-            wishlistItems.appendChild(card);
-
-        });
-
-
-        // Remove from Wishlist
-        document.querySelectorAll(".remove-wishlist").forEach(function (button) {
-
-            button.addEventListener("click", function () {
-
-                const itemId = this.dataset.itemId;
-
-
-                fetch("/api/wishlist/", {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + token
-                    },
-                    body: JSON.stringify({
-                        item_id: itemId
-                    })
-                })
-
-                .then(function (response) {
-
-                    if (!response.ok) {
-                        throw new Error("Failed to remove wishlist item");
-                    }
-
-                    return response.json();
-                })
-
-                .then(function (data) {
-
-                    console.log("Wishlist:", data);
-
-
-                    button.closest(".wishlist-card").remove();
-
-
-                    const remainingItems =
-                        document.querySelectorAll(".remove-wishlist").length;
-
-                    wishlistCount.textContent =
-                        remainingItems + " items";
-
-
-                    if (remainingItems === 0) {
-
-                        emptyWishlist.classList.remove("hidden");
-
-                    }
-
-                })
-
-                .catch(function (error) {
-
-                    console.error(
-                        "Remove wishlist error:",
-                        error
-                    );
-
-                });
-
-            });
-
-        });
-
-
-        // Add to Cart
-        document.querySelectorAll(".add-to-cart").forEach(function (button) {
-
-            button.addEventListener("click", function () {
-
-                const productId = this.dataset.productId;
-
-
-                fetch("/api/cart/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + token
-                    },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        quantity: 1
-                    })
-                })
-
-                .then(function (response) {
-
-                    if (!response.ok) {
-                        throw new Error("Failed to add product to cart");
-                    }
-
-                    return response.json();
-                })
-
-                .then(function (data) {
-
-                    console.log("Cart:", data);
-
-                    button.textContent = "Added to Cart";
-
-                    button.classList.remove(
-                        "bg-slate-800",
-                        "hover:bg-slate-700"
-                    );
-
-                    button.classList.add(
-                        "bg-green-700"
-                    );
-
-                })
-
-                .catch(function (error) {
-
-                    console.error(
-                        "Add to cart error:",
-                        error
-                    );
-
-                });
-
-            });
-
-        });
-
-    })
-
-    .catch(function (error) {
-
-        console.error(
-            "Wishlist error:",
-            error
-        );
-
-    });
+    /*
+    ========================================
+    START
+    ========================================
+    */
+
+    loadWishlist();
 
 });
-
 </script>
 
 {% endblock %}
+
