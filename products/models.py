@@ -36,6 +36,7 @@ class Products(models.Model):
         Category, on_delete=models.CASCADE, related_name='products'
     )
     name = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(
