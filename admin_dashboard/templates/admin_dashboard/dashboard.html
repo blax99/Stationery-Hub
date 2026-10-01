@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -66,6 +65,7 @@
         >
           <div>
             <h2 class="text-xl font-semibold text-gray-800">Admin Dashboard</h2>
+
             <p class="text-sm text-gray-500 mt-1">
               Stationery Hub management panel
             </p>
@@ -80,14 +80,8 @@
 
         <!-- Dashboard Content -->
         <section class="p-8">
-          <div
-            class="mb-8 rounded-2xl overflow-hidden relative bg-cover bg-center"
-            style="
-              background-image: url(&quot;https://img.magnific.com/free-photo/flat-lay-workstation-with-copy-space-stapler_23-2148430853.jpg&quot;);
-            "
-          >
-            <div class="absolute inset-0 bg-black/60"></div>
-
+          <!-- Dashboard Header -->
+          <div class="mb-8 rounded-2xl overflow-hidden relative bg-gray-800">
             <div class="relative p-8 text-white">
               <h2 class="text-3xl font-bold">Dashboard</h2>
 
@@ -99,6 +93,7 @@
 
           <!-- Statistics Cards -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Total Orders -->
             <div
               class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
@@ -109,6 +104,7 @@
               </h3>
             </div>
 
+            <!-- Total Revenue -->
             <div
               class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
@@ -119,6 +115,7 @@
               </h3>
             </div>
 
+            <!-- Customers -->
             <div
               class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
@@ -129,6 +126,7 @@
               </h3>
             </div>
 
+            <!-- Products -->
             <div
               class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
@@ -176,37 +174,45 @@
               </div>
 
               <div class="space-y-4">
+                <!-- Pending -->
                 <div
                   class="flex justify-between items-center bg-gray-50 rounded-lg px-4 py-3"
                 >
-                  <span class="text-gray-600">Pending</span>
+                  <span class="text-gray-600"> Pending </span>
+
                   <span class="font-semibold text-yellow-600">
                     {{ pending_orders }}
                   </span>
                 </div>
 
+                <!-- Processing -->
                 <div
                   class="flex justify-between items-center bg-gray-50 rounded-lg px-4 py-3"
                 >
-                  <span class="text-gray-600">Processing</span>
+                  <span class="text-gray-600"> Processing </span>
+
                   <span class="font-semibold text-blue-600">
                     {{ processing_orders }}
                   </span>
                 </div>
 
+                <!-- Completed -->
                 <div
                   class="flex justify-between items-center bg-gray-50 rounded-lg px-4 py-3"
                 >
-                  <span class="text-gray-600">Completed</span>
+                  <span class="text-gray-600"> Completed </span>
+
                   <span class="font-semibold text-green-600">
                     {{ completed_orders }}
                   </span>
                 </div>
 
+                <!-- Cancelled -->
                 <div
                   class="flex justify-between items-center bg-gray-50 rounded-lg px-4 py-3"
                 >
-                  <span class="text-gray-600">Cancelled</span>
+                  <span class="text-gray-600"> Cancelled </span>
+
                   <span class="font-semibold text-red-600">
                     {{ cancelled_orders }}
                   </span>
@@ -322,6 +328,7 @@
       </main>
     </div>
 
+    <!-- Sales Chart -->
     <script>
       const salesLabels = {{ sales_labels|safe }};
       const salesRevenue = {{ sales_revenue|safe }};
@@ -331,12 +338,15 @@
         y: salesRevenue,
         type: "scatter",
         mode: "lines+markers",
+
         line: {
           width: 3
         },
+
         marker: {
           size: 7
         },
+
         hovertemplate:
           "<b>%{x}</b><br>" +
           "Revenue: Rs. %{y:,.2f}" +
@@ -350,15 +360,19 @@
           t: 15,
           b: 45
         },
+
         xaxis: {
           title: "Date",
           automargin: true
         },
+
         yaxis: {
           title: "Revenue (Rs.)",
           automargin: true
         },
+
         showlegend: false,
+
         paper_bgcolor: "rgba(0,0,0,0)",
         plot_bgcolor: "rgba(0,0,0,0)"
       };
