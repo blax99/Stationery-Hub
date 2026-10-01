@@ -9,7 +9,9 @@ urlpatterns = [
     
     # Category filter routes
     path('category/<slug:category_slug>/', views.product_list, name='product_list_by_category'),
-    path('category/<slug:category_slug>/', views.product_list, name='category_detail'),
+
+    # Categories index route (Fixes the NoReverseMatch error for 'category_list')
+    path('categories/', views.product_list, name='category_list'),
     
     # Single product detail route: /products/<slug>/
     path('<slug:slug>/', views.product_detail, name='product_detail'),
