@@ -15,10 +15,29 @@
           <a href="#" class="hover:text-blue-600 transition">Home</a>
         </li>
         <li>
-          <a href="#" class="hover:text-blue-600 transition">Products</a>
+          <a href="{% url 'products:product_list' %}" class="hover:text-blue-600 transition">Products</a>
         </li>
-        <li>
-          <a href="#" class="hover:text-blue-600 transition">Categories</a>
+        <!-- Categories Dropdown Menu -->
+        <li class="relative group py-2">
+          <a href="{% url 'products:category_list' %}" class="hover:text-blue-600 transition flex items-center gap-1">
+            Categories
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </a>
+
+          <!-- Dropdown Box (Appears on Hover) -->
+          <div class="absolute left-0 top-full hidden group-hover:block w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+            {% for category in categories %}
+              <a 
+                href="{% url 'products:product_list_by_category' category.slug %}" 
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition"
+              >
+                {{ category.name }}
+              </a>
+            {% empty %}
+              <span class="block px-4 py-2 text-xs text-gray-400">No categories found</span>
+            {% endfor %}
+          </div>
         </li>
       </ul>
 
@@ -96,13 +115,13 @@
         </li>
 
         <li>
-          <a href="#" class="block hover:text-blue-600 transition">
+          <a href="{% url 'products:product_list' %}" class="block hover:text-blue-600 transition">
             Products
           </a>
         </li>
 
         <li>
-          <a href="#" class="block hover:text-blue-600 transition">
+          <a href="{% url 'products:category_list' %}" class="block hover:text-blue-600 transition">
             Categories
           </a>
         </li>
