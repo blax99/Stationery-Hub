@@ -248,7 +248,7 @@
                                         data-product-id="{{ product.id }}"
                                         title="Add to Wishlist"
                                     >
-
+                                        
                                         <svg
                                             class="w-4 h-4"
                                             fill="none"
@@ -444,68 +444,249 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const wishlistButtons = document.querySelectorAll(".wishlist-btn");
+    const token = localStorage.getItem("access_token");
 
+    if (!token) {
+        return;
+    }
+
+    // Store wishlist item IDs by product ID
+    const wishlistMap = new Map();
+
+
+    // Load current wishlist status
+    async function loadWishlistStatus() {
+        try {
+            const response = await fetch("/api/wishlist/", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            console.log("Wishlist data:", data);
+
+            if (!response.ok) {
+                return;
+            }
+
+            // Clear old data
+            wishlistMap.clear();
+
+            // Store:
+            // product ID -> wishlist item ID
+            data.items.forEach(function (item) {
+                wishlistMap.set(
+                    String(item.product_id),
+                    item.id
+                );
+            });
+
+            // Update all hearts
+            wishlistButtons.forEach(function (button) {
+
+                const productId = String(
+                    button.dataset.productId
+                );
+
+                if (wishlistMap.has(productId)) {
+                    setWishlistActive(button);
+                } else {
+                    setWishlistInactive(button);
+                }
+            });
+
+        } catch (error) {
+            console.error(
+                "Error loading wishlist:",
+                error
+            );
+        }
+    }
+
+
+    // Make heart red/filled
+    function setWishlistActive(button) {
+
+        button.classList.remove("text-gray-400");
+        button.classList.add("text-red-500");
+
+        const icon = button.querySelector("i");
+
+        if (icon) {
+            icon.classList.remove("fa-regular");
+            icon.classList.add("fa-solid");
+        }
+
+        button.title = "Remove from Wishlist";
+    }
+
+
+    // Make heart gray/outline
+    function setWishlistInactive(button) {
+
+        button.classList.remove("text-red-500");
+        button.classList.add("text-gray-400");
+
+        const icon = button.querySelector("i");
+
+        if (icon) {
+            icon.classList.remove("fa-solid");
+            icon.classList.add("fa-regular");
+        }
+
+        button.title = "Add to Wishlist";
+    }
+
+
+    // Handle wishlist button clicks
     wishlistButtons.forEach(function (button) {
 
         button.addEventListener("click", async function () {
 
-            const productId = this.dataset.productId;
-            const token = localStorage.getItem("access_token");
+            const productId = String(
+                this.dataset.productId
+            );
 
-            console.log("Wishlist product ID:", productId);
+            const wishlistItemId =
+                wishlistMap.get(productId);
 
-            if (!token) {
-                window.location.href = "{% url 'login-page' %}";
-                return;
-            }
+            this.disabled = true;
+
 
             try {
 
-                this.disabled = true;
+                // --------------------------------
+                // REMOVE FROM WISHLIST
+                // --------------------------------
+                if (wishlistItemId) {
 
-                const response = await fetch("/api/wishlist/", {
-                    method: "POST",
+                    console.log(
+                        "Removing wishlist item:",
+                        wishlistItemId
+                    );
 
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
+                    const response = await fetch(
+                        "/api/wishlist/",
+                        {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+                                "Authorization":
+                                    `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                item_id: wishlistItemId
+                            })
+                        }
+                    );
 
-                    body: JSON.stringify({
-                        product_id: productId
-                    })
-                });
+                    const data = await response.json();
 
-                const data = await response.json();
-
-                console.log(
-                    "Wishlist response:",
-                    response.status,
-                    data
-                );
-
-                if (response.ok) {
-
-                    this.classList.remove("text-gray-400");
-                    this.classList.add("text-red-500");
-
-                    if (typeof updateWishlistNavCount === "function") {
-                        await updateWishlistNavCount();
-                    }
-
-                } else {
-
-                    console.error(
-                        "Wishlist error:",
+                    console.log(
+                        "Remove wishlist response:",
+                        response.status,
                         data
                     );
 
-                    alert(
-                        data.error ||
-                        data.message ||
-                        "Unable to add product to wishlist."
+
+                    if (response.ok && data.success) {
+
+                        // Remove from local map
+                        wishlistMap.delete(productId);
+
+                        // Change heart back to gray
+                        setWishlistInactive(this);
+
+                        // Update navbar count
+                        if (
+                            typeof updateWishlistNavCount ===
+                            "function"
+                        ) {
+                            await updateWishlistNavCount();
+                        }
+
+                    } else {
+
+                        alert(
+                            data.error ||
+                            data.message ||
+                            "Unable to remove product from wishlist."
+                        );
+                    }
+
+
+                // --------------------------------
+                // ADD TO WISHLIST
+                // --------------------------------
+                } else {
+
+                    console.log(
+                        "Adding wishlist product:",
+                        productId
                     );
 
+                    const response = await fetch(
+                        "/api/wishlist/",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+                                "Authorization":
+                                    `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                product_id: productId
+                            })
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    console.log(
+                        "Add wishlist response:",
+                        response.status,
+                        data
+                    );
+
+
+                    if (response.ok && data.success) {
+
+                        /*
+                         * The API returns the wishlist item ID
+                         * when a new item is created.
+                         */
+                        if (data.wishlist_item_id) {
+
+                            wishlistMap.set(
+                                productId,
+                                data.wishlist_item_id
+                            );
+                        }
+
+                        // Make heart red
+                        setWishlistActive(this);
+
+                        // Update navbar count
+                        if (
+                            typeof updateWishlistNavCount ===
+                            "function"
+                        ) {
+                            await updateWishlistNavCount();
+                        }
+
+                    } else {
+
+                        alert(
+                            data.error ||
+                            data.message ||
+                            "Unable to add product to wishlist."
+                        );
+                    }
                 }
 
             } catch (error) {
@@ -516,18 +697,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 alert(
-                    "Unable to add product to wishlist."
+                    "Unable to update wishlist."
                 );
 
             } finally {
 
                 this.disabled = false;
-
             }
-
         });
-
     });
+
+
+    // Load wishlist when page opens
+    loadWishlistStatus();
 
 });
 </script>
