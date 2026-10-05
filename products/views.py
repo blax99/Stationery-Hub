@@ -19,7 +19,7 @@ def product_list(request, category_slug=None):
         'categories': categories,
         'products': products,
     }
-    return render(request, 'products/list.html', context)
+    return render(request, 'products/product_list.html', context)
 
 
 def product_detail(request, slug):
@@ -36,4 +36,4 @@ def product_detail(request, slug):
         'product': product,
         'related_products': related_products,
     }
-    return render(request, 'products/detail.html', context)
+    return render(request, 'products/product_detail.html', context)
