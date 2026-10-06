@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - Stationery Hub{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto px-4 py-16 text-center">
+    <div class="bg-white rounded-lg shadow p-10">
+
+        {% if order.payment_status == 'paid' %}
+
+            <div class="text-green-600 text-5xl mb-6">✓</div>
+
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                Order Confirmed!
+            </h1>
+
+            <p class="text-gray-600 mb-6">
+                Thank you for your order. Your payment was successful and your order has been placed.
+            </p>
+
+        {% elif order.payment_status == 'failed' %}
+
+            <div class="text-red-600 text-5xl mb-6">✕</div>
+
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                Payment Failed
+            </h1>
+
+            <p class="text-gray-600 mb-6">
+                Something went wrong with your payment. You can try again below.
+            </p>
+
+        {% else %}
+
+            <div class="text-yellow-500 text-5xl mb-6">⏳</div>
+
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                Order Placed — Payment Pending
+            </h1>
+
+            <p class="text-gray-600 mb-6">
+                Your order has been created. Please complete payment to confirm it.
+            </p>
+
+        {% endif %}
+
+        <div class="border-t border-gray-200 pt-6 mb-6">
+
+            <p class="text-gray-600">
+                Order Number
+            </p>
+
+            <p class="text-xl font-semibold text-gray-800">
+                #ORD-{{ order.id|stringformat:"04d" }}
+            </p>
+
+            <p class="text-gray-600 mt-4">
+                Total Amount
+            </p>
+
+            <p class="text-xl font-semibold text-gray-800">
+                Rs. {{ order.total_amount }}
+            </p>
+
+        </div>
+
+        {% if order.payment_status != 'paid' %}
+
+            <button
+                onclick="payWithKhalti({{ order.id }})"
+                class="inline-block bg-purple-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-purple-700 transition duration-200 mb-4"
+            >
+                Pay with Khalti
+            </button>
+
+            <br>
+
+        {% endif %}
+
+        <a
+            href="/"
+            class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200"
+        >
+            Continue Shopping
+        </a>
+
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+}
+
+async function payWithKhalti(orderId) {
+    const res = await fetch('/payments/initiate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            order_id: orderId
+        })
+    });
+
+    const data = await res.json();
+
+    if (data.payment_url) {
+        window.location.href = data.payment_url;
+    } else {
+        alert(
+            data.error ||
+            "Payment failed to start. Please try again."
+        );
+    }
+}
+</script>
+
+{% endblock %}

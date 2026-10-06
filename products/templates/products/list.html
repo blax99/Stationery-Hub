@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if current_category %}{{ current_category.name }} –{% endif %} Products | Stationery Hub
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+    <aside class="md:col-span-1">
+        <p class="font-mono text-[11px] uppercase tracking-widest text-ink-light mb-2">Index</p>
+        <nav>
+            <a href="{% url 'products:product_list' %}"
+               class="catalog-tab {% if not current_category %}bg-ink text-paper{% else %}bg-paper-deep text-ink hover:bg-manila-border{% endif %}">
+                ALL ITEMS
+            </a>
+            {% for category in categories %}
+            <!-- FIXED THIS LINE BELOW: Changed 'category_detail' to 'product_list_by_category' -->
+            <a href="{% url 'products:product_list_by_category' category.slug %}"
+               class="catalog-tab {% if current_category.slug == category.slug %}bg-ink text-paper{% else %}bg-paper-deep text-ink hover:bg-manila-border{% endif %}">
+                {{ category.name|upper }}
+            </a>
+            {% endfor %}
+        </nav>
+    </aside>
+
+    <section class="md:col-span-3">
+        <h1 class="font-display text-3xl font-semibold mb-4">
+            {{ current_category.name|default:"All Items" }}
+        </h1>
+
+        <form method="get" class="flex items-end gap-3 mb-6">
+            <div class="flex-1">
+                <label class="font-mono text-[10px] uppercase tracking-widest text-ink-light">Search the catalog</label>
+                <input type="text" name="q" value="{{ query }}" placeholder="Diary, gel pen, desk mat..."
+                       class="w-full bg-transparent border-0 border-b-2 border-ink font-mono text-sm py-1 focus:outline-none focus:border-accent-gold">
+            </div>
+            <select name="sort" onchange="this.form.submit()"
+                    class="font-mono text-xs border-2 border-ink bg-paper-card px-2 py-2 rounded-sm">
+                <option value="newest" {% if sort_key == "newest" %}selected{% endif %}>NEWEST</option>
+                <option value="price_asc" {% if sort_key == "price_asc" %}selected{% endif %}>PRICE &uarr;</option>
+                <option value="price_desc" {% if sort_key == "price_desc" %}selected{% endif %}>PRICE &darr;</option>
+                <option value="name" {% if sort_key == "name" %}selected{% endif %}>NAME A-Z</option>
+            </select>
+            <button type="submit" class="font-mono text-xs uppercase bg-ink text-paper px-4 py-2 rounded-sm hover:bg-ink-light">
+                Find
+            </button>
+        </form>
+
+        {% if query %}
+        <p class="font-mono text-xs text-ink-light mb-4">
+            RESULTS FOR "{{ query }}" &middot; <a href="?sort={{ sort_key }}" class="underline">clear</a>
+        </p>
+        {% endif %}
+
+        {% if products %}
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            {% for product in products %}
+            <a href="{% url 'products:product_detail' product.slug %}"
+               class="group relative block bg-paper-card border border-manila-border rounded-sm p-3 pt-5 hover:shadow-md hover:-translate-y-0.5 transition">
+
+                <span class="price-tag">${{ product.price }}</span>
+
+                <div class="aspect-square bg-paper-deep/40 rounded-sm overflow-hidden mb-3">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                         class="w-full h-full object-cover group-hover:scale-105 transition">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-ink-light text-xs font-mono">NO IMAGE</div>
+                    {% endif %}
+                </div>
+
+                <p class="font-display text-base font-semibold text-ink truncate mb-2">{{ product.name }}</p>
+
+                {% if product.in_stock %}
+                <span class="stamp stamp-in-stock">IN STOCK</span>
+                {% else %}
+                <span class="stamp stamp-out-of-stock">SOLD OUT</span>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if products.has_other_pages %}
+        <div class="flex justify-center gap-2 mt-8 font-mono text-xs">
+            {% if products.has_previous %}
+            <a href="?page={{ products.previous_page_number }}&q={{ query }}&sort={{ sort_key }}" class="px-3 py-1 border border-ink rounded-sm hover:bg-paper-deep">PREV</a>
+            {% endif %}
+            <span class="px-3 py-1 text-ink-light">PAGE {{ products.number }} / {{ products.paginator.num_pages }}</span>
+            {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}&q={{ query }}&sort={{ sort_key }}" class="px-3 py-1 border border-ink rounded-sm hover:bg-paper-deep">NEXT</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <p class="font-mono text-sm text-ink-light">No items found in this drawer of the catalog yet.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

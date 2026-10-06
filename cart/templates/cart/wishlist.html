@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}
+Wishlist
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- Wishlist Header -->
+    <div class="flex items-center justify-between mb-10">
+
+        <div>
+            <h1 class="text-3xl font-normal">
+                My Wishlist
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-2">
+                Products you've saved for later
+            </p>
+        </div>
+
+        <span id="wishlist-count" class="text-sm text-gray-500">
+            3 items
+        </span>
+
+    </div>
+
+
+    <!-- Wishlist Items -->
+    <section id="wishlist-items" class="space-y-0">
+
+
+        <!-- Product 1 -->
+        <div
+            class="wishlist-item flex items-center gap-6 py-8 border-t border-gray-200"
+            data-price="34.50"
+        >
+
+            <!-- Product Image -->
+            <div class="w-28 h-32 bg-gray-200 shrink-0">
+
+                <img
+                    src="https://images.unsplash.com/photo-1517842645767-c639042777db?w=300"
+                    alt="Staedtler Watercolor Pencils"
+                    class="w-full h-full object-cover"
+                >
+
+            </div>
+
+
+            <!-- Product Information -->
+            <div class="flex-1">
+
+                <p class="text-xs tracking-[0.2em] text-gray-500">
+                    STAEDTLER
+                </p>
+
+                <h2 class="text-lg font-medium mt-2">
+                    Staedtler Watercolor Pencils 36-Set
+                </h2>
+
+                <p class="text-sm text-amber-700 mt-2">
+                    On Sale
+                </p>
+
+                <p class="text-lg mt-4">
+                    $34.50
+                </p>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+
+                <button
+                    type="button"
+                    class="add-to-cart bg-slate-800 text-white px-6 py-3 text-sm hover:bg-slate-700 transition"
+                >
+                    Add to Cart
+                </button>
+
+                <button
+                    type="button"
+                    class="remove-wishlist text-gray-500 text-xl px-3 hover:text-red-600 transition"
+                    aria-label="Remove from wishlist"
+                >
+                    ♡
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Product 2 -->
+        <div
+            class="wishlist-item flex items-center gap-6 py-8 border-t border-gray-200"
+            data-price="16.00"
+        >
+
+            <!-- Product Image -->
+            <div class="w-28 h-32 bg-gray-200 shrink-0">
+
+                <img
+                    src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300"
+                    alt="Midori Notebook"
+                    class="w-full h-full object-cover"
+                >
+
+            </div>
+
+
+            <!-- Product Information -->
+            <div class="flex-1">
+
+                <p class="text-xs tracking-[0.2em] text-gray-500">
+                    MIDORI
+                </p>
+
+                <h2 class="text-lg font-medium mt-2">
+                    Midori MD Notebook A5 Blank
+                </h2>
+
+                <p class="text-lg mt-4">
+                    $16.00
+                </p>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+
+                <button
+                    type="button"
+                    class="add-to-cart bg-slate-800 text-white px-6 py-3 text-sm hover:bg-slate-700 transition"
+                >
+                    Add to Cart
+                </button>
+
+                <button
+                    type="button"
+                    class="remove-wishlist text-gray-500 text-xl px-3 hover:text-red-600 transition"
+                    aria-label="Remove from wishlist"
+                >
+                    ♡
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Product 3 -->
+        <div
+            class="wishlist-item flex items-center gap-6 py-8 border-t border-b border-gray-200"
+            data-price="31.99"
+        >
+
+            <!-- Product Image -->
+            <div class="w-28 h-32 bg-gray-200 shrink-0">
+
+                <img
+                    src="https://images.unsplash.com/photo-1585336139667-3b7d7f1a4e0a?w=300"
+                    alt="Lamy Safari Fountain Pen"
+                    class="w-full h-full object-cover"
+                >
+
+            </div>
+
+
+            <!-- Product Information -->
+            <div class="flex-1">
+
+                <p class="text-xs tracking-[0.2em] text-gray-500">
+                    LAMY
+                </p>
+
+                <h2 class="text-lg font-medium mt-2">
+                    Lamy Safari Fountain Pen — Charcoal
+                </h2>
+
+                <p class="text-lg mt-4">
+                    $31.99
+                </p>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+
+                <button
+                    type="button"
+                    class="add-to-cart bg-slate-800 text-white px-6 py-3 text-sm hover:bg-slate-700 transition"
+                >
+                    Add to Cart
+                </button>
+
+                <button
+                    type="button"
+                    class="remove-wishlist text-gray-500 text-xl px-3 hover:text-red-600 transition"
+                    aria-label="Remove from wishlist"
+                >
+                    ♡
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- Empty Wishlist -->
+    <div
+        id="empty-wishlist"
+        class="hidden text-center py-20"
+    >
+
+        <div class="text-5xl mb-5">
+            ♡
+        </div>
+
+        <h2 class="text-2xl font-normal">
+            Your wishlist is empty
+        </h2>
+
+        <p class="text-gray-500 mt-3">
+            Save products you love and find them here later.
+        </p>
+
+        <a
+            href="#"
+            class="inline-block bg-slate-800 text-white px-6 py-3 mt-6 text-sm hover:bg-slate-700 transition"
+        >
+            Continue Shopping
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

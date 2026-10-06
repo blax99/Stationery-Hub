@@ -15,6 +15,8 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
+  
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'orders',
     'payments',
     'home',
+    'admin_dashboard',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -65,6 +68,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
+
 
 
 MIDDLEWARE = [
