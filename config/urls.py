@@ -1,3 +1,4 @@
+
 # """
 # URL configuration for config project.
 
@@ -27,6 +28,7 @@
 #     path('api/payments/', include('payments.urls')),
 # ]
 
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -38,12 +40,13 @@ urlpatterns = [
     path('products/', include('products.urls')),  # Direct route for HTML views
     path('api/users/', include('users.urls')),
     path('api/cart/', include('cart.api_urls')),
+    path('api/cart/', include('cart.urls')),
+
     path('api/orders/', include('orders.urls')),
     path('api/payments/', include('payments.urls')),
     path('cart/', include('cart.urls')),
     path("api/wishlist/", include("cart.wishlist_api_urls")),
 ]
-
 
 # Serve uploaded media files locally in debug mode
 if settings.DEBUG:

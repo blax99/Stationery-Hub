@@ -1,5 +1,5 @@
-
 <nav class="bg-white shadow-md px-4 sm:px-6 py-4">
+
     <div class="max-w-7xl mx-auto">
 
         <!-- Main Navbar -->
@@ -36,6 +36,7 @@
 
                 <!-- Categories -->
                 <li class="relative group">
+
                     <button
                         type="button"
                         class="hover:text-blue-600 transition flex items-center gap-1"
@@ -47,6 +48,7 @@
                     <div
                         class="absolute left-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-2 hidden group-hover:block z-50"
                     >
+
                         <a
                             href="{% url 'products:product_list' %}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
@@ -66,7 +68,9 @@
                                 No categories
                             </span>
                         {% endfor %}
+
                     </div>
+
                 </li>
 
             </ul>
@@ -107,17 +111,14 @@
                     aria-label="Wishlist"
                     title="Wishlist"
                 >
+
                     <i class="fa-regular fa-heart"></i>
+
                     <span
                         id="wishlist-nav-count"
-                        class="absolute -top-2 -right-2
-                        min-w-4 h-4 px-1
-                        bg-red-500 text-white
-                        rounded-full
-                        text-[10px]
-                        flex items-center justify-center"
-                      >
-                          0
+                        class="absolute -top-2 -right-2 min-w-4 h-4 px-1 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center"
+                    >
+                        0
                     </span>
 
                 </a>
@@ -129,15 +130,16 @@
                     aria-label="Cart"
                     title="Cart"
                 >
+
                     <i class="fa-solid fa-cart-shopping"></i>
 
-                    <!-- Cart count will be connected later -->
                     <span
                         id="cart-count"
                         class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
                     >
                         0
                     </span>
+
                 </a>
 
                 <!-- Sign In -->
@@ -159,6 +161,7 @@
                 </button>
 
             </div>
+
         </div>
 
         <!-- Mobile Navigation -->
@@ -166,6 +169,7 @@
             id="mobileMenu"
             class="hidden md:hidden mt-4 border-t pt-4"
         >
+
             <ul class="flex flex-col gap-4 text-gray-700 font-medium">
 
                 <li>
@@ -187,6 +191,7 @@
                 </li>
 
                 <li>
+
                     <span class="block mb-2">
                         Categories
                     </span>
@@ -210,6 +215,7 @@
                         {% endfor %}
 
                     </div>
+
                 </li>
 
                 <li>
@@ -240,8 +246,9 @@
                 </li>
 
             </ul>
+
         </div>
 
     </div>
-</nav>
 
+</nav>

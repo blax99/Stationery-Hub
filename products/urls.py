@@ -4,12 +4,15 @@ from . import views
 app_name = 'products'
 
 urlpatterns = [
-    # All products page: /products/
+    # All products catalog: /products/
     path('', views.product_list, name='product_list'),
     
-    # Filter products by category slug: /products/category/<category_slug>/
+    # Category filter routes
     path('category/<slug:category_slug>/', views.product_list, name='product_list_by_category'),
+
+    # Categories index route (Fixes the NoReverseMatch error for 'category_list')
+    path('categories/', views.product_list, name='category_list'),
     
-    # Single product detail page: /products/<slug>/
+    # Single product detail route: /products/<slug>/
     path('<slug:slug>/', views.product_detail, name='product_detail'),
 ]
