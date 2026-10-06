@@ -14,8 +14,8 @@ Wishlist
                 My Wishlist
             </h1>
 
-            <p class="text-sm text-gray-500 mt-2">
-                Products you've saved for later
+            <p  id = "wishlist-subtitle" class="text-sm text-gray-500 mt-2">
+                0 saved items
             </p>
         </div>
 
@@ -85,9 +85,22 @@ document.addEventListener("DOMContentLoaded", function () {
     */
 
     function updateWishlistCount(count) {
-        wishlistCount.textContent =
-            count + " items";
+
+    wishlistCount.textContent =
+        count + (count === 1 ? " item" : " items");
+
+    const wishlistSubtitle =
+        document.getElementById("wishlist-subtitle");
+
+    if (wishlistSubtitle) {
+
+        wishlistSubtitle.textContent =
+            count +
+            (count === 1
+                ? " saved item"
+                : " saved items");
     }
+}
 
 
     /*
@@ -393,85 +406,190 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function setupAddToCartButtons() {
 
-        document
-            .querySelectorAll(".add-to-cart")
-            .forEach(function (button) {
+    document
+        .querySelectorAll(".add-to-cart")
+        .forEach(function (button) {
 
-                button.addEventListener(
-                    "click",
-                    function () {
+            button.addEventListener(
+                "click",
+                async function () {
 
-                        const productId =
-                            this.dataset.productId;
+                    const productId =
+                        this.dataset.productId;
 
+                    const wishlistCard =
+                        this.closest(".wishlist-card");
 
-                        fetch("/api/cart/", {
-                            method: "POST",
+                    const removeButton =
+                        wishlistCard.querySelector(
+                            ".remove-wishlist"
+                        );
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json",
+                    const wishlistItemId =
+                        removeButton.dataset.itemId;
 
-                                "Authorization":
-                                    "Bearer " + token
-                            },
+                    try {
 
-                            body: JSON.stringify({
-                                product_id: productId,
-                                quantity: 1
-                            })
-                        })
+                        /* =========================
+                           ADD PRODUCT TO CART
+                        ========================= */
 
-                        .then(function (response) {
+                        const cartResponse =
+                            await fetch(
+                                "/api/cart/",
+                                {
+                                    method: "POST",
 
-                            if (!response.ok) {
-                                throw new Error(
-                                    "Failed to add product to cart"
-                                );
-                            }
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json",
 
-                            return response.json();
-                        })
+                                        "Authorization":
+                                            "Bearer " + token
+                                    },
 
-                        .then(function (data) {
+                                    body: JSON.stringify({
+                                        product_id:
+                                            productId,
 
-                            console.log(
-                                "Cart:",
-                                data
+                                        quantity: 1
+                                    })
+                                }
                             );
+
+                        const cartData =
+                            await cartResponse.json();
+
+                        console.log(
+                            "Cart:",
+                            cartData
+                        );
+
+                        if (!cartResponse.ok) {
+                            throw new Error(
+                                cartData.error ||
+                                "Failed to add product to cart"
+                            );
+                        }
+
+
+                        /* =========================
+                           REMOVE FROM WISHLIST
+                        ========================= */
+
+                        const wishlistResponse =
+                            await fetch(
+                                "/api/wishlist/",
+                                {
+                                    method: "DELETE",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json",
+
+                                        "Authorization":
+                                            "Bearer " + token
+                                    },
+
+                                    body: JSON.stringify({
+                                        item_id:
+                                            wishlistItemId
+                                    })
+                                }
+                            );
+
+                        const wishlistData =
+                            await wishlistResponse.json();
+
+                        console.log(
+                            "Wishlist:",
+                            wishlistData
+                        );
+
+                        if (!wishlistResponse.ok) {
+                            throw new Error(
+                                wishlistData.error ||
+                                "Failed to remove product from wishlist"
+                            );
+                        }
+
+
+                        /* =========================
+                           REMOVE CARD FROM PAGE
+                        ========================= */
+
+                        wishlistCard.remove();
+
+
+                        /* =========================
+                           UPDATE WISHLIST COUNT
+                        ========================= */
+
+                        const remainingItems =
+                            document.querySelectorAll(
+                                ".remove-wishlist"
+                            ).length;
+
+                        updateWishlistCount(
+                            remainingItems
+                        );
+
+
+                        /* =========================
+                           UPDATE NAVBAR COUNT
+                        ========================= */
+
+                        const wishlistNavCount =
+                            document.getElementById(
+                                "wishlist-nav-count"
+                            );
+
+                        if (wishlistNavCount) {
+
+                            wishlistNavCount.textContent =
+                                remainingItems;
+                        }
+
+
+                        /* =========================
+                           EMPTY WISHLIST
+                        ========================= */
+
+                        if (remainingItems === 0) {
+
+                            showEmptyWishlist();
+                        }
+
+
+                        /* =========================
+                           UPDATE CART COUNT
+                        ========================= */
+
+                        if (
+                            typeof updateCartCount ===
+                            "function"
+                        ) {
 
                             updateCartCount();
+                        }
 
-
-                            button.textContent =
-                                "Added to Cart";
-
-
-                            button.classList.remove(
-                                "bg-slate-800",
-                                "hover:bg-slate-700"
-                            );
-
-
-                            button.classList.add(
-                                "bg-green-700"
-                            );
-
-                        })
-
-                        .catch(function (error) {
-
-                            console.error(
-                                "Add to cart error:",
-                                error
-                            );
-
-                        });
                     }
-                );
-            });
-    }
 
+                    catch (error) {
+
+                        console.error(
+                            "Move to cart error:",
+                            error
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+}
 
     /*
     ========================================

@@ -25,32 +25,44 @@ Shopping Cart
         <!-- CART ITEMS -->
         <div class="lg:col-span-2">
 
-            <div class="hidden lg:grid grid-cols-[minmax(0,1fr)_140px_140px_40px] gap-5 pb-3 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wide">
+            <!-- CART CONTENT -->
+            <div id="cart-content">
 
-    <div>
-        Product
-    </div>
+                <!-- CART HEADER -->
+                <div
+                    id="cart-header"
+                    class="hidden lg:grid grid-cols-[minmax(0,1fr)_140px_140px_40px] gap-5 pb-3 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wide"
+                >
 
-    <div class="text-center">
-        Quantity
-    </div>
+                    <div>
+                        Product
+                    </div>
 
-    <div class="text-center">
-        Price
-    </div>
+                    <div class="text-center">
+                        Quantity
+                    </div>
 
-    <div></div>
+                    <div class="text-center">
+                        Price
+                    </div>
 
-</div>
+                    <div></div>
 
-<div
-    id="api-cart-items"
-    class="space-y-0"
->
-                <p class="text-gray-500">
-                    Loading cart...
-                </p>
+                </div>
+
+
+                <!-- CART ITEMS -->
+                <div
+                    id="api-cart-items"
+                    class="space-y-0"
+                >
+                    <p class="text-gray-500">
+                        Loading cart...
+                    </p>
+                </div>
+
             </div>
+
 
             <!-- CONTINUE SHOPPING -->
             <div class="mt-8">
@@ -140,8 +152,6 @@ Shopping Cart
                     Proceed to Checkout
                 </button>
 
-            
-
             </div>
 
         </div>
@@ -224,10 +234,12 @@ async function cartRequest(
 
 
     options.headers = {
+
         ...(options.headers || {}),
 
         "Authorization":
             "Bearer " + token
+
     };
 
 
@@ -255,10 +267,12 @@ async function cartRequest(
 
 
         options.headers = {
+
             ...(options.headers || {}),
 
             "Authorization":
                 "Bearer " + token
+
         };
 
 
@@ -294,6 +308,12 @@ async function loadCart() {
         );
 
 
+    const cartHeader =
+        document.getElementById(
+            "cart-header"
+        );
+
+
     try {
 
         const response =
@@ -317,17 +337,36 @@ async function loadCart() {
             data
         );
 
-        const cartCount = document.getElementById("cart-count");
 
-        if (cartCount) {
-            const totalQuantity = data.items.reduce(
-                (total, item) => total + Number(item.quantity),
-                0
+        /* =================================================
+           UPDATE NAVBAR CART COUNT
+        ================================================= */
+
+        const cartCount =
+            document.getElementById(
+                "cart-count"
             );
 
-            cartCount.textContent = totalQuantity;
+
+        if (cartCount) {
+
+            const totalQuantity =
+                data.items.reduce(
+                    (total, item) =>
+                        total + Number(item.quantity),
+                    0
+                );
+
+
+            cartCount.textContent =
+                totalQuantity;
+
         }
 
+
+        /* =================================================
+           API ERROR
+        ================================================= */
 
         if (!response.ok) {
 
@@ -337,15 +376,18 @@ async function loadCart() {
                 </p>
             `;
 
+
             summaryContainer.innerHTML = "";
 
+
+            if (cartHeader) {
+                cartHeader.style.display = "none";
+            }
+
+
             return;
+
         }
-
-
-        container.innerHTML = "";
-
-        summaryContainer.innerHTML = "";
 
 
         /* =================================================
@@ -357,6 +399,16 @@ async function loadCart() {
             data.items.length === 0
         ) {
 
+            /*
+                Hide Product / Quantity / Price header
+                when cart is empty.
+            */
+
+            if (cartHeader) {
+                cartHeader.style.display = "none";
+            }
+
+
             container.innerHTML = `
 
                 <div class="text-center py-20">
@@ -365,9 +417,11 @@ async function loadCart() {
                         🛒
                     </div>
 
+
                     <h2 class="text-2xl font-normal">
                         Your cart is empty
                     </h2>
+
 
                     <p class="text-gray-500 mt-3">
                         Add some products to your cart.
@@ -379,9 +433,11 @@ async function loadCart() {
 
 
             summaryContainer.innerHTML = `
+
                 <p class="text-sm text-gray-400">
                     No items
                 </p>
+
             `;
 
 
@@ -396,7 +452,29 @@ async function loadCart() {
 
 
             return;
+
         }
+
+
+        /* =================================================
+           CART HAS PRODUCTS
+        ================================================= */
+
+        /*
+            Show Product / Quantity / Price header
+            when cart contains products.
+        */
+
+        if (cartHeader) {
+
+            cartHeader.style.display = "";
+
+        }
+
+
+        container.innerHTML = "";
+
+        summaryContainer.innerHTML = "";
 
 
         /* =================================================
@@ -405,7 +483,8 @@ async function loadCart() {
 
         const items =
             [...data.items].sort(
-                (a, b) => a.id - b.id
+                (a, b) =>
+                    a.id - b.id
             );
 
 
@@ -422,18 +501,17 @@ async function loadCart() {
                     );
 
 
-                cartItem.className =
-    `
-    cart-item
-    border-b
-    border-gray-200
-    py-6
-    grid
-    grid-cols-1
-    lg:grid-cols-[minmax(0,1fr)_140px_140px_40px]
-    gap-5
-    items-center
-    `;
+                cartItem.className = `
+                    cart-item
+                    border-b
+                    border-gray-200
+                    py-6
+                    grid
+                    grid-cols-1
+                    lg:grid-cols-[minmax(0,1fr)_140px_140px_40px]
+                    gap-5
+                    items-center
+                `;
 
 
                 cartItem.dataset.itemId =
@@ -451,11 +529,13 @@ async function loadCart() {
                 cartItem.innerHTML = `
 
                     <!-- PRODUCT -->
+
                     <div class="flex items-center gap-4 min-w-0">
 
                         <!-- IMAGE -->
+
                         <div
-                            class="w-20 h-24 bg-gray-100 flex-shrink-0"
+                            class="w-20 h-24 bg-gray-100 flex-shrink-0 overflow-hidden"
                         >
 
                             ${
@@ -464,14 +544,11 @@ async function loadCart() {
                                 ?
 
                                 `
-                                <div class="w-20 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
-                                    <img
-                                        src="${item.image}"
-                                        alt="${item.product}"
-                                        class="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-105"
-                                        
-                                    >
-                                </div>    
+                                <img
+                                    src="${item.image}"
+                                    alt="${item.product}"
+                                    class="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-105"
+                                >
                                 `
 
                                 :
@@ -489,6 +566,7 @@ async function loadCart() {
 
 
                         <!-- PRODUCT INFO -->
+
                         <div class="min-w-0">
 
                             <h3
@@ -504,18 +582,16 @@ async function loadCart() {
                                 Rs. ${item.price}
                             </p>
 
-
-                           
-
                         </div>
 
                     </div>
 
 
                     <!-- QUANTITY -->
+
                     <div
-    class="flex items-center justify-center border border-gray-200 w-full h-9"
->
+                        class="flex items-center justify-center border border-gray-200 w-full h-9"
+                    >
 
                         <button
                             type="button"
@@ -545,14 +621,16 @@ async function loadCart() {
 
 
                     <!-- ITEM TOTAL -->
+
                     <span
-    class="text-sm font-medium text-center w-full"
->
-    Rs. ${item.item_total}
-</span>
+                        class="text-sm font-medium text-center w-full"
+                    >
+                        Rs. ${item.item_total}
+                    </span>
 
 
                     <!-- DELETE -->
+
                     <button
                         type="button"
                         class="delete text-gray-400 hover:text-red-600 transition"
@@ -568,11 +646,13 @@ async function loadCart() {
                             stroke="currentColor"
                             class="w-5 h-5"
                         >
+
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
                                 d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0115.916 21H8.084a2.25 2.25 0 01-2.244-1.327L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.57 0c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0C7.91 2.148 7 3.132 7 4.312v.916m7.5 0a48.667 48.667 0 00-7.5 0"
                             />
+
                         </svg>
 
                     </button>
@@ -607,6 +687,7 @@ async function loadCart() {
                     >
                         ${item.product}
                     </span>
+
 
                     <span
                         class="font-medium whitespace-nowrap"
@@ -651,13 +732,16 @@ async function loadCart() {
         );
 
 
+        if (cartHeader) {
+            cartHeader.style.display = "none";
+        }
+
+
         container.innerHTML = `
 
             <p class="text-red-500">
-
                 Something went wrong
                 while loading the cart.
-
             </p>
 
         `;
@@ -756,6 +840,7 @@ async function updateQuantity(
             );
 
             return;
+
         }
 
 
@@ -780,68 +865,41 @@ async function updateQuantity(
    DELETE CART ITEM
 ========================================================= */
 
-async function deleteCartItem(
-    cartItem,
-    itemId
-) {
-
-    const confirmed =
-        confirm(
-            "Remove this item from your cart?"
-        );
-
-
-    if (!confirmed) {
-        return;
-    }
-
+async function deleteCartItem(cartItem, itemId) {
 
     try {
 
-        const response =
-            await cartRequest(
-                "/api/cart/",
-                {
+        const response = await cartRequest(
+            "/api/cart/",
+            {
+                method: "DELETE",
 
-                    method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        item_id:
-                            parseInt(itemId)
-
-                    })
-
-                }
-            );
-
+                body: JSON.stringify({
+                    item_id: parseInt(itemId)
+                })
+            }
+        );
 
         console.log(
             "Delete status:",
             response.status
         );
 
-
-        const data =
-            await response.json();
-
+        const data = await response.json();
 
         console.log(
             "Delete response:",
             data
         );
 
-
         if (
             !response.ok ||
             !data.success
         ) {
-
             alert(
                 data.error ||
                 "Unable to remove item."
@@ -850,11 +908,9 @@ async function deleteCartItem(
             return;
         }
 
-
         await loadCart();
 
     }
-
 
     catch (error) {
 
@@ -864,9 +920,7 @@ async function deleteCartItem(
         );
 
     }
-
 }
-
 
 /* =========================================================
    CART BUTTON HANDLING
