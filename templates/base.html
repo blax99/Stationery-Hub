@@ -10,11 +10,6 @@
         {% block title %}Stationery Hub{% endblock %}
     </title>
 
-    <!-- 1. Tailwind CSS CDN (Ensures all classes load immediately) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- 2. Font Awesome Icons (Fixes missing icons) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
 
@@ -34,5 +29,6 @@
     {% include "footer.html" %}
 
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}?v=2"></script> 
 </body>
 </html>
