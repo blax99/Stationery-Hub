@@ -1,5 +1,4 @@
 <nav class="bg-white shadow-md px-4 sm:px-6 py-4">
-
     <div class="max-w-7xl mx-auto">
 
         <!-- Main Navbar -->
@@ -7,18 +6,18 @@
 
             <!-- Logo -->
             <a
-                href="/"
+                href="{% url 'home' %}"
                 class="text-xl sm:text-2xl font-bold text-gray-800 whitespace-nowrap"
             >
                 StationeryHub<span class="text-blue-600">.</span>
             </a>
 
-            <!-- Desktop Nav Links -->
+            <!-- Desktop Navigation -->
             <ul class="hidden md:flex items-center gap-8 text-gray-700 font-medium">
 
                 <li>
                     <a
-                        href="/"
+                        href="{% url 'home' %}"
                         class="hover:text-blue-600 transition"
                     >
                         Home
@@ -35,20 +34,18 @@
                 </li>
 
                 <!-- Categories -->
-                <li class="relative group">
-
-                    <button
-                        type="button"
+                <li class="relative group py-2">
+                    <a
+                        href="{% url 'products:category_list' %}"
                         class="hover:text-blue-600 transition flex items-center gap-1"
                     >
                         Categories
                         <i class="fa-solid fa-chevron-down text-xs"></i>
-                    </button>
+                    </a>
 
                     <div
                         class="absolute left-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-2 hidden group-hover:block z-50"
                     >
-
                         <a
                             href="{% url 'products:product_list' %}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
@@ -64,13 +61,11 @@
                                 {{ cat.name }}
                             </a>
                         {% empty %}
-                            <span class="block px-4 py-2 text-sm text-gray-400">
+                            <span class="block px-4 py-2 text-sm text-gray-400 px-4">
                                 No categories
                             </span>
                         {% endfor %}
-
                     </div>
-
                 </li>
 
             </ul>
@@ -111,7 +106,6 @@
                     aria-label="Wishlist"
                     title="Wishlist"
                 >
-
                     <i class="fa-regular fa-heart"></i>
 
                     <span
@@ -120,7 +114,6 @@
                     >
                         0
                     </span>
-
                 </a>
 
                 <!-- Cart -->
@@ -130,7 +123,6 @@
                     aria-label="Cart"
                     title="Cart"
                 >
-
                     <i class="fa-solid fa-cart-shopping"></i>
 
                     <span
@@ -139,16 +131,50 @@
                     >
                         0
                     </span>
-
                 </a>
 
-                <!-- Sign In -->
-                <a
-                    href="{% url 'login-page' %}"
-                    class="hidden sm:block border border-black bg-white text-black px-3 sm:px-4 py-1.5 rounded-lg hover:bg-black hover:text-white transition text-sm font-medium cursor-pointer text-center"
-                >
-                    Sign In
-                </a>
+                <!-- User / Sign In -->
+                <div id="userMenu" class="relative hidden sm:block">
+
+                    <a
+                        id="authLink"
+                        href="{% url 'login-page' %}"
+                        data-profile-url="{% url 'profile' %}"
+                        data-profile-page="{% url 'profile-page' %}"
+                        data-login-page="{% url 'login-page' %}"
+                        class="border border-black bg-white text-black px-3 sm:px-4 py-1.5 rounded-lg hover:bg-black hover:text-white transition text-sm font-medium cursor-pointer text-center"
+                    >
+                        Sign In
+                    </a>
+
+                    <div
+                        id="userDropdown"
+                        class="hidden absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
+                    >
+                        <a
+                            href="{% url 'profile-page' %}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition"
+                        >
+                            My Profile
+                        </a>
+
+                        <a
+                            href="/orders/"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition"
+                        >
+                            Orders
+                        </a>
+
+                        <button
+                            id="logoutButton"
+                            type="button"
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition"
+                        >
+                            Logout
+                        </button>
+                    </div>
+
+                </div>
 
                 <!-- Mobile Hamburger -->
                 <button
@@ -169,12 +195,11 @@
             id="mobileMenu"
             class="hidden md:hidden mt-4 border-t pt-4"
         >
-
             <ul class="flex flex-col gap-4 text-gray-700 font-medium">
 
                 <li>
                     <a
-                        href="/"
+                        href="{% url 'home' %}"
                         class="block hover:text-blue-600 transition"
                     >
                         Home
@@ -191,7 +216,6 @@
                 </li>
 
                 <li>
-
                     <span class="block mb-2">
                         Categories
                     </span>
@@ -215,13 +239,12 @@
                         {% endfor %}
 
                     </div>
-
                 </li>
 
                 <li>
                     <a
                         href="{% url 'wishlist' %}"
-                        class="block hover:text-blue-600 transition"
+                        class="block hover:text-red-500 transition"
                     >
                         Wishlist
                     </a>
@@ -246,9 +269,7 @@
                 </li>
 
             </ul>
-
         </div>
 
     </div>
-
 </nav>

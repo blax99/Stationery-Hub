@@ -135,7 +135,7 @@ Stationery Hub{% endblock %} {% block content %}
       errorBox.classList.add("hidden");
 
       try {
-        const response = await fetch("/api/users/register/", {
+        const response = await fetch("{% url 'register' %}", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
