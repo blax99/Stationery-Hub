@@ -88,13 +88,40 @@
           </span>
         </button>
 
-        <!-- Sign In -->
-        <a
-          href="{% url 'login-page' %}"
-          class="hidden sm:block border border-black bg-white text-black px-3 sm:px-4 py-1.5 rounded-lg hover:bg-black hover:text-white transition text-sm font-medium cursor-pointer text-center"
-        >
-          Sign In
-        </a>
+        <div id="userMenu" class="relative hidden sm:block">
+          <a
+            id="authLink"
+            href="{% url 'login-page' %}"
+            data-profile-url="{% url 'profile' %}"
+            data-profile-page="{% url 'profile-page' %}"
+            data-login-page="{% url 'login-page' %}"
+            class="border border-black bg-white text-black px-3 sm:px-4 py-1.5 rounded-lg hover:bg-black hover:text-white transition text-sm font-medium cursor-pointer text-center"
+          >
+            Sign In
+          </a>
+          <div
+            id="userDropdown"
+            class="hidden group-hover:block group-focus-within:block absolute right-0 top-full w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
+          >
+            <a
+              href="{% url 'profile-page' %}"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition"
+              >My Profile</a
+            >
+            <a
+              href="/orders/"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition"
+              >Orders</a
+            >
+            <button
+              id="logoutButton"
+              type="button"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
         <!-- Mobile Hamburger -->
         <button
           id="menuButton"

@@ -412,6 +412,9 @@
   .w-20 {
     width: calc(var(--spacing) * 20);
   }
+  .w-44 {
+    width: calc(var(--spacing) * 44);
+  }
   .w-48 {
     width: calc(var(--spacing) * 48);
   }
@@ -426,6 +429,9 @@
   }
   .max-w-7xl {
     max-width: var(--container-7xl);
+  }
+  .max-w-32 {
+    max-width: calc(var(--spacing) * 32);
   }
   .max-w-full {
     max-width: 100%;
@@ -782,6 +788,9 @@
   .text-center {
     text-align: center;
   }
+  .text-left {
+    text-align: left;
+  }
   .font-display {
     font-family: var(--font-display);
   }
@@ -991,6 +1000,9 @@
     --tw-ease: var(--ease-out);
     transition-timing-function: var(--ease-out);
   }
+  .group-focus-within\:block:is(:where(.group):focus-within *) {
+    display: block;
+  }
   @media (hover: hover) {
     .group-hover\:block:is(:where(.group):hover *) {
       display: block;
@@ -1046,6 +1058,9 @@
     }
     .hover\:text-red-500:hover {
       color: var(--color-red-500);
+    }
+    .hover\:text-red-600:hover {
+      color: var(--color-red-600);
     }
     .hover\:text-white:hover {
       color: var(--color-white);
