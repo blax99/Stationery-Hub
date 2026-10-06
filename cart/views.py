@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect
 from .models import Cart, CartItem, Wishlist, WishlistItem
+from django.contrib.auth.decorators import login_required
 
 
 from django.contrib.auth import get_user_model
@@ -40,11 +41,9 @@ def cart(request):
         "subtotal": subtotal,
     })
 
-
+@login_required
 def wishlist(request):
-    from users.models import User
-
-    user = User.objects.get(email="carttest@example.com")
+    user = request.user
 
     wishlist, created = Wishlist.objects.get_or_create(user=user)
 
