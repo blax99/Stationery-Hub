@@ -446,10 +446,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const wishlistButtons = document.querySelectorAll(".wishlist-btn");
     const token = localStorage.getItem("access_token");
 
-    if (!token) {
-        return;
-    }
-
     // Store wishlist item IDs by product ID
     const wishlistMap = new Map();
 
@@ -545,6 +541,11 @@ document.addEventListener("DOMContentLoaded", function () {
     wishlistButtons.forEach(function (button) {
 
         button.addEventListener("click", async function () {
+
+            if (!token) {
+                window.location.href = "{% url 'login-page' %}";
+                return;
+            }
 
             const productId = String(
                 this.dataset.productId

@@ -54,6 +54,8 @@ urlpatterns = [
     path("api/wishlist/", include("cart.wishlist_api_urls")),
 ]
 
+
+
 # Serve uploaded media files locally in debug mode
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
