@@ -1,6 +1,79 @@
 
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Product Detail - Add to Cart
+const productAddToCartButtons = document.querySelectorAll(".product-add-to-cart");
+
+productAddToCartButtons.forEach((button) => {
+    button.closest("form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+            window.location.href = "/users/login-page/";
+            return;
+        }
+
+        const productId = button.dataset.productId;
+        const form = button.closest("form");
+        const quantityInput = form.querySelector("#quantity");
+        const quantity = Number(quantityInput.value);
+        const maxQuantity = Number(quantityInput.max);
+
+        if (!quantity || quantity < 1) {
+            alert("Please enter a valid quantity.");
+            return;
+        }
+
+        if (quantity > maxQuantity) {
+            alert(`Only ${maxQuantity} items are available.`);
+            return;
+        }
+
+        const originalButtonHTML = button.innerHTML;
+
+        button.disabled = true;
+        button.innerHTML = "Adding...";
+
+        try {
+            const response = await fetch("/api/cart/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || data.message || "Failed to add product to cart.");
+            }
+
+            button.innerHTML = "Added to Cart";
+
+            updateCartCount();
+
+            setTimeout(() => {
+                button.innerHTML = originalButtonHTML;
+                button.disabled = false;
+            }, 1200);
+
+        } catch (error) {
+            console.error("Add to cart error:", error);
+
+            alert(error.message);
+
+            button.innerHTML = originalButtonHTML;
+            button.disabled = false;
+        }
+    });
+});
 
     // =========================
     // MOBILE MENU
