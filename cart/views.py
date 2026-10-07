@@ -41,21 +41,8 @@ def cart(request):
         "subtotal": subtotal,
     })
 
-@login_required
 def wishlist(request):
-    user = request.user
-
-    wishlist, created = Wishlist.objects.get_or_create(user=user)
-
-    wishlist_items = wishlist.items.select_related(
-        "product",
-        "product__category"
-    )
-
-    return render(request, "cart/wishlist.html", {
-        "wishlist": wishlist,
-        "wishlist_items": wishlist_items,
-    })
+    return render(request, "cart/wishlist.html")
 
 def remove_from_wishlist(request, item_id):
     wishlist = Wishlist.objects.get(user=request.user)
