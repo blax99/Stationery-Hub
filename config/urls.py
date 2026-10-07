@@ -37,14 +37,20 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
-    path('products/', include('products.urls')),  # Direct route for HTML views
+    path('products/', include('products.urls')),
+
     path('api/users/', include('users.urls')),
+    path('users/', include('users.urls')),
+
     path('api/cart/', include('cart.api_urls')),
-    path('api/cart/', include('cart.urls')),
+    path('cart/', include('cart.urls')),
 
     path('api/orders/', include('orders.urls')),
+    path('orders/', include('orders.urls')),
+
     path('api/payments/', include('payments.urls')),
-    path('cart/', include('cart.urls')),
+    path('payments/', include('payments.urls')),
+
     path("api/wishlist/", include("cart.wishlist_api_urls")),
 ]
 

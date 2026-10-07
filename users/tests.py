@@ -12,7 +12,7 @@ User = get_user_model()
 class RegistrationTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.register_url = '/api/users/register/'
+        self.register_url = '/users/register/'
 
     def test_register_success(self):
         data = {
@@ -50,7 +50,7 @@ class RegistrationTests(TestCase):
 class LoginTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.login_url = '/api/users/login/'
+        self.login_url = '/users/login/'
         self.user = User.objects.create_user(
             username="loginuser", email="login@example.com", password="TestPass123"
         )
