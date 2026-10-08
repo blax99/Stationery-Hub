@@ -4,31 +4,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
         {% block title %}Stationery Hub{% endblock %}
     </title>
 
-    <!-- Favicon -->
     <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-
-    <!-- Compiled CSS -->
+    <!-- Your Compiled CSS -->
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
 
-<body>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+
     {% include "navbar.html" %}
 
-    <main>
+    <main class="grow">
         {% block content %}
         {% endblock %}
     </main>
