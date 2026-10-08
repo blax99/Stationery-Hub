@@ -1,16 +1,37 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
-from .models import Order, ShippingAddress
+from .models import Order, OrderItem, ShippingAddress
+from cart.models import Cart
 
 
 @login_required
 def checkout(request):
     if request.method == "POST":
+        cart = Cart.objects.filter(user=request.user).first()
+
+        if not cart or not cart.items.exists():
+            return redirect('cart')
+
+        cart_items = cart.items.select_related('product')
+
+        total_amount = sum(
+            item.product.price * item.quantity
+            for item in cart_items
+        )
+
         order = Order.objects.create(
             user=request.user,
-            total_amount=0.00
+            total_amount=total_amount
         )
+
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product_name=item.product.name,
+                quantity=item.quantity,
+                price=item.product.price
+            )
 
         ShippingAddress.objects.create(
             order=order,
@@ -19,6 +40,8 @@ def checkout(request):
             city=request.POST.get("city"),
             phone=request.POST.get("phone")
         )
+
+        cart.items.all().delete()
 
         return redirect(
             'order_confirmation',
