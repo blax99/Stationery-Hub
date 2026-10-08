@@ -318,7 +318,7 @@ async function loadCart() {
 
         const response =
             await cartRequest(
-                "/api/cart/"
+                "/cart/items/"
             );
 
 
@@ -789,7 +789,7 @@ async function updateQuantity(
 
         const response =
             await cartRequest(
-                "/api/cart/",
+                "/cart/items/",
                 {
 
                     method: "PATCH",
@@ -870,7 +870,7 @@ async function deleteCartItem(cartItem, itemId) {
     try {
 
         const response = await cartRequest(
-            "/api/cart/",
+            "/cart/items/",
             {
                 method: "DELETE",
 

@@ -39,7 +39,7 @@ productAddToCartButtons.forEach((button) => {
         button.innerHTML = "Adding...";
 
         try {
-            const response = await fetch("/api/cart/", {
+            const response = await fetch("/cart/items/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -368,7 +368,7 @@ deleteButtons.forEach(function (button) {
             try {
 
                 const response = await fetch(
-                    "/api/wishlist/",
+                    "/wishlist/",
                     {
                         method: "GET",
                         headers: {
@@ -453,7 +453,7 @@ deleteButtons.forEach(function (button) {
 
                             const response =
                                 await fetch(
-                                    "/api/wishlist/",
+                                    "/wishlist/",
                                     {
                                         method: "DELETE",
                                         headers: {
@@ -511,7 +511,7 @@ deleteButtons.forEach(function (button) {
 
                             const response =
                                 await fetch(
-                                    "/api/wishlist/",
+                                    "/wishlist/",
                                     {
                                         method: "POST",
                                         headers: {
@@ -604,7 +604,7 @@ function updateCartCount() {
         return;
     }
 
-    fetch("/api/cart/", {
+    fetch("/cart/items/", {
         headers: {
             Authorization: `Bearer ${accessToken}`
         }
@@ -648,7 +648,7 @@ function updateWishlistNavCount() {
         return;
     }
 
-    fetch("/api/wishlist/", {
+    fetch("/wishlist/", {
         headers: {
             Authorization: `Bearer ${accessToken}`
         }
