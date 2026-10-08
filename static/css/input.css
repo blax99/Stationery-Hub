@@ -7,6 +7,7 @@
 @source "../../payments/templates";
 @source "../../products/templates";
 @source "../../users/templates";
+@source "../../cart/templates/cart/cart.html";
 
 @theme {
 	--color-kraft: #d8c3a5;
