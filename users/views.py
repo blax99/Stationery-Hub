@@ -5,7 +5,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.tokens import default_token_generator
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
@@ -14,9 +17,25 @@ from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .permissions import IsAdmin
 from django.conf import settings
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class LoginPageView(TemplateView):
     template_name = "users/login.html"
+
+
+class LoginAPIView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        auth_login(request._request, serializer.user)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+@require_POST
+def logout_view(request):
+    auth_logout(request)
+    return JsonResponse({"success": True})
+
 
 class ForgotPasswordPageView(TemplateView):
     template_name = "users/forgot-password.html"

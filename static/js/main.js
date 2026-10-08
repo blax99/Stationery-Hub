@@ -1,4 +1,94 @@
 
+window.stationeryApiFetch = async function (url, options = {}) {
+    const sendRequest = (token) => {
+        const headers = new Headers(options.headers || {});
+        const method = (options.method || "GET").toUpperCase();
+        if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+        }
+        if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
+            const csrfToken = document.querySelector(
+                "#logout-csrf-form input[name=csrfmiddlewaretoken]"
+            )?.value;
+            if (csrfToken) {
+                headers.set("X-CSRFToken", csrfToken);
+            }
+        }
+
+        return fetch(url, { ...options, headers });
+    };
+
+    const response = await sendRequest(localStorage.getItem("access_token"));
+    if (response.status !== 401) {
+        return response;
+    }
+
+    const refreshToken = localStorage.getItem("refresh_token");
+    if (!refreshToken) {
+        localStorage.removeItem("access_token");
+        return sendRequest(null);
+    }
+
+    const refreshResponse = await fetch("/users/login/refresh/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh: refreshToken })
+    });
+
+    if (!refreshResponse.ok) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        return sendRequest(null);
+    }
+
+    const refreshType = refreshResponse.headers.get("content-type") || "";
+    if (!refreshType.includes("json")) {
+        throw new Error("The session refresh endpoint returned an unexpected response.");
+    }
+
+    const refreshData = await refreshResponse.json();
+    if (!refreshData.access) {
+        throw new Error("The session refresh response did not include an access token.");
+    }
+
+    localStorage.setItem("access_token", refreshData.access);
+    return sendRequest(refreshData.access);
+};
+
+window.stationeryLoginRedirect = function () {
+    const next = encodeURIComponent(
+        window.location.pathname + window.location.search
+    );
+    window.location.href = `/users/login-page/?next=${next}`;
+};
+
+window.stationeryApiJson = async function (response, fallbackMessage) {
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("json")) {
+        if (response.redirected || contentType.includes("text/html")) {
+            const html = await response.clone().text();
+            const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+            const pageTitle = titleMatch
+                ? titleMatch[1].replace(/<[^>]*>/g, "").trim()
+                : "";
+            const responseUrl = new URL(response.url).pathname;
+            const details = [
+                `HTTP ${response.status}`,
+                responseUrl,
+                pageTitle
+            ].filter(Boolean).join(" — ");
+
+            throw new Error(
+                `${fallbackMessage} The server returned an HTML page instead of API data (${details}).`
+            );
+        }
+        throw new Error(
+            `${fallbackMessage} The server returned HTTP ${response.status} with an unexpected response type.`
+        );
+    }
+
+    return response.json();
+};
 
 document.addEventListener("DOMContentLoaded", function () {
     // Product Detail - Add to Cart
@@ -7,15 +97,6 @@ const productAddToCartButtons = document.querySelectorAll(".product-add-to-cart"
 productAddToCartButtons.forEach((button) => {
     button.closest("form").addEventListener("submit", async function (event) {
         event.preventDefault();
-
-        const token = localStorage.getItem("access_token");
-
-        
-
-        if (!token) {
-            window.location.href = "/users/login-page/";
-            return;
-        }
 
         const productId = button.dataset.productId;
         const form = button.closest("form");
@@ -39,11 +120,10 @@ productAddToCartButtons.forEach((button) => {
         button.innerHTML = "Adding...";
 
         try {
-            const response = await fetch("/cart/items/", {
+            const response = await window.stationeryApiFetch("/cart/items/", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     product_id: productId,
@@ -51,10 +131,23 @@ productAddToCartButtons.forEach((button) => {
                 })
             });
 
-            const data = await response.json();
+            if (response.status === 401) {
+                window.stationeryLoginRedirect();
+                return;
+            }
+
+            const data = await window.stationeryApiJson(
+                response,
+                "Failed to add product to cart."
+            );
 
             if (!response.ok) {
-                throw new Error(data.detail || data.message || "Failed to add product to cart.");
+                throw new Error(
+                    data.error ||
+                    data.detail ||
+                    data.message ||
+                    "Failed to add product to cart."
+                );
             }
 
             button.innerHTML = "Added to Cart";
@@ -352,34 +445,19 @@ deleteButtons.forEach(function (button) {
         }
 
         async function loadWishlistStatus() {
-
-            const token =
-                localStorage.getItem("access_token");
-
-            if (!token) {
-
-                wishlistButtons.forEach(function (button) {
-                    setWishlistInactive(button);
-                });
-
-                return;
-            }
-
             try {
 
-                const response = await fetch(
+                const response = await window.stationeryApiFetch(
                     "/wishlist/api/",
                     {
-                        method: "GET",
-                        headers: {
-                            "Authorization":
-                                `Bearer ${token}`
-                        }
+                        method: "GET"
                     }
                 );
 
-                const data =
-                    await response.json();
+                const data = await window.stationeryApiJson(
+                    response,
+                    "Unable to load wishlist status."
+                );
 
                 if (!response.ok) {
                     return;
@@ -422,19 +500,6 @@ deleteButtons.forEach(function (button) {
                 "click",
                 async function () {
 
-                    const token =
-                        localStorage.getItem("access_token");
-                        
-
-                    if (!token) {
-                        
-
-                        window.location.href =
-                            "/users/login-page/";
-
-                        return;
-                    }
-
                     const productId =
                         String(this.dataset.productId);
 
@@ -452,15 +517,13 @@ deleteButtons.forEach(function (button) {
                         if (wishlistItemId) {
 
                             const response =
-                                await fetch(
+                                await window.stationeryApiFetch(
                                     "/wishlist/api/",
                                     {
                                         method: "DELETE",
                                         headers: {
                                             "Content-Type":
-                                                "application/json",
-                                            "Authorization":
-                                                `Bearer ${token}`
+                                                "application/json"
                                         },
                                         body: JSON.stringify({
                                             item_id:
@@ -469,8 +532,15 @@ deleteButtons.forEach(function (button) {
                                     }
                                 );
 
-                            const data =
-                                await response.json();
+                                if (response.status === 401) {
+                                    window.stationeryLoginRedirect();
+                                    return;
+                                }
+
+                                const data = await window.stationeryApiJson(
+                                response,
+                                "Unable to remove product from wishlist."
+                            );
 
                             if (
                                 response.ok &&
@@ -510,15 +580,13 @@ deleteButtons.forEach(function (button) {
                         else {
 
                             const response =
-                                await fetch(
+                                await window.stationeryApiFetch(
                                     "/wishlist/api/",
                                     {
                                         method: "POST",
                                         headers: {
                                             "Content-Type":
-                                                "application/json",
-                                            "Authorization":
-                                                `Bearer ${token}`
+                                                "application/json"
                                         },
                                         body: JSON.stringify({
                                             product_id:
@@ -527,8 +595,15 @@ deleteButtons.forEach(function (button) {
                                     }
                                 );
 
-                            const data =
-                                await response.json();
+                                if (response.status === 401) {
+                                    window.stationeryLoginRedirect();
+                                    return;
+                                }
+
+                                const data = await window.stationeryApiJson(
+                                response,
+                                "Unable to add product to wishlist."
+                            );
 
                             if (
                                 response.ok &&
@@ -597,24 +672,16 @@ function updateCartCount() {
         return;
     }
 
-    const accessToken = localStorage.getItem("access_token");
-
-    if (!accessToken) {
-        cartCount.textContent = "0";
-        return;
-    }
-
-    fetch("/cart/items/", {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    })
+    window.stationeryApiFetch("/cart/items/")
     .then(response => {
         if (!response.ok) {
             throw new Error("Failed to fetch cart");
         }
 
-        return response.json();
+        return window.stationeryApiJson(
+            response,
+            "Failed to fetch cart."
+        );
     })
     .then(data => {
         const totalQuantity = data.items.reduce(
@@ -640,25 +707,16 @@ function updateWishlistNavCount() {
         return;
     }
 
-    const accessToken =
-        localStorage.getItem("access_token");
-
-    if (!accessToken) {
-        wishlistNavCount.textContent = "0";
-        return;
-    }
-
-    fetch("/wishlist/api/", {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    })
+    window.stationeryApiFetch("/wishlist/api/")
     .then(response => {
         if (!response.ok) {
             throw new Error("Failed to fetch wishlist");
         }
 
-        return response.json();
+        return window.stationeryApiJson(
+            response,
+            "Failed to fetch wishlist."
+        );
     })
     .then(data => {
         wishlistNavCount.textContent =
@@ -675,6 +733,3 @@ function updateWishlistNavCount() {
 }
 
 updateWishlistNavCount();
-
-
-

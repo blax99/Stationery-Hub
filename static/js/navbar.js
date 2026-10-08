@@ -37,20 +37,37 @@ menuButton?.addEventListener("click", () => {
     }
 });
 
-logoutButton?.addEventListener("click", () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    window.location.href = authLink.dataset.loginPage;
+logoutButton?.addEventListener("click", async () => {
+    const csrfToken = document.querySelector(
+        "#logout-csrf-form input[name=csrfmiddlewaretoken]"
+    )?.value;
+
+    try {
+        const response = await fetch(authLink.dataset.logoutUrl, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Logout failed: ${response.status}`);
+        }
+
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        window.location.href = authLink.dataset.loginPage;
+    } catch (error) {
+        console.error("Unable to sign out.", error);
+        alert("Unable to sign out. Please try again.");
+    }
 });
 
 async function showAuthenticatedUser() {
-    const token = localStorage.getItem("access_token");
-    if (!token || !authLink) return;
+    if (!authLink) return;
 
     try {
-        const response = await fetch(authLink.dataset.profileUrl, {
-            headers: { Authorization: "Bearer " + token },
-        });
+        const response = await window.stationeryApiFetch(
+            authLink.dataset.profileUrl
+        );
 
         if (response.status === 401) {
             localStorage.removeItem("access_token");
@@ -61,7 +78,10 @@ async function showAuthenticatedUser() {
             throw new Error(`Could not load profile: ${response.status}`);
         }
 
-        const user = await response.json();
+        const user = await window.stationeryApiJson(
+            response,
+            "Could not load profile."
+        );
         const initials = user.username
             .split(/\s+/)
             .map((part) => part[0])

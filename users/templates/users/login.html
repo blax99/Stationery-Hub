@@ -130,7 +130,14 @@ Stationery Hub{% endblock %} {% block content %}
         if (response.ok) {
           localStorage.setItem("access_token", data.access);
           localStorage.setItem("refresh_token", data.refresh);
-          window.location.href = "/";
+          const next = new URLSearchParams(window.location.search).get("next");
+          const destination = next
+            ? new URL(next, window.location.origin)
+            : new URL("/", window.location.origin);
+          window.location.href =
+            destination.origin === window.location.origin
+              ? destination.href
+              : "/";
         } else {
           errorBox.textContent = "Invalid email or password.";
           errorBox.classList.remove("hidden");
