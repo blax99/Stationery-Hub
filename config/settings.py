@@ -158,3 +158,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_URL = os.getenv('SITE_URL')
+LOGIN_URL = "/users/login-page/"
