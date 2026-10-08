@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from cart import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -11,7 +12,9 @@ urlpatterns = [
     path('cart/', include('cart.urls')),
     path('orders/', include('orders.urls')),
     path('payments/', include('payments.urls')),
-    path("wishlist/", include("cart.wishlist_api_urls")),
+    path("wishlist/", views.wishlist, name="wishlist"),
+    path("wishlist/api/", include("cart.wishlist_api_urls")),
+
 ]
 
 

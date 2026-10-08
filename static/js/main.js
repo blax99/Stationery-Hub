@@ -368,7 +368,7 @@ deleteButtons.forEach(function (button) {
             try {
 
                 const response = await fetch(
-                    "/wishlist/",
+                    "/wishlist/api/",
                     {
                         method: "GET",
                         headers: {
@@ -453,7 +453,7 @@ deleteButtons.forEach(function (button) {
 
                             const response =
                                 await fetch(
-                                    "/wishlist/",
+                                    "/wishlist/api/",
                                     {
                                         method: "DELETE",
                                         headers: {
@@ -511,7 +511,7 @@ deleteButtons.forEach(function (button) {
 
                             const response =
                                 await fetch(
-                                    "/wishlist/",
+                                    "/wishlist/api/",
                                     {
                                         method: "POST",
                                         headers: {
@@ -648,7 +648,7 @@ function updateWishlistNavCount() {
         return;
     }
 
-    fetch("/wishlist/", {
+    fetch("/wishlist/api/", {
         headers: {
             Authorization: `Bearer ${accessToken}`
         }

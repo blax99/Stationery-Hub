@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function loadWishlist() {
 
-        fetch("/wishlist/", {
+        fetch("/wishlist/api/", {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + token
@@ -319,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             this.dataset.itemId;
 
 
-                        fetch("/wishlist/", {
+                        fetch("/wishlist/api/", {
                             method: "DELETE",
 
                             headers: {
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         const wishlistResponse =
                             await fetch(
-                                "/wishlist/",
+                                "/wishlist/api/",
                                 {
                                     method: "DELETE",
 
