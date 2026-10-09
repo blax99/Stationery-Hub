@@ -327,6 +327,34 @@
 
         </div>
 
+        {% if request.GET.payment == 'success' %}
+            <div class="confirmation-card border-emerald-200 bg-emerald-50 text-emerald-800" role="status">
+                Payment received. Your order is confirmed.
+            </div>
+        {% elif request.GET.payment == 'failed' %}
+            <div class="confirmation-card border-red-200 bg-red-50 text-red-800" role="status">
+                Payment was not completed. You can try again below.
+            </div>
+        {% elif request.GET.payment == 'pending' %}
+            <div class="confirmation-card border-amber-200 bg-amber-50 text-amber-800" role="status">
+                Payment is still processing. Refresh this page in a moment to check its status.
+            </div>
+        {% elif request.GET.payment == 'error' %}
+            <div class="confirmation-card border-red-200 bg-red-50 text-red-800" role="alert">
+                We could not verify this payment yet. Please try again or contact support if you were charged.
+            </div>
+        {% endif %}
+
+        {% if request.GET.cancellation == 'payment_in_progress' %}
+            <div class="confirmation-card border-amber-200 bg-amber-50 text-amber-900" role="alert">
+                This order can’t be cancelled while its Khalti payment is in progress. Finish or cancel the payment first, then try cancelling the order again.
+            </div>
+        {% elif request.GET.cancellation == 'paid' %}
+            <div class="confirmation-card border-amber-200 bg-amber-50 text-amber-900" role="alert">
+                This order has already been paid and can’t be cancelled here. Please contact support if you need help.
+            </div>
+        {% endif %}
+
 
         <!-- ORDER DETAILS -->
 
@@ -467,23 +495,25 @@
 
             <!-- KHALTI PAYMENT -->
 
-            {% if order.payment_status != 'paid' and order.status != 'cancelled' and order.status != 'delivered' and order.status != 'return_requested' and order.status != 'returned' %}
+            {% if order.status == 'pending' or order.status == 'confirmed' %}
 
-                <button
-                    type="button"
-                    id="khalti-button"
-                    class="action-button khalti-button"
-                    onclick="payWithKhalti({{ order.id }})"
-                >
-                    Pay with Khalti
-                </button>
+                {% if order.payment_status != 'paid' %}
+                    <button
+                        type="button"
+                        id="khalti-button"
+                        class="action-button khalti-button"
+                        onclick="payWithKhalti({{ order.id }})"
+                    >
+                        Pay with Khalti
+                    </button>
+                {% endif %}
 
             {% endif %}
 
 
             <!-- CANCEL ORDER -->
 
-            {% if order.status == 'pending' or order.status == 'confirmed' %}
+            {% if order.payment_status != 'paid' and order.status == 'pending' or order.payment_status != 'paid' and order.status == 'confirmed' %}
 
                 <form
                     method="POST"
@@ -578,7 +608,7 @@ async function payWithKhalti(orderId) {
         const csrfToken = getCookie('csrftoken');
 
         const response = await fetch(
-            '/api/payments/initiate/',
+            "{% url 'khalti-initiate' %}",
             {
                 method: 'POST',
 
@@ -587,34 +617,30 @@ async function payWithKhalti(orderId) {
                     'X-CSRFToken': csrfToken
                 },
 
+                credentials: 'same-origin',
+
                 body: JSON.stringify({
                     order_id: orderId
                 })
             }
         );
 
-        const data = await response.json();
-
-        if (data.payment_url) {
-
-            window.location.href = data.payment_url;
-
-        } else {
-
-            alert(
-                data.error ||
-                'Payment failed to start. Please try again.'
-            );
-
-            if (button) {
-
-                button.disabled = false;
-
-                button.innerText = 'Pay with Khalti';
-
-            }
-
+        let data = {};
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            data = await response.json();
         }
+
+        if (!response.ok || !data.payment_url) {
+            let errorMessage = data.error || data.detail ||
+                `Payment could not start (HTTP ${response.status}).`;
+            if (data.configuration_help) {
+                errorMessage += ` ${data.configuration_help}`;
+            }
+            throw new Error(errorMessage);
+        }
+
+        window.location.href = data.payment_url;
 
     } catch (error) {
 
@@ -624,7 +650,7 @@ async function payWithKhalti(orderId) {
         );
 
         alert(
-            'Unable to connect to the payment service. Please try again.'
+            error.message || 'Unable to connect to the payment service. Please try again.'
         );
 
         if (button) {

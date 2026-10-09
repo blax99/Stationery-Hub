@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Verification | Stationery Hub{% endblock %}
+
+{% block content %}
+<style>
+    .payment-result-page {
+        min-height: 70vh;
+        padding: 48px 16px 64px;
+        background: #f9fafb;
+    }
+
+    .payment-result-card {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 36px;
+        border: 1px solid #e5dfd5;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(41, 37, 36, 0.07);
+        text-align: center;
+    }
+
+    .payment-result-icon {
+        display: grid;
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 20px;
+        place-items: center;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .payment-result-success {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    .payment-result-failed,
+    .payment-result-error {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .payment-result-pending {
+        background: #fffbeb;
+        color: #b45309;
+    }
+
+    .payment-result-title {
+        margin: 0;
+        color: #292524;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.75rem, 5vw, 2.25rem);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .payment-result-message {
+        margin: 12px 0 0;
+        color: #6b7280;
+        line-height: 1.65;
+    }
+
+    .payment-order-reference {
+        margin: 24px 0 0;
+        padding: 14px;
+        border: 1px solid #e5dfd5;
+        border-radius: 8px;
+        background: #faf8f5;
+        color: #57534e;
+        font-size: 0.9rem;
+    }
+
+    .payment-result-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .payment-result-button {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 20px;
+        border: 1px solid #7a2828;
+        border-radius: 8px;
+        background: #7a2828;
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .payment-result-button:hover {
+        transform: translateY(-1px);
+        border-color: #5e1f1f;
+        background: #5e1f1f;
+        color: #fff;
+    }
+
+    .payment-result-button-secondary {
+        border-color: #e5dfd5;
+        background: #fff;
+        color: #44403c;
+    }
+
+    .payment-result-button-secondary:hover {
+        border-color: #c9bca8;
+        background: #faf8f5;
+        color: #292524;
+    }
+
+    .payment-result-button:focus-visible {
+        outline: 3px solid rgba(122, 40, 40, 0.22);
+        outline-offset: 3px;
+    }
+
+    @media (max-width: 520px) {
+        .payment-result-page {
+            padding: 32px 14px 48px;
+        }
+
+        .payment-result-card {
+            padding: 28px 20px;
+        }
+
+        .payment-result-actions {
+            flex-direction: column;
+        }
+
+        .payment-result-button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<main class="payment-result-page">
+    <section class="payment-result-card" aria-labelledby="payment-result-title">
+        {% if result == 'success' %}
+            <div class="payment-result-icon payment-result-success" aria-hidden="true">✓</div>
+            <h1 id="payment-result-title" class="payment-result-title">Payment Verified</h1>
+            <p class="payment-result-message">
+                Your payment was received successfully. Your order is confirmed.
+            </p>
+        {% elif result == 'failed' %}
+            <div class="payment-result-icon payment-result-failed" aria-hidden="true">!</div>
+            <h1 id="payment-result-title" class="payment-result-title">Payment Not Completed</h1>
+            <p class="payment-result-message">
+                Khalti reported that this payment was cancelled or expired. You can return to your order and try again.
+            </p>
+        {% elif result == 'pending' %}
+            <div class="payment-result-icon payment-result-pending" aria-hidden="true">…</div>
+            <h1 id="payment-result-title" class="payment-result-title">Payment Processing</h1>
+            <p class="payment-result-message">
+                Khalti has not confirmed this payment yet. Check again shortly before starting another payment.
+            </p>
+        {% elif result == 'paid_cancelled' %}
+            <div class="payment-result-icon payment-result-error" aria-hidden="true">!</div>
+            <h1 id="payment-result-title" class="payment-result-title">Payment Received for Cancelled Order</h1>
+            <p class="payment-result-message">
+                The payment completed after the order was cancelled. The order remains cancelled; please contact support to arrange a refund.
+            </p>
+        {% else %}
+            <div class="payment-result-icon payment-result-error" aria-hidden="true">!</div>
+            <h1 id="payment-result-title" class="payment-result-title">Unable to Verify Payment</h1>
+            <p class="payment-result-message">
+                We could not confirm the payment with Khalti. If you were charged, please contact support before trying again.
+            </p>
+        {% endif %}
+
+        {% if order %}
+            <p class="payment-order-reference">
+                Order <strong>#ORD-{{ order.id|stringformat:"04d" }}</strong>
+                <span aria-hidden="true"> · </span>
+                Total <strong>Rs. {{ order.total_amount }}</strong>
+            </p>
+        {% endif %}
+
+        <div class="payment-result-actions">
+            {% if order_url %}
+                <a class="payment-result-button" href="{{ order_url }}">Return to Order</a>
+            {% endif %}
+            <a
+                class="payment-result-button payment-result-button-secondary"
+                href="{% url 'order_history' %}"
+            >
+                Order History
+            </a>
+        </div>
+    </section>
+</main>
+{% endblock %}
