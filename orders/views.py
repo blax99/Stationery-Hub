@@ -1,5 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.csrf import ensure_csrf_cookie
 from datetime import timedelta
 from .models import Order, OrderItem, ShippingAddress
 from cart.models import Cart
@@ -65,6 +69,7 @@ def checkout(request):
 
 
 @login_required
+@ensure_csrf_cookie
 def checkout_confirmation(request, order_id):
     order = get_object_or_404(
         Order,
@@ -101,17 +106,48 @@ def order_history(request):
 
 @login_required
 def cancel_order(request, order_id):
-    order = get_object_or_404(
-        Order,
-        id=order_id,
-        user=request.user
-    )
+    if request.method != "POST":
+        return redirect('order_history')
 
-    if request.method == "POST":
-        if order.status in ['pending', 'confirmed']:
-            order.status = 'cancelled'
-            order.save()
+    from payments.models import ACTIVE_TRANSACTION_TIMEOUT, KhaltiTransaction
 
+    with transaction.atomic():
+        order = get_object_or_404(
+            Order.objects.select_for_update(),
+            id=order_id,
+            user=request.user
+        )
+
+        if order.payment_status == 'paid':
+            cancellation_result = 'paid'
+        elif order.status not in ('pending', 'confirmed'):
+            cancellation_result = 'unavailable'
+        else:
+            now = timezone.now()
+            KhaltiTransaction.objects.filter(
+                order=order,
+                status__in=('Initiated', 'Pending'),
+                created_at__lt=now - ACTIVE_TRANSACTION_TIMEOUT,
+            ).update(status='Expired')
+
+            payment_in_progress = KhaltiTransaction.objects.filter(
+                order=order,
+                status__in=('Initiated', 'Pending'),
+                created_at__gte=now - ACTIVE_TRANSACTION_TIMEOUT,
+            ).exists()
+
+            if payment_in_progress:
+                cancellation_result = 'payment_in_progress'
+            else:
+                order.status = 'cancelled'
+                order.save(update_fields=['status', 'updated_at'])
+                cancellation_result = None
+
+    if cancellation_result:
+        return redirect(
+            f"{reverse('order_confirmation', args=[order.id])}"
+            f"?cancellation={cancellation_result}"
+        )
     return redirect('order_history')
 
 

@@ -1,5 +1,10 @@
+from datetime import timedelta
+
 from django.db import models
 from orders.models import Order
+
+
+ACTIVE_TRANSACTION_TIMEOUT = timedelta(minutes=30)
 
 
 class KhaltiTransaction(models.Model):
