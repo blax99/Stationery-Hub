@@ -118,38 +118,59 @@
     }
 
     .confirmation-actions {
-        text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
         margin-top: 30px;
     }
 
-    .khalti-button,
-    .continue-shopping {
-        display: inline-block;
-        background-color: #8b2d2d;
-        color: #ffffff;
-        padding: 11px 30px;
-        border: 1px solid #8b2d2d;
-        border-radius: 6px;
-        font-size: 1rem;
+    .confirmation-actions form {
+        margin: 0;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 22px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font: inherit;
+        font-size: 0.95rem;
         font-weight: 600;
         text-decoration: none;
         cursor: pointer;
         transition:
             background-color 0.2s ease,
             border-color 0.2s ease,
+            color 0.2s ease,
+            box-shadow 0.2s ease,
             transform 0.2s ease;
     }
 
-    .khalti-button:hover,
-    .continue-shopping:hover {
-        background-color: #722424;
-        border-color: #722424;
-        color: #ffffff;
+    .action-button:hover {
+        transform: translateY(-1px);
     }
 
-    .khalti-button:active,
-    .continue-shopping:active {
-        transform: translateY(1px);
+    .action-button:focus-visible {
+        outline: 3px solid rgba(122, 40, 40, 0.25);
+        outline-offset: 3px;
+    }
+
+    .khalti-button {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    }
+
+    .khalti-button:hover {
+        background-color: #1d4ed8;
+        border-color: #1d4ed8;
+        color: #ffffff;
     }
 
     .khalti-button:disabled {
@@ -158,30 +179,28 @@
         transform: none;
     }
 
-    .continue-shopping {
-        margin-top: 14px;
-    }
-
     .cancel-order-button {
-        display: inline-block;
-        background-color: #8b2d2d !important;
-        color: #ffffff !important;
-        padding: 11px 30px;
-        border: 1px solid #8b2d2d !important;
-        border-radius: 6px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition:
-            background-color 0.2s ease,
-            color 0.2s ease,
-            border-color 0.2s ease;
+        background-color: #ffffff;
+        border-color: #e6caca;
+        color: #7a2828;
     }
 
     .cancel-order-button:hover {
-        background-color: #722424 !important;
-        color: #ffffff !important;
-        border-color: #722424 !important;
+        background-color: #fbf2f2;
+        border-color: #7a2828;
+        color: #642020;
+    }
+
+    .continue-shopping {
+        background-color: #faf8f5;
+        border-color: #e5dfd5;
+        color: #292524;
+    }
+
+    .continue-shopping:hover {
+        background-color: #f1ece4;
+        border-color: #c9bca8;
+        color: #292524;
     }
 
     @media (max-width: 640px) {
@@ -211,11 +230,15 @@
             text-align: right;
         }
 
-        .khalti-button,
-        .continue-shopping,
-        .cancel-order-button {
+        .action-button {
             width: 100%;
             box-sizing: border-box;
+        }
+
+        .confirmation-actions,
+        .confirmation-actions form,
+        .confirmation-actions form button {
+            width: 100%;
         }
     }
 </style>
@@ -449,7 +472,7 @@
                 <button
                     type="button"
                     id="khalti-button"
-                    class="khalti-button"
+                    class="action-button khalti-button"
                     onclick="payWithKhalti({{ order.id }})"
                 >
                     Pay with Khalti
@@ -465,7 +488,6 @@
                 <form
                     method="POST"
                     action="{% url 'cancel_order' order.id %}"
-                    style="margin-bottom: 10px; margin-top: 10px;"
                     onsubmit="return confirm('Are you sure you want to cancel this order?');"
                 >
 
@@ -473,7 +495,7 @@
 
                     <button
                         type="submit"
-                        class="cancel-order-button"
+                        class="action-button cancel-order-button"
                     >
                         Cancel Order
                     </button>
@@ -490,7 +512,6 @@
                 <form
                     method="POST"
                     action="{% url 'request_return' order.id %}"
-                    style="margin-bottom: 10px; margin-top: 10px;"
                     onsubmit="return confirm('Are you sure you want to request a return?');"
                 >
 
@@ -498,7 +519,7 @@
 
                     <button
                         type="submit"
-                        class="cancel-order-button"
+                        class="action-button cancel-order-button"
                     >
                         Return Order
                     </button>
@@ -510,16 +531,12 @@
 
             <!-- CONTINUE SHOPPING -->
 
-            <div>
-
-                <a
-                    href="/"
-                    class="continue-shopping"
-                >
-                    Continue Shopping
-                </a>
-
-            </div>
+            <a
+                href="/"
+                class="action-button continue-shopping"
+            >
+                Continue Shopping
+            </a>
 
         </div>
 

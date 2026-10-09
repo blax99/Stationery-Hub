@@ -8,18 +8,18 @@ Wishlist
 {% block content %}
 <div class="max-w-7xl mx-auto px-6 py-10">
 
-    <div class="flex items-center justify-between mb-10">
+    <div class="flex items-end justify-between mb-8 border-b border-gray-200 pb-4">
         <div>
-            <h1 class="text-3xl font-normal">
+            <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight">
                 My Wishlist
             </h1>
 
-            <p  id = "wishlist-subtitle" class="text-sm text-gray-500 mt-2">
+            <p id="wishlist-subtitle" class="text-xs text-gray-500 mt-1">
                 0 saved items
             </p>
         </div>
 
-        <span id="wishlist-count" class="text-sm text-gray-500">
+        <span id="wishlist-count" class="text-xs text-gray-500">
             0 items
         </span>
     </div>
@@ -621,4 +621,3 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 {% endblock %}
-

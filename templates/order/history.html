@@ -2,9 +2,111 @@
 
 {% block content %}
 
-<div class="max-w-5xl mx-auto px-4 py-8">
+<style>
+    .order-card {
+        border: 1px solid #e5dfd5;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(41, 37, 36, 0.05);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
 
-<h1 class="text-3xl font-bold mb-6">My Orders</h1>
+    .order-card:hover {
+        box-shadow: 0 8px 22px rgba(41, 37, 36, 0.09);
+        transform: translateY(-1px);
+    }
+
+    .order-action {
+        display: inline-flex;
+        min-height: 40px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        padding: 0 16px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease,
+            color 0.2s ease, transform 0.2s ease;
+    }
+
+    .order-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .order-action:focus-visible {
+        outline: 3px solid rgba(122, 40, 40, 0.2);
+        outline-offset: 2px;
+    }
+
+    .order-action-primary {
+        background: #7a2828;
+        border-color: #7a2828;
+        color: #fff;
+    }
+
+    .order-action-primary:hover {
+        background: #5e1f1f;
+        border-color: #5e1f1f;
+        color: #fff;
+    }
+
+    .order-action-danger {
+        background: #fff;
+        border-color: #e6caca;
+        color: #7a2828;
+    }
+
+    .order-action-danger:hover {
+        background: #fbf2f2;
+        border-color: #7a2828;
+        color: #5e1f1f;
+    }
+
+    .order-status-pending {
+        background: #f0fdf4;
+        color: #15803d;
+    }
+
+    .order-progress-step {
+        background: #e5e7eb;
+        color: #6b7280;
+    }
+
+    .order-progress-step-active,
+    .order-progress-line-active {
+        background: #16a34a;
+    }
+
+    .order-progress-step-active {
+        color: #ffffff;
+    }
+
+    .order-progress-label {
+        color: #6b7280;
+    }
+
+    .order-progress-label-active {
+        color: #15803d;
+        font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+        .order-action {
+            flex: 1 1 auto;
+        }
+    }
+</style>
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+<div class="mb-8 border-b border-gray-200 pb-4">
+    <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight">
+        My Orders
+    </h1>
+</div>
 
 {% if orders %}
 
@@ -12,23 +114,34 @@
 
         {% for order in orders %}
 
-        <div class="p-5 bg-white shadow-sm"> 
+        <div class="order-card p-5 sm:p-6">
 
-                <div class="flex justify-between items-center mb-3">
+                <div class="flex justify-between items-center gap-3 mb-5">
 
-                    <h2 class="text-lg font-semibold">
-                        Order #{{ order.id|stringformat:"04d" }}
-                    </h2>
+                    <div class="min-w-0">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            Order #{{ order.id|stringformat:"04d" }}
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Placed {{ order.created_at|date:"M d, Y" }}
+                        </p>
+                    </div>
 
-                    <span class="text-sm text-gray-500">
-                        {{ order.created_at|date:"M d, Y" }}
+                    <span class="inline-flex w-fit shrink-0 whitespace-nowrap items-center rounded-md px-2 py-0.5 text-[11px] font-semibold
+                        {% if order.status == 'cancelled' or order.status == 'returned' %}bg-gray-100 text-gray-700
+                        {% elif order.status == 'return_requested' %}bg-amber-50 text-amber-800
+                        {% elif order.status == 'delivered' %}bg-emerald-50 text-emerald-800
+                        {% elif order.status == 'shipped' %}bg-blue-50 text-blue-800
+                        {% elif order.status == 'pending' %}order-status-pending
+                        {% else %}bg-[#7A2828]/10 text-[#7A2828]{% endif %}">
+                        {{ order.get_status_display }}
                     </span>
 
                 </div>
 
                 {% if order.status == 'cancelled' %}
 
-                    <div class="border rounded-lg p-4 bg-gray-50 mb-4">
+                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4">
 
                         <p class="font-semibold text-gray-700">
                             Order Cancelled
@@ -42,7 +155,7 @@
 
                 {% elif order.status == 'return_requested' %}
 
-                    <div class="border rounded-lg p-4 bg-gray-50 mb-4">
+                    <div class="border border-amber-200 rounded-lg p-4 bg-amber-50 mb-4">
 
                         <p class="font-semibold text-gray-700">
                             Return Requested
@@ -56,7 +169,7 @@
 
                 {% elif order.status == 'returned' %}
 
-                    <div class="border rounded-lg p-4 bg-gray-50 mb-4">
+                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4">
 
                         <p class="font-semibold text-gray-700">
                             Order Returned
@@ -70,23 +183,21 @@
 
                 {% else %}
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
 
-                        <div class="md:col-span-3">
+                        <div class="md:col-span-3 rounded-lg bg-[#faf8f5] border border-[#e5dfd5] p-4">
 
-                            <strong>Order Status:</strong>
+                            <strong class="text-sm text-gray-700">Order Status</strong>
 
-                            <div class="flex items-center justify-between mt-3 text-sm">
+                            <div class="flex items-center justify-between mt-4 text-xs sm:text-sm">
 
                                 <!-- Pending -->
 
                                 <div class="text-center">
 
-                                    <div class="w-8 h-8 mx-auto rounded-full
+                                    <div class="order-progress-step w-8 h-8 mx-auto rounded-full
                                         {% if order.status == 'pending' or order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}
-                                            bg-green-600 text-white
-                                        {% else %}
-                                            bg-gray-200 text-gray-500
+                                            order-progress-step-active
                                         {% endif %}
                                         flex items-center justify-center">
 
@@ -94,7 +205,7 @@
 
                                     </div>
 
-                                    <p class="mt-1 text-black">
+                                    <p class="order-progress-label mt-1 {% if order.status == 'pending' or order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}order-progress-label-active{% endif %}">
                                         Pending
                                     </p>
 
@@ -104,7 +215,7 @@
 
                                 <div class="flex-1 h-1 mx-2
                                     {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}
-                                        bg-green-600
+                                        order-progress-line-active
                                     {% else %}
                                         bg-gray-200
                                     {% endif %}">
@@ -114,11 +225,9 @@
 
                                 <div class="text-center">
 
-                                    <div class="w-8 h-8 mx-auto rounded-full
+                                    <div class="order-progress-step w-8 h-8 mx-auto rounded-full
                                         {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}
-                                            bg-green-600 text-white
-                                        {% else %}
-                                            bg-gray-200 text-gray-500
+                                            order-progress-step-active
                                         {% endif %}
                                         flex items-center justify-center">
 
@@ -126,7 +235,7 @@
 
                                     </div>
 
-                                    <p class="mt-1 text-black">
+                                    <p class="order-progress-label mt-1 {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}order-progress-label-active{% endif %}">
                                         Confirmed
                                     </p>
 
@@ -136,7 +245,7 @@
 
                                 <div class="flex-1 h-1 mx-2
                                     {% if order.status == 'shipped' or order.status == 'delivered' %}
-                                        bg-green-600
+                                        order-progress-line-active
                                     {% else %}
                                         bg-gray-200
                                     {% endif %}">
@@ -146,11 +255,9 @@
 
                                 <div class="text-center">
 
-                                    <div class="w-8 h-8 mx-auto rounded-full
+                                    <div class="order-progress-step w-8 h-8 mx-auto rounded-full
                                         {% if order.status == 'shipped' or order.status == 'delivered' %}
-                                            bg-green-600 text-white
-                                        {% else %}
-                                            bg-gray-200 text-gray-500
+                                            order-progress-step-active
                                         {% endif %}
                                         flex items-center justify-center">
 
@@ -158,7 +265,7 @@
 
                                     </div>
 
-                                    <p class="mt-1 text-black">
+                                    <p class="order-progress-label mt-1 {% if order.status == 'shipped' or order.status == 'delivered' %}order-progress-label-active{% endif %}">
                                         Shipped
                                     </p>
 
@@ -168,7 +275,7 @@
 
                                 <div class="flex-1 h-1 mx-2
                                     {% if order.status == 'delivered' %}
-                                        bg-green-600
+                                        order-progress-line-active
                                     {% else %}
                                         bg-gray-200
                                     {% endif %}">
@@ -178,11 +285,9 @@
 
                                 <div class="text-center">
 
-                                    <div class="w-8 h-8 mx-auto rounded-full
+                                    <div class="order-progress-step w-8 h-8 mx-auto rounded-full
                                         {% if order.status == 'delivered' %}
-                                            bg-green-600 text-white
-                                        {% else %}
-                                            bg-gray-200 text-gray-500
+                                            order-progress-step-active
                                         {% endif %}
                                         flex items-center justify-center">
 
@@ -190,7 +295,7 @@
 
                                     </div>
 
-                                    <p class="mt-1 text-black">
+                                    <p class="order-progress-label mt-1 {% if order.status == 'delivered' %}order-progress-label-active{% endif %}">
                                         Delivered
                                     </p>
 
@@ -200,19 +305,19 @@
 
                         </div>
 
-                        <div>
+                        <div class="rounded-lg bg-gray-50 border border-gray-100 p-4">
 
-                            <strong>Payment:</strong>
+                            <strong class="block text-xs uppercase tracking-wide text-gray-500 mb-1">Payment</strong>
 
-                            {{ order.get_payment_status_display }}
+                            <span class="font-semibold text-gray-900">{{ order.get_payment_status_display }}</span>
 
                         </div>
 
-                        <div>
+                        <div class="rounded-lg bg-gray-50 border border-gray-100 p-4">
 
-                            <strong>Total:</strong>
+                            <strong class="block text-xs uppercase tracking-wide text-gray-500 mb-1">Total</strong>
 
-                            Rs. {{ order.total_amount }}
+                            <span class="font-semibold text-gray-900">Rs. {{ order.total_amount }}</span>
 
                         </div>
 
@@ -220,16 +325,13 @@
 
                 {% endif %}
 
-                <div class="mt-4 flex flex-wrap gap-8">
+                <div class="mt-5 pt-4 border-t border-gray-100 flex flex-wrap gap-3">
 
                     <!-- View Order -->
 
                     <a
                         href="{% url 'order_confirmation' order.id %}"
-                        class="inline-block px-4 py-2 rounded"
-                        style="background-color: #8b2d2d !important; color: #ffffff !important; border: none !important; text-decoration: none !important;"
-                        onmouseover="this.style.backgroundColor='#722424'"
-                        onmouseout="this.style.backgroundColor='#8b2d2d'"
+                        class="order-action order-action-primary"
                     >
                         View Order
                     </a>
@@ -242,17 +344,14 @@
                             method="POST"
                             action="{% url 'cancel_order' order.id %}"
                             onsubmit="return confirm('Are you sure you want to cancel this order?');"
-                            style="margin: 0;"
+                            class="m-0"
                         >
 
                             {% csrf_token %}
 
                             <button
                                 type="submit"
-                                class="px-4 py-2 rounded"
-                                style="background-color: #8b2d2d !important; color: #ffffff !important; border: none !important; text-decoration: none !important; opacity: 1 !important; visibility: visible !important; display: inline-block !important; cursor: pointer;"
-                                onmouseover="this.style.backgroundColor='#722424'"
-                                onmouseout="this.style.backgroundColor='#8b2d2d'"
+                                class="order-action order-action-danger"
                             >
                                 Cancel Order
                             </button>
@@ -269,17 +368,14 @@
                             method="POST"
                             action="{% url 'request_return' order.id %}"
                             onsubmit="return confirm('Are you sure you want to request a return?');"
-                            style="margin: 0;"
+                            class="m-0"
                         >
 
                             {% csrf_token %}
 
                             <button
                                 type="submit"
-                                class="px-4 py-2 rounded"
-                                style="background-color: #f97316 !important; color: #ffffff !important; border: none !important; text-decoration: none !important; opacity: 1 !important; visibility: visible !important; display: inline-block !important; cursor: pointer;"
-                                onmouseover="this.style.backgroundColor='#ea580c'"
-                                onmouseout="this.style.backgroundColor='#f97316'"
+                                class="order-action order-action-danger"
                             >
                                 Return Order
                             </button>
