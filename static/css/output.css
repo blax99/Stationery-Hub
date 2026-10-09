@@ -538,6 +538,9 @@
   .flex-col {
     flex-direction: column;
   }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
   .items-center {
     align-items: center;
   }
@@ -1197,6 +1200,15 @@
     .hover\:text-red-600:hover {
       color: var(--color-red-600);
     }
+    .hover\:text-blue-600:hover {
+      color: var(--color-blue-600);
+    }
+    .hover\:text-gray-700:hover {
+      color: var(--color-gray-700);
+    }
+    .hover\:text-red-500:hover {
+      color: var(--color-red-500);
+    }
     .hover\:text-white:hover {
       color: var(--color-white);
     }
@@ -1282,6 +1294,9 @@
     }
   }
   @media (width >= 48rem) {
+    .md\:col-span-3 {
+      grid-column: span 3 / span 3;
+    }
     .md\:flex {
       display: flex;
     }

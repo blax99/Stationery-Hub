@@ -157,5 +157,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+KHALTI_SECRET_KEY = os.getenv("KHALTI_SECRET_KEY")  # or test_secret_key_xxx for sandbox
+# KHALTI_BASE_URL = "https://khalti.com/api/v2"        # prod
+KHALTI_BASE_URL = os.getenv("KHALTI_BASE_URL", "https://dev.khalti.com/api/v2")
+KHALTI_WEBSITE_URL = os.getenv("KHALTI_WEBSITE_URL", "http://127.0.0.1:8000/")
+KHALTI_RETURN_URL = os.getenv("KHALTI_RETURN_URL", "http://127.0.0.1:8000/api/payments/verify/")
+
 SITE_URL = os.getenv('SITE_URL')
 LOGIN_URL = "/users/login-page/"
