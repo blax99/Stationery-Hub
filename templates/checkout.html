@@ -247,6 +247,7 @@
                         <input
                             type="email"
                             name="email"
+                            value="{{ email }}"
                             placeholder="Enter your email address"
                             required
                         >
@@ -318,6 +319,7 @@
                         <input
                             type="tel"
                             name="phone"
+                            value="{{ phone_number }}"
                             placeholder="Enter your phone number"
                             required
                         >
@@ -337,6 +339,22 @@
                         Order Summary
                     </h2>
 
+                    <div class="order-items">
+                        {% for item in cart_items %}
+                            <div class="order-row">
+                                <span>
+                                    {{ item.product.name }} × {{ item.quantity }}
+                                </span>
+                                <span>
+                                    Rs. {{ item.line_total|floatformat:2 }}
+                                </span>
+                            </div>
+                        {% empty %}
+                            <p class="order-row">
+                                Your cart is empty.
+                            </p>
+                        {% endfor %}
+                    </div>
 
                     <div class="order-row">
 
@@ -345,7 +363,7 @@
                         </span>
 
                         <span>
-                            Rs. 0.00
+                            Rs. {{ total_amount|floatformat:2 }}
                         </span>
 
                     </div>
@@ -374,7 +392,7 @@
                         </span>
 
                         <span>
-                            Rs. 0.00
+                            Rs. {{ total_amount|floatformat:2 }}
                         </span>
 
                     </div>

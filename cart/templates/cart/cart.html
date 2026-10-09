@@ -9,12 +9,12 @@ Shopping Cart
 <div class="max-w-7xl mx-auto px-6 py-10">
 
     <!-- HEADER -->
-    <div class="mb-10">
-        <h1 class="text-3xl font-normal">
+    <div class="mb-8 border-b border-gray-200 pb-4">
+        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight">
             Shopping Cart
         </h1>
 
-        <p class="text-sm text-gray-500 mt-2">
+        <p class="text-xs text-gray-500 mt-1">
             Review your selected products
         </p>
     </div>
@@ -145,12 +145,12 @@ Shopping Cart
 
 
                 <!-- CHECKOUT -->
-                <button
-                    type="button"
-                    class="w-full bg-slate-800 text-white py-3 mt-6 text-sm font-medium hover:bg-slate-700 transition"
+                <a
+                    href="{% url 'checkout' %}"
+                    class="block w-full bg-slate-800 text-white py-3 mt-6 text-center text-sm font-medium hover:bg-slate-700 transition"
                 >
                     Proceed to Checkout
-                </button>
+                </a>
 
             </div>
 

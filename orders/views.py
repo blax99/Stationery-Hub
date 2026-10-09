@@ -7,18 +7,22 @@ from cart.models import Cart
 
 @login_required
 def checkout(request):
+    cart = Cart.objects.filter(user=request.user).first()
+    cart_items = list(
+        cart.items.select_related('product') if cart else []
+    )
+
+    for item in cart_items:
+        item.line_total = item.product.price * item.quantity
+
+    total_amount = sum(
+        (item.line_total for item in cart_items),
+        start=0
+    )
+
     if request.method == "POST":
-        cart = Cart.objects.filter(user=request.user).first()
-
-        if not cart or not cart.items.exists():
+        if not cart_items:
             return redirect('cart')
-
-        cart_items = cart.items.select_related('product')
-
-        total_amount = sum(
-            item.product.price * item.quantity
-            for item in cart_items
-        )
 
         order = Order.objects.create(
             user=request.user,
@@ -48,7 +52,16 @@ def checkout(request):
             order_id=order.id
         )
 
-    return render(request, 'checkout.html')
+    return render(
+        request,
+        'checkout.html',
+        {
+            'cart_items': cart_items,
+            'total_amount': total_amount,
+            'email': request.user.email,
+            'phone_number': request.user.phone_number,
+        }
+    )
 
 
 @login_required
