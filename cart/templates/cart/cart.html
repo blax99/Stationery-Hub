@@ -1,0 +1,1052 @@
+{% extends "base.html" %}
+
+{% block title %}
+Shopping Cart
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- HEADER -->
+    <div class="mb-8 border-b border-gray-200 pb-4">
+        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight">
+            Shopping Cart
+        </h1>
+
+        <p class="text-xs text-gray-500 mt-1">
+            Review your selected products
+        </p>
+    </div>
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+        <!-- CART ITEMS -->
+        <div class="lg:col-span-2">
+
+            <!-- CART CONTENT -->
+            <div id="cart-content">
+
+                <!-- CART HEADER -->
+                <div
+                    id="cart-header"
+                    class="hidden lg:grid grid-cols-[minmax(0,1fr)_140px_140px_40px] gap-5 pb-3 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wide"
+                >
+
+                    <div>
+                        Product
+                    </div>
+
+                    <div class="text-center">
+                        Quantity
+                    </div>
+
+                    <div class="text-center">
+                        Price
+                    </div>
+
+                    <div></div>
+
+                </div>
+
+
+                <!-- CART ITEMS -->
+                <div
+                    id="api-cart-items"
+                    class="space-y-0"
+                >
+                    <p class="text-gray-500">
+                        Loading cart...
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- CONTINUE SHOPPING -->
+            <div class="mt-8">
+                <a
+                    href="{% url 'products:product_list' %}"
+                    class="text-sm text-amber-700 hover:text-amber-900 transition"
+                >
+                    ← Continue Shopping
+                </a>
+            </div>
+
+        </div>
+
+
+        <!-- ORDER SUMMARY -->
+        <div>
+
+            <div class="border border-gray-200 bg-white p-6">
+
+                <h2 class="text-xl font-medium mb-6">
+                    Order Summary
+                </h2>
+
+
+                <!-- PRODUCT SUMMARY -->
+                <div
+                    id="order-summary-items"
+                    class="space-y-4 pb-5 border-b border-gray-200"
+                >
+                    <p class="text-sm text-gray-400">
+                        Loading...
+                    </p>
+                </div>
+
+
+                <!-- SUBTOTAL -->
+                <div class="flex justify-between text-sm mt-6 mb-4">
+
+                    <span class="text-gray-500">
+                        Subtotal
+                    </span>
+
+                    <span id="subtotal">
+                        Rs. 0
+                    </span>
+
+                </div>
+
+
+                <!-- SHIPPING -->
+                <div class="flex justify-between text-sm mb-4">
+
+                    <span class="text-gray-500">
+                        Shipping
+                    </span>
+
+                    <span class="text-emerald-700">
+                        Free
+                    </span>
+
+                </div>
+
+
+                <!-- TOTAL -->
+                <div class="border-t border-gray-200 pt-5">
+
+                    <div class="flex justify-between text-lg font-medium">
+
+                        <span>
+                            Total
+                        </span>
+
+                        <span id="total">
+                            Rs. 0
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CHECKOUT -->
+                <a
+                    href="{% url 'checkout' %}"
+                    class="block w-full bg-slate-800 text-white py-3 mt-6 text-center text-sm font-medium hover:bg-slate-700 transition"
+                >
+                    Proceed to Checkout
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   JWT
+========================================================= */
+
+function getAccessToken() {
+
+    return localStorage.getItem("access_token");
+
+}
+
+
+async function refreshAccessToken() {
+
+    const refreshToken =
+        localStorage.getItem("refresh_token");
+
+    if (!refreshToken) {
+        return null;
+    }
+
+
+    const response = await fetch(
+        "/api/users/login/refresh/",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                refresh: refreshToken
+            })
+        }
+    );
+
+
+    if (!response.ok) {
+        return null;
+    }
+
+
+    const data =
+        await response.json();
+
+
+    localStorage.setItem(
+        "access_token",
+        data.access
+    );
+
+
+    return data.access;
+
+}
+
+
+/* =========================================================
+   CART REQUEST
+========================================================= */
+
+async function cartRequest(
+    url,
+    options = {}
+) {
+
+    let token =
+        getAccessToken();
+
+
+    options.headers = {
+
+        ...(options.headers || {}),
+
+        "Authorization":
+            "Bearer " + token
+
+    };
+
+
+    let response =
+        await fetch(
+            url,
+            options
+        );
+
+
+    /*
+        If access token expired,
+        refresh it and try again.
+    */
+
+    if (response.status === 401) {
+
+        token =
+            await refreshAccessToken();
+
+
+        if (!token) {
+            return response;
+        }
+
+
+        options.headers = {
+
+            ...(options.headers || {}),
+
+            "Authorization":
+                "Bearer " + token
+
+        };
+
+
+        response =
+            await fetch(
+                url,
+                options
+            );
+
+    }
+
+
+    return response;
+
+}
+
+
+/* =========================================================
+   LOAD CART
+========================================================= */
+
+async function loadCart() {
+
+    const container =
+        document.getElementById(
+            "api-cart-items"
+        );
+
+
+    const summaryContainer =
+        document.getElementById(
+            "order-summary-items"
+        );
+
+
+    const cartHeader =
+        document.getElementById(
+            "cart-header"
+        );
+
+
+    try {
+
+        const response =
+            await cartRequest(
+                "/cart/items/"
+            );
+
+
+        console.log(
+            "Cart API status:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Cart data:",
+            data
+        );
+
+
+        /* =================================================
+           UPDATE NAVBAR CART COUNT
+        ================================================= */
+
+        const cartCount =
+            document.getElementById(
+                "cart-count"
+            );
+
+
+        if (cartCount) {
+
+            const totalQuantity =
+                data.items.reduce(
+                    (total, item) =>
+                        total + Number(item.quantity),
+                    0
+                );
+
+
+            cartCount.textContent =
+                totalQuantity;
+
+        }
+
+
+        /* =================================================
+           API ERROR
+        ================================================= */
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+                <p class="text-red-500">
+                    Unable to load cart.
+                </p>
+            `;
+
+
+            summaryContainer.innerHTML = "";
+
+
+            if (cartHeader) {
+                cartHeader.style.display = "none";
+            }
+
+
+            return;
+
+        }
+
+
+        /* =================================================
+           EMPTY CART
+        ================================================= */
+
+        if (
+            !data.items ||
+            data.items.length === 0
+        ) {
+
+            /*
+                Hide Product / Quantity / Price header
+                when cart is empty.
+            */
+
+            if (cartHeader) {
+                cartHeader.style.display = "none";
+            }
+
+
+            container.innerHTML = `
+
+                <div class="text-center py-20">
+
+                    <div class="text-5xl mb-5">
+                        🛒
+                    </div>
+
+
+                    <h2 class="text-2xl font-normal">
+                        Your cart is empty
+                    </h2>
+
+
+                    <p class="text-gray-500 mt-3">
+                        Add some products to your cart.
+                    </p>
+
+                </div>
+
+            `;
+
+
+            summaryContainer.innerHTML = `
+
+                <p class="text-sm text-gray-400">
+                    No items
+                </p>
+
+            `;
+
+
+            document.getElementById(
+                "subtotal"
+            ).textContent = "Rs. 0";
+
+
+            document.getElementById(
+                "total"
+            ).textContent = "Rs. 0";
+
+
+            return;
+
+        }
+
+
+        /* =================================================
+           CART HAS PRODUCTS
+        ================================================= */
+
+        /*
+            Show Product / Quantity / Price header
+            when cart contains products.
+        */
+
+        if (cartHeader) {
+
+            cartHeader.style.display = "";
+
+        }
+
+
+        container.innerHTML = "";
+
+        summaryContainer.innerHTML = "";
+
+
+        /* =================================================
+           SORT ITEMS
+        ================================================= */
+
+        const items =
+            [...data.items].sort(
+                (a, b) =>
+                    a.id - b.id
+            );
+
+
+        /* =================================================
+           CART ITEMS
+        ================================================= */
+
+        items.forEach(
+            function(item) {
+
+                const cartItem =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                cartItem.className = `
+                    cart-item
+                    border-b
+                    border-gray-200
+                    py-6
+                    grid
+                    grid-cols-1
+                    lg:grid-cols-[minmax(0,1fr)_140px_140px_40px]
+                    gap-5
+                    items-center
+                `;
+
+
+                cartItem.dataset.itemId =
+                    item.id;
+
+
+                cartItem.dataset.price =
+                    item.price;
+
+
+                cartItem.dataset.itemTotal =
+                    item.item_total;
+
+
+                cartItem.innerHTML = `
+
+                    <!-- PRODUCT -->
+
+                    <div class="flex items-center gap-4 min-w-0">
+
+                        <!-- IMAGE -->
+
+                        <div
+                            class="w-20 h-24 bg-gray-100 flex-shrink-0 overflow-hidden"
+                        >
+
+                            ${
+                                item.image
+
+                                ?
+
+                                `
+                                <img
+                                    src="${item.image}"
+                                    alt="${item.product}"
+                                    class="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-105"
+                                >
+                                `
+
+                                :
+
+                                `
+                                <div
+                                    class="w-full h-full flex items-center justify-center text-xs text-gray-400"
+                                >
+                                    No Image
+                                </div>
+                                `
+                            }
+
+                        </div>
+
+
+                        <!-- PRODUCT INFO -->
+
+                        <div class="min-w-0">
+
+                            <h3
+                                class="text-base font-medium text-gray-900"
+                            >
+                                ${item.product}
+                            </h3>
+
+
+                            <p
+                                class="text-sm text-gray-500 mt-1"
+                            >
+                                Rs. ${item.price}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- QUANTITY -->
+
+                    <div
+                        class="flex items-center justify-center border border-gray-200 w-full h-9"
+                    >
+
+                        <button
+                            type="button"
+                            class="decrease w-9 h-9 flex items-center justify-center hover:bg-gray-50"
+                            aria-label="Decrease quantity"
+                        >
+                            −
+                        </button>
+
+
+                        <span
+                            class="quantity w-9 text-center text-sm"
+                        >
+                            ${item.quantity}
+                        </span>
+
+
+                        <button
+                            type="button"
+                            class="increase w-9 h-9 flex items-center justify-center hover:bg-gray-50"
+                            aria-label="Increase quantity"
+                        >
+                            +
+                        </button>
+
+                    </div>
+
+
+                    <!-- ITEM TOTAL -->
+
+                    <span
+                        class="text-sm font-medium text-center w-full"
+                    >
+                        Rs. ${item.item_total}
+                    </span>
+
+
+                    <!-- DELETE -->
+
+                    <button
+                        type="button"
+                        class="delete text-gray-400 hover:text-red-600 transition"
+                        title="Remove from cart"
+                        aria-label="Remove from cart"
+                    >
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="w-5 h-5"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0115.916 21H8.084a2.25 2.25 0 01-2.244-1.327L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.57 0c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0C7.91 2.148 7 3.132 7 4.312v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                            />
+
+                        </svg>
+
+                    </button>
+
+                `;
+
+
+                container.appendChild(
+                    cartItem
+                );
+
+
+                /* =================================================
+                   ORDER SUMMARY ITEM
+                ================================================= */
+
+                const summaryItem =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                summaryItem.className =
+                    "flex justify-between gap-4 text-sm";
+
+
+                summaryItem.innerHTML = `
+
+                    <span
+                        class="text-gray-500 truncate"
+                        title="${item.product}"
+                    >
+                        ${item.product}
+                    </span>
+
+
+                    <span
+                        class="font-medium whitespace-nowrap"
+                    >
+                        Rs. ${item.item_total}
+                    </span>
+
+                `;
+
+
+                summaryContainer.appendChild(
+                    summaryItem
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           TOTALS
+        ================================================= */
+
+        document.getElementById(
+            "subtotal"
+        ).textContent =
+            "Rs. " + data.subtotal;
+
+
+        document.getElementById(
+            "total"
+        ).textContent =
+            "Rs. " + data.subtotal;
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Cart loading error:",
+            error
+        );
+
+
+        if (cartHeader) {
+            cartHeader.style.display = "none";
+        }
+
+
+        container.innerHTML = `
+
+            <p class="text-red-500">
+                Something went wrong
+                while loading the cart.
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE QUANTITY
+========================================================= */
+
+async function updateQuantity(
+    cartItem,
+    change
+) {
+
+    const itemId =
+        cartItem.dataset.itemId;
+
+
+    const quantityElement =
+        cartItem.querySelector(
+            ".quantity"
+        );
+
+
+    const currentQuantity =
+        parseInt(
+            quantityElement.textContent.trim()
+        );
+
+
+    const newQuantity =
+        currentQuantity + change;
+
+
+    if (newQuantity < 1) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await cartRequest(
+                "/cart/items/",
+                {
+
+                    method: "PATCH",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        item_id:
+                            parseInt(itemId),
+
+                        quantity:
+                            newQuantity
+
+                    })
+
+                }
+            );
+
+
+        console.log(
+            "Quantity update status:",
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Updated cart:",
+            data
+        );
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                data.error ||
+                "Unable to update quantity."
+            );
+
+            return;
+
+        }
+
+
+        await loadCart();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Quantity update error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE CART ITEM
+========================================================= */
+
+async function deleteCartItem(cartItem, itemId) {
+
+    try {
+
+        const response = await cartRequest(
+            "/cart/items/",
+            {
+                method: "DELETE",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    item_id: parseInt(itemId)
+                })
+            }
+        );
+
+        console.log(
+            "Delete status:",
+            response.status
+        );
+
+        const data = await response.json();
+
+        console.log(
+            "Delete response:",
+            data
+        );
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+            alert(
+                data.error ||
+                "Unable to remove item."
+            );
+
+            return;
+        }
+
+        await loadCart();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Delete error:",
+            error
+        );
+
+    }
+}
+
+/* =========================================================
+   CART BUTTON HANDLING
+========================================================= */
+
+const container =
+    document.getElementById(
+        "api-cart-items"
+    );
+
+
+container.addEventListener(
+    "click",
+    function(event) {
+
+
+        /* =========================
+           INCREASE
+        ========================= */
+
+        const increaseButton =
+            event.target.closest(
+                ".increase"
+            );
+
+
+        if (increaseButton) {
+
+            const cartItem =
+                increaseButton.closest(
+                    ".cart-item"
+                );
+
+
+            if (cartItem) {
+
+                updateQuantity(
+                    cartItem,
+                    1
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        /* =========================
+           DECREASE
+        ========================= */
+
+        const decreaseButton =
+            event.target.closest(
+                ".decrease"
+            );
+
+
+        if (decreaseButton) {
+
+            const cartItem =
+                decreaseButton.closest(
+                    ".cart-item"
+                );
+
+
+            if (cartItem) {
+
+                updateQuantity(
+                    cartItem,
+                    -1
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        /* =========================
+           DELETE
+        ========================= */
+
+        const deleteButton =
+            event.target.closest(
+                ".delete"
+            );
+
+
+        if (deleteButton) {
+
+            const cartItem =
+                deleteButton.closest(
+                    ".cart-item"
+                );
+
+
+            if (!cartItem) {
+                return;
+            }
+
+
+            const itemId =
+                cartItem.dataset.itemId;
+
+
+            deleteCartItem(
+                cartItem,
+                itemId
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadCart();
+
+</script>
+
+{% endblock %}
