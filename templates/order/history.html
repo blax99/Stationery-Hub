@@ -338,7 +338,7 @@
 
                     <!-- Cancel Order -->
 
-                    {% if order.status == 'pending' or order.status == 'confirmed' %}
+                    {% if order.payment_status != 'paid' and order.status == 'pending' or order.payment_status != 'paid' and order.status == 'confirmed' %}
 
                         <form
                             method="POST"
