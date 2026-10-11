@@ -1,6 +1,12 @@
-from django.shortcuts import render, redirect
+from functools import wraps
+
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate, TruncMonth
+from django.contrib import messages
+from django.db.models import Q
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from datetime import timedelta
 
@@ -8,8 +14,21 @@ from products.models import Products, Category
 from products.forms import ProductForm
 from orders.models import Order
 from users.models import User
+from users.permissions import has_admin_access
 
 
+def admin_required(view_func):
+    @login_required
+    @wraps(view_func)
+    def wrapped_view(request, *args, **kwargs):
+        if not has_admin_access(request.user):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+
+    return wrapped_view
+
+
+@admin_required
 def dashboard_view(request):
 
     total_products = Products.objects.count()
@@ -73,6 +92,7 @@ def dashboard_view(request):
     return render(request, "admin_dashboard/dashboard.html", context)
 
 
+@admin_required
 def products_view(request):
 
     form = ProductForm()
@@ -114,6 +134,7 @@ def products_view(request):
     return render(request, "admin_dashboard/products.html", context)
 
 
+@admin_required
 def inventory_view(request):
 
     if request.method == "POST":
@@ -143,6 +164,7 @@ def inventory_view(request):
     return render(request, "admin_dashboard/inventory.html", context)
 
 
+@admin_required
 def orders_view(request):
 
     if request.method == "POST":
@@ -192,6 +214,7 @@ def orders_view(request):
     return render(request, "admin_dashboard/orders.html", context)
 
 
+@admin_required
 def analytics_view(request):
 
     total_products = Products.objects.count()
@@ -502,6 +525,7 @@ def analytics_view(request):
     return render(request, "admin_dashboard/analytics.html", context)
 
 
+@admin_required
 def users_view(request):
 
     if request.method == "POST":
@@ -513,6 +537,10 @@ def users_view(request):
             email = request.POST.get("email", "").strip()
             password = request.POST.get("password")
             role = request.POST.get("role")
+
+            if role not in ("admin", "customer"):
+                messages.error(request, "Choose either Admin or Customer.")
+                return redirect("users")
 
             name_parts = full_name.split()
             first_name = name_parts[0] if name_parts else ""
@@ -548,6 +576,10 @@ def users_view(request):
             password = request.POST.get("password")
             role = request.POST.get("role")
 
+            if role not in ("admin", "customer"):
+                messages.error(request, "Choose either Admin or Customer.")
+                return redirect("users")
+
             name_parts = full_name.split()
 
             user.first_name = name_parts[0] if name_parts else ""
@@ -570,11 +602,14 @@ def users_view(request):
 
             return redirect("users")
 
-    users = User.objects.all().order_by("-date_joined")
+    users = (
+        User.objects.filter(Q(role__in=("admin", "customer")) | Q(is_superuser=True))
+        .order_by("-date_joined")
+    )
 
     total_users = users.count()
-    total_customers = users.filter(role="customer").count()
-    total_admins = users.filter(role="admin").count()
+    total_customers = users.filter(role="customer", is_superuser=False).count()
+    total_admins = users.filter(Q(role="admin") | Q(is_superuser=True)).count()
 
     context = {
         "users": users,

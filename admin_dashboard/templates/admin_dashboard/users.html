@@ -4,109 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>User Management - Stationery Hub</title>
+    <title>Stationery Hub - Admin</title>
+    <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png" />
 
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
   <body class="bg-gray-100 text-gray-800">
-    <aside class="fixed left-0 top-0 z-40 h-screen w-64 bg-gray-900 text-white">
-      <div class="flex h-20 items-center border-b border-gray-700 px-6">
-        <h1 class="text-2xl font-bold">
-          Stationery<span class="text-blue-400">Hub</span>
-        </h1>
+    <div class="flex min-h-screen">
+      {% include "admin_dashboard/_sidebar.html" with active_page="users" %}
+
+    <main class="min-w-0 flex-1 p-8">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">Users</h2>
+        <p class="mt-1 text-gray-500">
+          Manage admin and customer accounts
+        </p>
       </div>
 
-      <nav class="mt-6 px-4">
-        <p
-          class="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500"
-        >
-          Main
+      {% if messages %}
+      <div class="mb-6 space-y-2" role="status">
+        {% for message in messages %}
+        <p class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {{ message }}
         </p>
+        {% endfor %}
+      </div>
+      {% endif %}
 
-        <a
-          href="{% url 'dashboard' %}"
-          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
-        >
-          <span class="mr-3">📊</span>
-          Dashboard
-        </a>
-
-        <a
-          href="{% url 'products' %}"
-          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
-        >
-          <span class="mr-3">📦</span>
-          Products
-        </a>
-
-        <a
-          href="{% url 'inventory' %}"
-          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
-        >
-          <span class="mr-3">📋</span>
-          Inventory
-        </a>
-
-        <a
-          href="{% url 'orders' %}"
-          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
-        >
-          <span class="mr-3">🛒</span>
-          Orders
-        </a>
-
-        <a
-          href="{% url 'analytics' %}"
-          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
-        >
-          <span class="mr-3">📈</span>
-          Analytics
-        </a>
-
-        <p
-          class="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500"
-        >
-          Management
-        </p>
-
-        <a
-          href="{% url 'users' %}"
-          class="mb-2 flex items-center rounded-lg bg-blue-600 px-4 py-3 font-medium text-white shadow"
-        >
-          <span class="mr-3">👥</span>
-          Users
-        </a>
-      </nav>
-    </aside>
-
-    <main class="ml-64 min-h-screen">
-      <header
-        class="flex h-20 items-center justify-between border-b bg-white px-8 shadow-sm"
-      >
-        <div>
-          <h2 class="text-2xl font-bold text-gray-800">User Management</h2>
-
-          <p class="mt-1 text-sm text-gray-500">
-            Manage registered users and their roles
-          </p>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <div class="text-right">
-            <p class="text-sm font-semibold text-gray-700">Admin</p>
-            <p class="text-xs text-gray-500">Administrator</p>
-          </div>
-
-          <div
-            class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold text-white"
-          >
-            A
-          </div>
-        </div>
-      </header>
-
-      <section class="p-8">
         <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
           <div class="rounded-xl bg-white p-6 shadow-sm">
             <div class="flex items-center justify-between">
@@ -207,7 +132,6 @@
               <option value="">All Roles</option>
               <option value="customer">Customer</option>
               <option value="admin">Admin</option>
-              <option value="vendor">Vendor</option>
             </select>
           </div>
 
@@ -229,7 +153,7 @@
 
                 <tr
                   class="user-row transition hover:bg-gray-50"
-                  data-role="{{ user.role|lower }}"
+                  data-role="{% if user.role == 'admin' or user.is_superuser %}admin{% else %}customer{% endif %}"
                   data-id="{{ user.id }}"
                   data-name="{{ user.first_name }} {{ user.last_name }}"
                   data-email="{{ user.email }}"
@@ -260,20 +184,12 @@
                   <td class="px-6 py-4 text-gray-600">{{ user.email }}</td>
 
                   <td class="px-6 py-4">
-                    {% if user.role == "admin" %}
+                    {% if user.role == "admin" or user.is_superuser %}
 
                     <span
                       class="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-700"
                     >
                       Admin
-                    </span>
-
-                    {% elif user.role == "vendor" %}
-
-                    <span
-                      class="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700"
-                    >
-                      Vendor
                     </span>
 
                     {% else %}
@@ -367,8 +283,8 @@
             </p>
           </div>
         </div>
-      </section>
     </main>
+    </div>
 
     <!-- USER MODAL -->
 
@@ -462,7 +378,6 @@
             >
               <option value="customer">Customer</option>
               <option value="admin">Admin</option>
-              <option value="vendor">Vendor</option>
             </select>
           </div>
 

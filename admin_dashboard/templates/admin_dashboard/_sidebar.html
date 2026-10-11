@@ -1,0 +1,48 @@
+<aside class="w-64 shrink-0 bg-gray-900 p-6 text-white shadow-lg">
+  <h1 class="mb-8 text-2xl font-bold">Stationery Hub - Admin</h1>
+
+  <nav class="space-y-2" aria-label="Admin dashboard">
+    <a
+      href="{% url 'dashboard' %}"
+      class="block rounded-lg px-4 py-3 transition {% if active_page == 'dashboard' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+      {% if active_page == 'dashboard' %}aria-current="page"{% endif %}
+    >
+      📊 Dashboard
+    </a>
+    <a
+      href="{% url 'products' %}"
+      class="block rounded-lg px-4 py-3 transition {% if active_page == 'products' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+      {% if active_page == 'products' %}aria-current="page"{% endif %}
+    >
+      📦 Products
+    </a>
+    <a
+      href="{% url 'inventory' %}"
+      class="block rounded-lg px-4 py-3 transition {% if active_page == 'inventory' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+      {% if active_page == 'inventory' %}aria-current="page"{% endif %}
+    >
+      📋 Inventory
+    </a>
+    <a
+      href="{% url 'orders' %}"
+      class="block rounded-lg px-4 py-3 transition {% if active_page == 'orders' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+      {% if active_page == 'orders' %}aria-current="page"{% endif %}
+    >
+      🛒 Orders
+    </a>
+    <a
+      href="{% url 'analytics' %}"
+      class="block rounded-lg px-4 py-3 transition {% if active_page == 'analytics' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+      {% if active_page == 'analytics' %}aria-current="page"{% endif %}
+    >
+      📈 Analytics
+    </a>
+    <a
+      href="{% url 'users' %}"
+      class="block rounded-lg px-4 py-3 transition {% if active_page == 'users' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+      {% if active_page == 'users' %}aria-current="page"{% endif %}
+    >
+      👥 Users
+    </a>
+  </nav>
+</aside>

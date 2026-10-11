@@ -4,60 +4,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Orders - Stationery Hub</title>
+    <title>Stationery Hub - Admin</title>
+    <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png" />
 
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
   <body class="bg-gray-100 text-gray-800">
     <div class="flex min-h-screen">
-      <!-- Sidebar -->
-      <aside class="w-64 bg-gray-900 text-white p-6 shadow-lg">
-        <h1 class="text-2xl font-bold mb-8">Stationery Hub</h1>
-
-        <nav class="space-y-2">
-          <a
-            href="/dashboard/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            📊 Dashboard
-          </a>
-
-          <a
-            href="/dashboard/products/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            📦 Products
-          </a>
-
-          <a
-            href="/dashboard/inventory/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            📋 Inventory
-          </a>
-
-          <a
-            href="/dashboard/orders/"
-            class="block px-4 py-3 rounded-lg bg-gray-800"
-          >
-            🛒 Orders
-          </a>
-
-          <a
-            href="/dashboard/analytics/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            📈 Analytics
-          </a>
-          <a
-            href="/dashboard/users/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            👥 Users
-          </a>
-        </nav>
-      </aside>
+      {% include "admin_dashboard/_sidebar.html" with active_page="orders" %}
 
       <!-- Main Content -->
       <main class="flex-1 p-8">

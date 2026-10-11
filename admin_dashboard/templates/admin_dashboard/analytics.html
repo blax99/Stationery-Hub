@@ -5,7 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Analytics - Stationery Hub</title>
+    <title>Stationery Hub - Admin</title>
+    <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -25,87 +26,26 @@
 
   <body class="bg-gray-100 text-gray-800">
     <div class="flex min-h-screen">
-      <!-- Sidebar -->
-      <aside class="w-64 bg-gray-900 text-white fixed h-full shadow-lg">
-        <div class="p-6 border-b border-gray-700">
-          <h1 class="text-2xl font-bold">Stationery Hub</h1>
-          <p class="text-gray-400 text-sm mt-1">Admin Panel</p>
-        </div>
-
-        <nav class="p-4 space-y-2">
-          <a
-            href="/dashboard/"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            <span>📊</span>
-            <span>Dashboard</span>
-          </a>
-
-          <a
-            href="/dashboard/products/"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            <span>📦</span>
-            <span>Products</span>
-          </a>
-
-          <a
-            href="/dashboard/inventory/"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            <span>📦</span>
-            <span>Inventory</span>
-          </a>
-
-          <a
-            href="/dashboard/orders/"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            <span>📋</span>
-            <span>Orders</span>
-          </a>
-
-          <a
-            href="/dashboard/analytics/"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600"
-          >
-            <span>📈</span>
-            <span>Analytics</span>
-          </a>
-
-          <a
-            href="/dashboard/users/"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-800 transition"
-          >
-            <span>👥</span>
-            <span>Users</span>
-          </a>
-        </nav>
-      </aside>
+      {% include "admin_dashboard/_sidebar.html" with active_page="analytics" %}
 
       <!-- Main Content -->
-      <main class="ml-64 flex-1">
-        <!-- Header -->
-        <header
-          class="bg-white shadow-sm px-8 py-5 flex justify-between items-center"
-        >
+      <main class="flex-1 p-8">
+        <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 class="text-2xl font-bold text-gray-800">Analytics</h2>
-
-            <p class="text-gray-500 text-sm mt-1">
+            <h2 class="text-3xl font-bold text-gray-800">Analytics</h2>
+            <p class="text-gray-500 mt-1">
               Monitor your store performance
             </p>
           </div>
-
           <button
             id="exportReportBtn"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition"
+            class="self-start rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white transition hover:bg-blue-700 sm:self-auto"
           >
             Export Report
           </button>
-        </header>
+        </div>
 
-        <div class="p-8">
+        <div>
           <!-- KPI Cards -->
           <div
             class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8"

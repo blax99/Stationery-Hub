@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "orders",
     "payments",
     "home",
+    "admin_dashboard.apps.AdminConfig",
 ]
 
 AUTH_USER_MODEL = "users.User"
