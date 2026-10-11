@@ -45,7 +45,7 @@ def dashboard_view(request):
 
     completed_orders = Order.objects.filter(status="delivered").count()
 
-    cancelled_orders = 0
+    cancelled_orders = Order.objects.filter(status="cancelled").count()
 
     recent_orders = Order.objects.select_related("user").order_by("-created_at")[:5]
 
@@ -201,6 +201,7 @@ def orders_view(request):
     confirmed_orders = Order.objects.filter(status="confirmed").count()
     shipped_orders = Order.objects.filter(status="shipped").count()
     delivered_orders = Order.objects.filter(status="delivered").count()
+    cancelled_orders = Order.objects.filter(status="cancelled").count()
 
     context = {
         "orders": orders,
@@ -209,6 +210,7 @@ def orders_view(request):
         "confirmed_orders": confirmed_orders,
         "shipped_orders": shipped_orders,
         "delivered_orders": delivered_orders,
+        "cancelled_orders": cancelled_orders,
     }
 
     return render(request, "admin_dashboard/orders.html", context)
@@ -231,8 +233,7 @@ def analytics_view(request):
 
     completed_orders = Order.objects.filter(status="delivered").count()
 
-    # No cancelled status in the current model
-    cancelled_orders = 0
+    cancelled_orders = Order.objects.filter(status="cancelled").count()
 
     today = timezone.localdate()
 

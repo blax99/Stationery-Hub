@@ -8,6 +8,8 @@ from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import resolve
 
+from orders.models import Order
+
 from .views import (
     analytics_view,
     admin_required,
@@ -205,3 +207,22 @@ class DashboardUserRoleTests(TestCase):
         self.customer.refresh_from_db()
         self.assertEqual(self.customer.role, "customer")
         self.assertContains(response, "Choose either Admin or Customer.")
+
+    def test_cancelled_orders_are_counted_and_displayed_in_admin_pages(self):
+        Order.objects.create(
+            user=self.customer,
+            total_amount="25.00",
+            status="cancelled",
+        )
+
+        dashboard_response = self.client.get("/dashboard/")
+        orders_response = self.client.get("/dashboard/orders/")
+        analytics_response = self.client.get("/dashboard/analytics/")
+
+        self.assertEqual(dashboard_response.context["cancelled_orders"], 1)
+        self.assertContains(dashboard_response, "bg-red-100 text-red-700")
+        self.assertContains(orders_response, 'data-status="cancelled"')
+        self.assertEqual(orders_response.context["cancelled_orders"], 1)
+        self.assertContains(orders_response, "bg-red-100 text-red-700")
+        self.assertContains(orders_response, "<option>Cancelled</option>")
+        self.assertEqual(analytics_response.context["cancelled_orders"], 1)

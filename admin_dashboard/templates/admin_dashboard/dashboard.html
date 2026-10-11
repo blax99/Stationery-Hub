@@ -238,6 +238,14 @@
                         Delivered
                       </span>
 
+                      {% elif order.status == "cancelled" %}
+
+                      <span
+                        class="inline-flex bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium"
+                      >
+                        Cancelled
+                      </span>
+
                       {% endif %}
                     </td>
                   </tr>
