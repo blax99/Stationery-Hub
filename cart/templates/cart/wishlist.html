@@ -64,7 +64,7 @@ Wishlist
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+(function initializeWishlistPage() {
 
     const token = localStorage.getItem("access_token");
 
@@ -617,7 +617,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     loadWishlist();
 
-});
+})();
 </script>
 
 {% endblock %}
