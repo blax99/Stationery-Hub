@@ -5,13 +5,13 @@ from .models import Order, OrderItem, ShippingAddress
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ['id', 'product_name', 'quantity', 'price']
+        fields = ["id", "product_name", "quantity", "price"]
 
 
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShippingAddress
-        fields = ['full_name', 'address', 'city', 'phone']
+        fields = ["full_name", "address", "city", "phone"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -21,17 +21,17 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'id',
-            'user',
-            'total_amount',
-            'status',
-            'created_at',
-            'updated_at',
-            'items',
-            'shipping_address',
+            "id",
+            "user",
+            "total_amount",
+            "status",
+            "created_at",
+            "updated_at",
+            "items",
+            "shipping_address",
         ]
         read_only_fields = [
-            'id',
-            'created_at',
-            'updated_at',
+            "id",
+            "created_at",
+            "updated_at",
         ]

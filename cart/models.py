@@ -5,9 +5,7 @@ from products.models import Products
 
 class Cart(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="cart"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="cart"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -17,23 +15,16 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(
-        Cart,
-        on_delete=models.CASCADE,
-        related_name="items"
-    )
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(
-        Products,
-        on_delete=models.CASCADE,
-        related_name="cart_items"
+        Products, on_delete=models.CASCADE, related_name="cart_items"
     )
     quantity = models.PositiveIntegerField(default=1)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["cart", "product"],
-                name="unique_cart_product"
+                fields=["cart", "product"], name="unique_cart_product"
             )
         ]
 
@@ -43,9 +34,7 @@ class CartItem(models.Model):
 
 class Wishlist(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="wishlist"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wishlist"
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -55,21 +44,16 @@ class Wishlist(models.Model):
 
 class WishlistItem(models.Model):
     wishlist = models.ForeignKey(
-        Wishlist,
-        on_delete=models.CASCADE,
-        related_name="items"
+        Wishlist, on_delete=models.CASCADE, related_name="items"
     )
     product = models.ForeignKey(
-        Products,
-        on_delete=models.CASCADE,
-        related_name="wishlist_items"
+        Products, on_delete=models.CASCADE, related_name="wishlist_items"
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["wishlist", "product"],
-                name="unique_wishlist_product"
+                fields=["wishlist", "product"], name="unique_wishlist_product"
             )
         ]
 

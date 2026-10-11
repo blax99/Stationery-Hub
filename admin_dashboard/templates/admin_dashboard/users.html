@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>User Management - Stationery Hub</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-gray-100 text-gray-800">
+    <aside class="fixed left-0 top-0 z-40 h-screen w-64 bg-gray-900 text-white">
+      <div class="flex h-20 items-center border-b border-gray-700 px-6">
+        <h1 class="text-2xl font-bold">
+          Stationery<span class="text-blue-400">Hub</span>
+        </h1>
+      </div>
+
+      <nav class="mt-6 px-4">
+        <p
+          class="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500"
+        >
+          Main
+        </p>
+
+        <a
+          href="{% url 'dashboard' %}"
+          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
+        >
+          <span class="mr-3">📊</span>
+          Dashboard
+        </a>
+
+        <a
+          href="{% url 'products' %}"
+          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
+        >
+          <span class="mr-3">📦</span>
+          Products
+        </a>
+
+        <a
+          href="{% url 'inventory' %}"
+          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
+        >
+          <span class="mr-3">📋</span>
+          Inventory
+        </a>
+
+        <a
+          href="{% url 'orders' %}"
+          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
+        >
+          <span class="mr-3">🛒</span>
+          Orders
+        </a>
+
+        <a
+          href="{% url 'analytics' %}"
+          class="mb-2 flex items-center rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
+        >
+          <span class="mr-3">📈</span>
+          Analytics
+        </a>
+
+        <p
+          class="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500"
+        >
+          Management
+        </p>
+
+        <a
+          href="{% url 'users' %}"
+          class="mb-2 flex items-center rounded-lg bg-blue-600 px-4 py-3 font-medium text-white shadow"
+        >
+          <span class="mr-3">👥</span>
+          Users
+        </a>
+      </nav>
+    </aside>
+
+    <main class="ml-64 min-h-screen">
+      <header
+        class="flex h-20 items-center justify-between border-b bg-white px-8 shadow-sm"
+      >
+        <div>
+          <h2 class="text-2xl font-bold text-gray-800">User Management</h2>
+
+          <p class="mt-1 text-sm text-gray-500">
+            Manage registered users and their roles
+          </p>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="text-right">
+            <p class="text-sm font-semibold text-gray-700">Admin</p>
+            <p class="text-xs text-gray-500">Administrator</p>
+          </div>
+
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold text-white"
+          >
+            A
+          </div>
+        </div>
+      </header>
+
+      <section class="p-8">
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div class="rounded-xl bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Total Users</p>
+
+                <h3 class="mt-2 text-3xl font-bold text-gray-800">
+                  {{ total_users }}
+                </h3>
+              </div>
+
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-2xl"
+              >
+                👥
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Customers</p>
+
+                <h3 class="mt-2 text-3xl font-bold text-gray-800">
+                  {{ total_customers }}
+                </h3>
+              </div>
+
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-2xl"
+              >
+                🛍️
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Admins</p>
+
+                <h3 class="mt-2 text-3xl font-bold text-gray-800">
+                  {{ total_admins }}
+                </h3>
+              </div>
+
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-2xl"
+              >
+                🛡️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white shadow-sm">
+          <div
+            class="flex flex-col gap-4 border-b p-6 md:flex-row md:items-center md:justify-between"
+          >
+            <div>
+              <h3 class="text-lg font-bold text-gray-800">All Users</h3>
+
+              <p class="mt-1 text-sm text-gray-500">
+                View and manage registered users
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onclick="openAddUserModal()"
+              class="rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white transition hover:bg-blue-700"
+            >
+              + Add User
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-4 border-b bg-gray-50 p-6 md:flex-row">
+            <div class="relative flex-1">
+              <span
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              >
+                🔍
+              </span>
+
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Search users by name or email..."
+                class="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            <select
+              id="roleFilter"
+              class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            >
+              <option value="">All Roles</option>
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+              <option value="vendor">Vendor</option>
+            </select>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                <tr>
+                  <th class="px-6 py-4 font-semibold">User</th>
+                  <th class="px-6 py-4 font-semibold">Email</th>
+                  <th class="px-6 py-4 font-semibold">Role</th>
+                  <th class="px-6 py-4 font-semibold">Status</th>
+                  <th class="px-6 py-4 font-semibold">Joined</th>
+                  <th class="px-6 py-4 text-right font-semibold">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody id="userTableBody" class="divide-y divide-gray-100">
+                {% for user in users %}
+
+                <tr
+                  class="user-row transition hover:bg-gray-50"
+                  data-role="{{ user.role|lower }}"
+                  data-id="{{ user.id }}"
+                  data-name="{{ user.first_name }} {{ user.last_name }}"
+                  data-email="{{ user.email }}"
+                  data-role-value="{{ user.role }}"
+                  data-username="{{ user.username }}"
+                  data-joined="{{ user.date_joined|date:'M d, Y' }}"
+                >
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 font-semibold text-indigo-600"
+                      >
+                        {{ user.username|first|upper }}
+                      </div>
+
+                      <div>
+                        <div class="font-medium text-gray-900">
+                          {{ user.username }}
+                        </div>
+
+                        <div class="text-xs text-gray-500">
+                          ID: #{{ user.id }}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td class="px-6 py-4 text-gray-600">{{ user.email }}</td>
+
+                  <td class="px-6 py-4">
+                    {% if user.role == "admin" %}
+
+                    <span
+                      class="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-700"
+                    >
+                      Admin
+                    </span>
+
+                    {% elif user.role == "vendor" %}
+
+                    <span
+                      class="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700"
+                    >
+                      Vendor
+                    </span>
+
+                    {% else %}
+
+                    <span
+                      class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700"
+                    >
+                      Customer
+                    </span>
+
+                    {% endif %}
+                  </td>
+
+                  <td class="px-6 py-4">
+                    {% if user.is_active %}
+
+                    <span
+                      class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700"
+                    >
+                      Active
+                    </span>
+
+                    {% else %}
+
+                    <span
+                      class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700"
+                    >
+                      Inactive
+                    </span>
+
+                    {% endif %}
+                  </td>
+
+                  <td class="px-6 py-4 text-gray-600">
+                    {{ user.date_joined|date:"M d, Y" }}
+                  </td>
+
+                  <td class="px-6 py-4">
+                    <div class="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onclick="viewUser('{{ user.id }}')"
+                        class="rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200"
+                      >
+                        View
+                      </button>
+
+                      <button
+                        type="button"
+                        onclick="editUser('{{ user.id }}')"
+                        class="rounded-lg bg-blue-50 px-3 py-2 text-xs font-medium text-blue-600 hover:bg-blue-100"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        onclick="deleteUser('{{ user.id }}')"
+                        class="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-100"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                  <td colspan="6" class="px-6 py-12 text-center">
+                    <div class="text-4xl">👥</div>
+
+                    <p class="mt-3 font-semibold text-gray-700">
+                      No users found
+                    </p>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                      Registered users will appear here.
+                    </p>
+                  </td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex items-center justify-between border-t px-6 py-4">
+            <p class="text-sm text-gray-500">
+              Showing {{ users|length }} users
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- USER MODAL -->
+
+    <div
+      id="userModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
+    >
+      <div class="w-full max-w-lg rounded-xl bg-white shadow-xl">
+        <div class="flex items-center justify-between border-b px-6 py-4">
+          <div>
+            <h3 id="modalTitle" class="text-lg font-bold text-gray-800">
+              Add New User
+            </h3>
+
+            <p id="modalDescription" class="text-sm text-gray-500">
+              Create a new user account
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onclick="closeUserModal()"
+            class="text-2xl text-gray-400 hover:text-gray-600"
+          >
+            &times;
+          </button>
+        </div>
+
+        <form method="POST" id="userForm" class="space-y-5 p-6">
+          {% csrf_token %}
+
+          <input type="hidden" name="action" id="formAction" value="add" />
+
+          <input type="hidden" name="user_id" id="userId" />
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-gray-700">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              id="userName"
+              name="full_name"
+              placeholder="Enter full name"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-gray-700">
+              Email
+            </label>
+
+            <input
+              type="email"
+              id="userEmail"
+              name="email"
+              placeholder="Enter email address"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-gray-700">
+              Password
+            </label>
+
+            <input
+              type="password"
+              id="userPassword"
+              name="password"
+              placeholder="Enter password"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-gray-700">
+              Role
+            </label>
+
+            <select
+              id="userRole"
+              name="role"
+              required
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+              <option value="vendor">Vendor</option>
+            </select>
+          </div>
+
+          <div class="flex justify-end gap-3 border-t pt-5">
+            <button
+              type="button"
+              onclick="closeUserModal()"
+              class="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              Save User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- View User Modal -->
+    <div
+      id="viewUserModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
+    >
+      <div class="w-full max-w-md rounded-xl bg-white shadow-xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b px-6 py-4">
+          <div>
+            <h2 class="text-lg font-semibold text-gray-900">User Details</h2>
+            <p class="text-sm text-gray-500">View user account information</p>
+          </div>
+
+          <button
+            type="button"
+            onclick="closeViewUserModal()"
+            class="text-2xl text-gray-400 hover:text-gray-600"
+          >
+            &times;
+          </button>
+        </div>
+
+        <!-- User Details -->
+        <div class="space-y-4 p-6">
+          <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Username</p>
+            <p
+              id="viewUsername"
+              class="mt-1 text-sm font-medium text-gray-900"
+            ></p>
+          </div>
+
+          <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Full Name</p>
+            <p id="viewName" class="mt-1 text-sm font-medium text-gray-900"></p>
+          </div>
+
+          <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Email</p>
+            <p
+              id="viewEmail"
+              class="mt-1 text-sm font-medium text-gray-900"
+            ></p>
+          </div>
+
+          <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Role</p>
+            <p id="viewRole" class="mt-1 text-sm font-medium text-gray-900"></p>
+          </div>
+
+          <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Joined</p>
+            <p
+              id="viewJoined"
+              class="mt-1 text-sm font-medium text-gray-900"
+            ></p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end border-t px-6 py-4">
+          <button
+            type="button"
+            onclick="closeViewUserModal()"
+            class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openAddUserModal() {
+        const modal = document.getElementById("userModal");
+        const form = document.getElementById("userForm");
+        const password = document.getElementById("userPassword");
+
+        form.reset();
+
+        document.getElementById("modalTitle").textContent = "Add New User";
+        document.getElementById("modalDescription").textContent =
+          "Create a new user account";
+        document.getElementById("formAction").value = "add";
+        document.getElementById("userId").value = "";
+
+        password.value = "";
+        password.placeholder = "Enter password";
+        password.setAttribute("required", "");
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function closeUserModal() {
+        const modal = document.getElementById("userModal");
+
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      function editUser(userId) {
+        const row = document.querySelector(`.user-row[data-id="${userId}"]`);
+
+        if (!row) {
+          alert("User not found.");
+          return;
+        }
+
+        const modal = document.getElementById("userModal");
+        const password = document.getElementById("userPassword");
+
+        document.getElementById("modalTitle").textContent = "Edit User";
+        document.getElementById("modalDescription").textContent =
+          "Update user account information";
+
+        document.getElementById("userName").value = row.dataset.name.trim();
+        document.getElementById("userEmail").value = row.dataset.email;
+        document.getElementById("userRole").value = row.dataset.roleValue;
+        document.getElementById("formAction").value = "edit";
+        document.getElementById("userId").value = userId;
+
+        password.value = "";
+        password.placeholder = "Leave blank to keep current password";
+        password.removeAttribute("required");
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function viewUser(userId) {
+        const row = document.querySelector(`.user-row[data-id="${userId}"]`);
+
+        if (!row) {
+          alert("User not found.");
+          return;
+        }
+
+        document.getElementById("viewUsername").textContent =
+          row.dataset.username;
+
+        document.getElementById("viewName").textContent =
+          row.dataset.name.trim();
+
+        document.getElementById("viewEmail").textContent = row.dataset.email;
+
+        document.getElementById("viewRole").textContent = row.dataset.roleValue;
+
+        document.getElementById("viewJoined").textContent = row.dataset.joined;
+
+        const modal = document.getElementById("viewUserModal");
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function closeViewUserModal() {
+        const modal = document.getElementById("viewUserModal");
+
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      function deleteUser(userId) {
+        if (!confirm("Are you sure you want to delete this user?")) {
+          return;
+        }
+
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = "";
+
+        form.innerHTML = `
+    {% csrf_token %}
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="user_id" value="${userId}">
+  `;
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      function filterUsers() {
+        const searchValue = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+
+        const roleValue = document
+          .getElementById("roleFilter")
+          .value.toLowerCase();
+
+        const rows = document.querySelectorAll(".user-row");
+
+        rows.forEach(function (row) {
+          const rowText = row.textContent.toLowerCase();
+          const rowRole = row.dataset.role;
+
+          const matchesSearch = rowText.includes(searchValue);
+          const matchesRole = !roleValue || rowRole === roleValue;
+
+          row.style.display = matchesSearch && matchesRole ? "" : "none";
+        });
+      }
+
+      document
+        .getElementById("userModal")
+        .addEventListener("click", function (event) {
+          if (event.target === this) {
+            closeUserModal();
+          }
+        });
+
+      document
+        .getElementById("viewUserModal")
+        .addEventListener("click", function (event) {
+          if (event.target === this) {
+            closeViewUserModal();
+          }
+        });
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", filterUsers);
+
+      document
+        .getElementById("roleFilter")
+        .addEventListener("change", filterUsers);
+    </script>
+  </body>
+</html>

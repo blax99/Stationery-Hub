@@ -11,7 +11,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = "Category"
         verbose_name_plural = "Categories"
-        ordering = ['name']
+        ordering = ["name"]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -33,28 +33,27 @@ class Category(models.Model):
 
 class Products(models.Model):
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, related_name='products'
+        Category, on_delete=models.CASCADE, related_name="products"
     )
     name = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='products/', blank=True, null=True)
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(
-        max_digits=10, decimal_places=2,
-        validators=[MinValueValidator(0)]
+        max_digits=10, decimal_places=2, validators=[MinValueValidator(0)]
     )
     stock = models.PositiveIntegerField(default=0)
     is_available = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='products/', blank=True, null=True)
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=['category', 'is_available']),
+            models.Index(fields=["category", "is_available"]),
         ]
 
     def save(self, *args, **kwargs):

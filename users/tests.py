@@ -12,7 +12,7 @@ User = get_user_model()
 class RegistrationTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.register_url = '/users/register/'
+        self.register_url = "/users/register/"
 
     def test_register_success(self):
         data = {
@@ -27,7 +27,9 @@ class RegistrationTests(TestCase):
         self.assertTrue(User.objects.filter(email="testuser1@example.com").exists())
 
     def test_register_duplicate_email(self):
-        User.objects.create_user(username="existing", email="dup@example.com", password="TestPass123")
+        User.objects.create_user(
+            username="existing", email="dup@example.com", password="TestPass123"
+        )
         data = {
             "username": "newuser",
             "email": "dup@example.com",
@@ -50,16 +52,20 @@ class RegistrationTests(TestCase):
 class LoginTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.login_url = '/users/login/'
+        self.login_url = "/users/login/"
         self.user = User.objects.create_user(
             username="loginuser", email="login@example.com", password="TestPass123"
         )
 
     def test_login_success(self):
-        response = self.client.post(self.login_url, {"email": "login@example.com", "password": "TestPass123"})
+        response = self.client.post(
+            self.login_url, {"email": "login@example.com", "password": "TestPass123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
 
     def test_login_wrong_password(self):
-        response = self.client.post(self.login_url, {"email": "login@example.com", "password": "wrongpass"})
+        response = self.client.post(
+            self.login_url, {"email": "login@example.com", "password": "wrongpass"}
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

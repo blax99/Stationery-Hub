@@ -5,18 +5,16 @@ from django.conf.urls.static import static
 from cart import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('home.urls')),
-    path('products/', include('products.urls')),
-    path('users/', include('users.urls')),
-    path('cart/', include('cart.urls')),
-    path('orders/', include('orders.urls')),
-    path('payments/', include('payments.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("home.urls")),
+    path("products/", include("products.urls")),
+    path("users/", include("users.urls")),
+    path("cart/", include("cart.urls")),
+    path("orders/", include("orders.urls")),
+    path("payments/", include("payments.urls")),
     path("wishlist/", views.wishlist, name="wishlist"),
     path("wishlist/api/", include("cart.wishlist_api_urls")),
-
 ]
-
 
 
 # Serve uploaded media files locally in debug mode
