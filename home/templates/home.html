@@ -1,34 +1,69 @@
-{% extends "base.html" %} {% block title %}Stationery Hub — Notebooks, Pens
-&amp; Paper Goods{% endblock %} {% block content %}
+{% extends "base.html" %} {% load static %} {% block title %}Stationery Hub —
+Notebooks, Pens &amp; Paper Goods{% endblock %} {% block content %}
 
-<section class="bg-kraft">
-  <div class="max-w-4xl mx-auto px-6 py-24 text-center">
-    <p class="font-mono text-xs tracking-widest uppercase text-stamp mb-3">
-      Welcome to
-    </p>
-    <h1 class="font-display text-5xl font-semibold mb-5">Stationery Hub</h1>
-    <p class="text-ink-soft max-w-prose mx-auto mb-8">
-      Notebooks, pens, and paper goods for people who still like writing things
-      down.
-    </p>
-    <a
-      href="{% url 'products:product_list' %}"
-      class="inline-block font-mono text-sm uppercase tracking-wide bg-stamp text-cream px-6 py-3 rounded hover:opacity-90 transition"
-    >
-      Shop Now
-    </a>
-  </div>
-</section>
+<section class="overflow-hidden bg-gradient-to-br from-sky-50 via-white to-amber-50">
+  <div
+    class="mx-auto grid max-w-7xl items-center gap-10 px-6 py-14 sm:px-10 sm:py-20 lg:grid-cols-2 lg:gap-14 lg:px-12 lg:py-24"
+  >
+    <div class="max-w-xl">
+      <p
+        class="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/80 px-4 py-2 text-sm font-medium text-sky-900 shadow-sm"
+      >
+        <span
+          class="h-2.5 w-2.5 rounded-full bg-green-500"
+          aria-hidden="true"
+        ></span>
+        A little inspiration for every day
+      </p>
+      <h1
+        class="mb-6 text-5xl font-bold leading-[1.05] tracking-tight text-gray-900 sm:text-6xl lg:text-7xl"
+      >
+        Make room for
+        <span class="text-sky-700">good ideas.</span>
+      </h1>
+      <p class="mb-8 max-w-lg text-base leading-7 text-gray-600 sm:text-lg">
+        Find notebooks, pens, and paper goods to make everyday writing feel
+        special.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <a
+          href="{% url 'products:product_list' %}"
+          class="inline-flex items-center gap-3 rounded-lg bg-sky-700 px-6 py-3.5 font-semibold text-white shadow-lg shadow-sky-900/15 transition hover:-translate-y-0.5 hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2"
+        >
+          Explore stationery
+          <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
+        </a>
+        <span class="text-sm text-gray-500">Made for notes, plans &amp; ideas</span>
+      </div>
+    </div>
 
-<section class="flex items-center justify-center p-5">
-  <div class="max-w-4xl mx-auto px-6 text-center">
-    <h2 class="font-display text-2xl pt-2 mb-3">
-      Quality paper goods, thoughtfully made
-    </h2>
-    <p class="text-ink-soft">
-      Browse our collection of notebooks, pens, and gift sets — crafted for
-      everyday writing.
-    </p>
+    <div class="relative mx-auto w-full max-w-2xl lg:max-w-none">
+      <div
+        class="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-sky-200/70 to-amber-200/70 blur-2xl"
+        aria-hidden="true"
+      ></div>
+      <div class="relative overflow-hidden rounded-3xl bg-white p-2 shadow-2xl shadow-slate-900/15 ring-1 ring-black/5">
+        <img
+          src="{% static 'images/home-bg.jpg' %}"
+          alt="Illustrated desk with notebooks, pens, and writing supplies"
+          fetchpriority="high"
+          class="aspect-[4/3] w-full rounded-[1.35rem] object-cover"
+        />
+        <div
+          class="absolute bottom-6 left-6 flex items-center gap-3 rounded-2xl border border-white/70 bg-white/90 px-4 py-3 shadow-lg backdrop-blur"
+        >
+          <span
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800"
+          >
+            <i class="fa-solid fa-pen-nib" aria-hidden="true"></i>
+          </span>
+          <span>
+            <span class="block text-sm font-semibold text-gray-900">Your desk, your way</span>
+            <span class="block text-xs text-gray-500">Find your everyday favorites</span>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 

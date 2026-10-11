@@ -1,11 +1,15 @@
-<nav class="bg-white shadow-md px-4 sm:px-6 py-4">
+<nav
+  id="site-navbar"
+  data-turbo-permanent
+  class="bg-white shadow-md px-4 py-4 sm:px-6 font-navbar"
+>
   <div class="max-w-7xl mx-auto">
     <!-- Main Navbar -->
     <div class="flex items-center justify-between gap-3">
       <!-- Logo -->
       <a
         href="/"
-        class="text-xl sm:text-2xl font-bold text-gray-800 whitespace-nowrap"
+        class="text-xl sm:text-2xl font-bold tracking-tight text-gray-800 whitespace-nowrap"
       >
         StationeryHub<span class="text-blue-600">.</span>
       </a>
@@ -13,13 +17,18 @@
       <!-- Desktop Nav Links -->
       <ul class="hidden md:flex items-center gap-8 text-gray-700 font-medium">
         <li>
-          <a href="/" class="hover:text-blue-600 transition"> Home </a>
+          <a
+            href="/"
+            class="text-lg hover:text-blue-600 transition font-semibold"
+          >
+            Home
+          </a>
         </li>
 
         <li>
           <a
             href="{% url 'products:product_list' %}"
-            class="hover:text-blue-600 transition"
+            class="text-lg hover:text-blue-600 transition font-semibold"
           >
             Products
           </a>
@@ -29,7 +38,7 @@
         <li class="relative group">
           <button
             type="button"
-            class="hover:text-blue-600 transition flex items-center gap-1"
+            class="text-lg hover:text-blue-600 transition flex items-center gap-1 font-semibold"
           >
             Categories
             <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -183,20 +192,25 @@
     <div id="mobileMenu" class="hidden md:hidden mt-4 border-t pt-4">
       <ul class="flex flex-col gap-4 text-gray-700 font-medium">
         <li>
-          <a href="/" class="block hover:text-blue-600 transition"> Home </a>
+          <a
+            href="/"
+            class="block text-lg hover:text-blue-600 transition font-semibold"
+          >
+            Home
+          </a>
         </li>
 
         <li>
           <a
             href="{% url 'products:product_list' %}"
-            class="block hover:text-blue-600 transition"
+            class="block text-lg hover:text-blue-600 transition font-semibold"
           >
             Products
           </a>
         </li>
 
         <li>
-          <span class="block mb-2"> Categories </span>
+          <span class="block mb-2 text-lg font-semibold"> Categories </span>
 
           <div class="pl-4 flex flex-col gap-2 text-sm">
             <a
