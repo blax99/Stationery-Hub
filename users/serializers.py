@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-
 User = get_user_model()
 
 
@@ -10,15 +9,20 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'phone_number',]
+        fields = [
+            "username",
+            "email",
+            "password",
+            "phone_number",
+        ]
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            phone_number=validated_data.get('phone_number', ''),
-            role='customer'
+            username=validated_data["username"],
+            email=validated_data["email"],
+            password=validated_data["password"],
+            phone_number=validated_data.get("phone_number", ""),
+            role="customer",
         )
         return user
 
@@ -33,11 +37,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         if value.isdigit():
             raise serializers.ValidationError("Password cannot be entirely numeric.")
         if value.isalpha():
-            raise serializers.ValidationError("Password must contain at least one number.")
+            raise serializers.ValidationError(
+                "Password must contain at least one number."
+            )
         return value
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone_number', 'role', 'profile_picture']
-        read_only_fields = ['id', 'email', 'role']
+        fields = ["id", "username", "email", "phone_number", "role", "profile_picture"]
+        read_only_fields = ["id", "email", "role"]

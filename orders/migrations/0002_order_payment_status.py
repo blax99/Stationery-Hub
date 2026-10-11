@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0001_initial'),
+        ("orders", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='order',
-            name='payment_status',
-            field=models.CharField(choices=[('unpaid', 'Unpaid'), ('paid', 'Paid'), ('failed', 'Failed')], default='unpaid', max_length=20),
+            model_name="order",
+            name="payment_status",
+            field=models.CharField(
+                choices=[("unpaid", "Unpaid"), ("paid", "Paid"), ("failed", "Failed")],
+                default="unpaid",
+                max_length=20,
+            ),
         ),
     ]
