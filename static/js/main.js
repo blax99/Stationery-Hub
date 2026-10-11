@@ -62,7 +62,21 @@ window.stationeryLoginRedirect = function () {
   const next = encodeURIComponent(
     window.location.pathname + window.location.search,
   );
-  window.location.href = `/users/login-page/?next=${next}`;
+  window.stationeryNavigate(`/users/login-page/?next=${next}`);
+};
+
+window.stationeryNavigate = function (url, { reload = false } = {}) {
+  const destination = new URL(url, window.location.origin);
+  if (
+    destination.origin === window.location.origin &&
+    window.Turbo &&
+    !reload
+  ) {
+    window.Turbo.visit(destination.href);
+    return;
+  }
+
+  window.location.href = destination.href;
 };
 
 window.stationeryApiJson = async function (response, fallbackMessage) {
@@ -91,7 +105,43 @@ window.stationeryApiJson = async function (response, fallbackMessage) {
   return response.json();
 };
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("turbo:before-render", function (event) {
+  event.detail.newBody
+    .querySelectorAll("main script:not([src])")
+    .forEach((script) => {
+      if (script.type && script.type !== "text/javascript") {
+        return;
+      }
+      script.dataset.turboOriginalType = script.type;
+      script.type = "text/x-turbo-inert";
+      script.dataset.turboEval = "false";
+    });
+});
+
+document.addEventListener("turbo:load", function () {
+  document
+    .querySelectorAll("main script[type='text/x-turbo-inert']")
+    .forEach((script) => {
+      const replacement = document.createElement("script");
+      for (const attribute of script.attributes) {
+        if (
+          attribute.name !== "type" &&
+          attribute.name !== "data-turbo-eval" &&
+          attribute.name !== "data-turbo-original-type"
+        ) {
+          replacement.setAttribute(attribute.name, attribute.value);
+        }
+      }
+      if (script.dataset.turboOriginalType) {
+        replacement.type = script.dataset.turboOriginalType;
+      }
+
+      replacement.textContent = `(function () {\n${script.textContent}\n}).call(window);`;
+      script.replaceWith(replacement);
+    });
+});
+
+document.addEventListener("turbo:load", function () {
   // Product Detail - Add to Cart
   const productAddToCartButtons = document.querySelectorAll(
     ".product-add-to-cart",
