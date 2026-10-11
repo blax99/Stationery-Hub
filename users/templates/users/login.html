@@ -158,10 +158,12 @@ Stationery Hub{% endblock %} {% block content %}
           const destination = next
             ? new URL(next, window.location.origin)
             : new URL("/", window.location.origin);
-          window.location.href =
+          window.stationeryNavigate(
             destination.origin === window.location.origin
               ? destination.href
-              : "/";
+              : "/",
+            { reload: adminOnly },
+          );
         } else {
           errorBox.textContent = data.detail || "Invalid email or password.";
           errorBox.classList.remove("hidden");

@@ -58,7 +58,7 @@
 
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
-      window.location.href = authLink.dataset.loginPage;
+      window.stationeryNavigate(authLink.dataset.loginPage);
     } catch (error) {
       console.error("Unable to sign out.", error);
       alert("Unable to sign out. Please try again.");

@@ -152,7 +152,7 @@ Stationery Hub{% endblock %} {% block content %}
         const data = await response.json();
 
         if (response.ok) {
-          window.location.href = "{% url 'login-page' %}";
+          window.stationeryNavigate("{% url 'login-page' %}");
         } else {
           const firstError = Object.values(data)[0];
           errorBox.textContent = Array.isArray(firstError)
