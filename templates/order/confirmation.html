@@ -391,6 +391,14 @@
 
           <p class="shipping-value">{{ order.shipping_address.city }}</p>
         </div>
+
+        {% if order.shipping_address.postal_code %}
+        <div class="shipping-item">
+          <p class="shipping-label">Postal Code</p>
+
+          <p class="shipping-value">{{ order.shipping_address.postal_code }}</p>
+        </div>
+        {% endif %}
       </div>
 
       {% else %}
@@ -404,15 +412,13 @@
 
     <!-- ESTIMATED DELIVERY -->
 
-    {% if order.status != 'cancelled' and order.status != 'delivered' and
-    order.status != 'return_requested' and order.status != 'returned' %}
+    {% if order.status != 'cancelled' and order.status != 'delivered' and order.status != 'return_requested' and order.status != 'returned' %}
 
     <div class="confirmation-card">
       <h2>Estimated Delivery</h2>
 
       <p class="delivery-date">
-        {{ estimated_delivery_start|date:"F d, Y" }} - {{
-        estimated_delivery_end|date:"F d, Y" }}
+        {{ estimated_delivery_start|date:"F d, Y" }} - {{ estimated_delivery_end|date:"F d, Y" }}
       </p>
 
       <p class="delivery-note">
@@ -427,8 +433,8 @@
     <div class="confirmation-actions">
       <!-- KHALTI PAYMENT -->
 
-      {% if order.status == 'pending' or order.status == 'confirmed' %} {% if
-      order.payment_status != 'paid' %}
+      {% if order.status == 'pending' or order.status == 'confirmed' %}
+      {% if order.payment_status != 'paid' %}
       <button
         type="button"
         id="khalti-button"
@@ -441,8 +447,7 @@
 
       <!-- CANCEL ORDER -->
 
-      {% if order.payment_status != 'paid' and order.status == 'pending' or
-      order.payment_status != 'paid' and order.status == 'confirmed' %}
+      {% if order.payment_status != 'paid' and order.status == 'pending' or order.payment_status != 'paid' and order.status == 'confirmed' %}
 
       <form
         method="POST"

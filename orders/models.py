@@ -59,6 +59,7 @@ class ShippingAddress(models.Model):
     full_name = models.CharField(max_length=100)
     address = models.TextField()
     city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20, blank=True)
     phone = models.CharField(max_length=20)
 
     def __str__(self):

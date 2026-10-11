@@ -38,6 +38,7 @@ def checkout(request):
             full_name=request.POST.get("full_name"),
             address=request.POST.get("address"),
             city=request.POST.get("city"),
+            postal_code=request.POST.get("postal_code", ""),
             phone=request.POST.get("phone"),
         )
 
@@ -53,6 +54,10 @@ def checkout(request):
             "total_amount": total_amount,
             "email": request.user.email,
             "phone_number": request.user.phone_number,
+            "full_name": request.user.get_full_name(),
+            "address": request.user.address,
+            "city": request.user.city,
+            "postal_code": request.user.postal_code,
         },
     )
 
@@ -62,8 +67,9 @@ def checkout(request):
 def checkout_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
-    estimated_delivery_start = order.created_at + timedelta(days=3)
-    estimated_delivery_end = order.created_at + timedelta(days=5)
+    order_date = timezone.localdate(order.created_at)
+    estimated_delivery_start = order_date + timedelta(days=3)
+    estimated_delivery_end = order_date + timedelta(days=5)
 
     return render(
         request,
