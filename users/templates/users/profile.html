@@ -78,7 +78,7 @@ Stationery Hub{% endblock %} {% block content %}
   }
 
   async function loadProfile() {
-    const response = await fetch("/api/users/profile/", {
+    const response = await fetch("{% url 'profile' %}", {
       headers: { Authorization: "Bearer " + token },
     });
     if (!response.ok) {
@@ -98,7 +98,7 @@ Stationery Hub{% endblock %} {% block content %}
       e.preventDefault();
       msgBox.classList.add("hidden");
 
-      const response = await fetch("/api/users/profile/", {
+      const response = await fetch("{% url 'profile' %}", {
         method: "PATCH",
         headers: {
           Authorization: "Bearer " + token,

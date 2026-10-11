@@ -1,126 +1,670 @@
-{% extends "base.html" %}
-
-{% block title %}Order Confirmation - Stationery Hub{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
 
-<div class="max-w-2xl mx-auto px-4 py-16 text-center">
-    <div class="bg-white rounded-lg shadow p-10">
+<style>
+    .confirmation-page {
+        background-color: #f9fafb;
+        min-height: 100vh;
+        padding: 40px 16px 60px;
+    }
 
-        {% if order.payment_status == 'paid' %}
+    .confirmation-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-            <div class="text-green-600 text-5xl mb-6">✓</div>
+    .confirmation-header {
+        text-align: center;
+        margin-bottom: 36px;
+    }
 
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">
-                Order Confirmed!
-            </h1>
+    .confirmation-header h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin: 0 0 10px;
+        color: #111827;
+    }
 
-            <p class="text-gray-600 mb-6">
-                Thank you for your order. Your payment was successful and your order has been placed.
-            </p>
+    .confirmation-header p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 1rem;
+    }
 
-        {% elif order.payment_status == 'failed' %}
+    .confirmation-card {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        padding: 26px;
+        margin-bottom: 20px;
+    }
 
-            <div class="text-red-600 text-5xl mb-6">✕</div>
+    .confirmation-card h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0 0 22px;
+    }
 
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">
-                Payment Failed
-            </h1>
+    .confirmation-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
 
-            <p class="text-gray-600 mb-6">
-                Something went wrong with your payment. You can try again below.
-            </p>
+    .confirmation-row + .confirmation-row {
+        border-top: 1px solid #f0f0f0;
+        margin-top: 15px;
+        padding-top: 15px;
+    }
 
-        {% else %}
+    .confirmation-label {
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
 
-            <div class="text-yellow-500 text-5xl mb-6">⏳</div>
+    .confirmation-value {
+        color: #111827;
+        font-weight: 600;
+        text-align: right;
+    }
 
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">
-                Order Placed — Payment Pending
-            </h1>
+    .confirmation-total {
+        color: #111827;
+        font-size: 1.15rem;
+    }
 
-            <p class="text-gray-600 mb-6">
-                Your order has been created. Please complete payment to confirm it.
-            </p>
+    .shipping-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px 30px;
+    }
 
-        {% endif %}
+    .shipping-item {
+        min-width: 0;
+    }
 
-        <div class="border-t border-gray-200 pt-6 mb-6">
+    .shipping-label {
+        color: #9ca3af;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin: 0 0 6px;
+    }
 
-            <p class="text-gray-600">
-                Order Number
-            </p>
+    .shipping-value {
+        color: #111827;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0;
+        word-break: break-word;
+    }
 
-            <p class="text-xl font-semibold text-gray-800">
-                #ORD-{{ order.id|stringformat:"04d" }}
-            </p>
+    .delivery-date {
+        color: #374151;
+        font-size: 1rem;
+        margin: 0;
+    }
 
-            <p class="text-gray-600 mt-4">
-                Total Amount
-            </p>
+    .delivery-note {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin: 8px 0 0;
+    }
 
-            <p class="text-xl font-semibold text-gray-800">
-                Rs. {{ order.total_amount }}
-            </p>
+    .confirmation-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 30px;
+    }
+
+    .confirmation-actions form {
+        margin: 0;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 22px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease,
+            color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .action-button:hover {
+        transform: translateY(-1px);
+    }
+
+    .action-button:focus-visible {
+        outline: 3px solid rgba(122, 40, 40, 0.25);
+        outline-offset: 3px;
+    }
+
+    .khalti-button {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    }
+
+    .khalti-button:hover {
+        background-color: #1d4ed8;
+        border-color: #1d4ed8;
+        color: #ffffff;
+    }
+
+    .khalti-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .cancel-order-button {
+        background-color: #ffffff;
+        border-color: #e6caca;
+        color: #7a2828;
+    }
+
+    .cancel-order-button:hover {
+        background-color: #fbf2f2;
+        border-color: #7a2828;
+        color: #642020;
+    }
+
+    .continue-shopping {
+        background-color: #faf8f5;
+        border-color: #e5dfd5;
+        color: #292524;
+    }
+
+    .continue-shopping:hover {
+        background-color: #f1ece4;
+        border-color: #c9bca8;
+        color: #292524;
+    }
+
+    @media (max-width: 640px) {
+
+        .confirmation-page {
+            padding: 30px 14px 50px;
+        }
+
+        .confirmation-header h1 {
+            font-size: 1.9rem;
+        }
+
+        .confirmation-card {
+            padding: 20px;
+        }
+
+        .shipping-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .confirmation-row {
+            align-items: flex-start;
+        }
+
+        .confirmation-value {
+            text-align: right;
+        }
+
+        .action-button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .confirmation-actions,
+        .confirmation-actions form,
+        .confirmation-actions form button {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="confirmation-page">
+
+    <div class="confirmation-container">
+
+        <!-- PAGE HEADER -->
+
+        <div class="confirmation-header">
+
+            {% if order.status == 'cancelled' %}
+
+                <h1 style="color: #111827;">
+                    Order Cancelled
+                </h1>
+
+                <p>
+                    This order has been cancelled.
+                </p>
+
+            {% elif order.status == 'return_requested' %}
+
+                <h1 style="color: #d97706;">
+                    Return Requested
+                </h1>
+
+                <p>
+                    Your return request has been submitted.
+                </p>
+
+            {% elif order.status == 'delivered' %}
+
+                <h1 style="color: #111827;">
+                    Order Delivered
+                </h1>
+
+                <p>
+                    Your order has been delivered successfully.
+                </p>
+
+            {% elif order.status == 'returned' %}
+
+                <h1 style="color: #16a34a;">
+                    Order Returned
+                </h1>
+
+                <p>
+                    This order has been returned.
+                </p>
+
+            {% elif order.payment_status == 'paid' %}
+
+                <h1 style="color: #16a34a;">
+                    Order Confirmed!
+                </h1>
+
+                <p>
+                    Your order has been placed successfully.
+                </p>
+
+            {% elif order.payment_status == 'failed' %}
+
+                <h1 style="color: #dc2626;">
+                    Payment Failed
+                </h1>
+
+                <p>
+                    Something went wrong with your payment.
+                    You can try again below.
+                </p>
+
+            {% else %}
+
+                <h1>
+                    Order Placed
+                </h1>
+
+                <p>
+                    Your order has been placed and is awaiting payment.
+                </p>
+
+            {% endif %}
 
         </div>
 
-        {% if order.payment_status != 'paid' %}
+        {% if request.GET.payment == 'success' %}
+            <div class="confirmation-card border-emerald-200 bg-emerald-50 text-emerald-800" role="status">
+                Payment received. Your order is confirmed.
+            </div>
+        {% elif request.GET.payment == 'failed' %}
+            <div class="confirmation-card border-red-200 bg-red-50 text-red-800" role="status">
+                Payment was not completed. You can try again below.
+            </div>
+        {% elif request.GET.payment == 'pending' %}
+            <div class="confirmation-card border-amber-200 bg-amber-50 text-amber-800" role="status">
+                Payment is still processing. Refresh this page in a moment to check its status.
+            </div>
+        {% elif request.GET.payment == 'error' %}
+            <div class="confirmation-card border-red-200 bg-red-50 text-red-800" role="alert">
+                We could not verify this payment yet. Please try again or contact support if you were charged.
+            </div>
+        {% endif %}
 
-            <button
-                onclick="payWithKhalti({{ order.id }})"
-                class="inline-block bg-purple-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-purple-700 transition duration-200 mb-4"
-            >
-                Pay with Khalti
-            </button>
+        {% if request.GET.cancellation == 'payment_in_progress' %}
+            <div class="confirmation-card border-amber-200 bg-amber-50 text-amber-900" role="alert">
+                This order can’t be cancelled while its Khalti payment is in progress. Finish or cancel the payment first, then try cancelling the order again.
+            </div>
+        {% elif request.GET.cancellation == 'paid' %}
+            <div class="confirmation-card border-amber-200 bg-amber-50 text-amber-900" role="alert">
+                This order has already been paid and can’t be cancelled here. Please contact support if you need help.
+            </div>
+        {% endif %}
 
-            <br>
+
+        <!-- ORDER DETAILS -->
+
+        <div class="confirmation-card">
+
+            <h2>
+                Order Details
+            </h2>
+
+            <div class="confirmation-row">
+
+                <span class="confirmation-label">
+                    Order Number
+                </span>
+
+                <strong class="confirmation-value">
+                    #ORD-{{ order.id|stringformat:"04d" }}
+                </strong>
+
+            </div>
+
+            <div class="confirmation-row">
+
+                <span class="confirmation-label">
+                    Total Amount
+                </span>
+
+                <strong class="confirmation-value confirmation-total">
+                    Rs. {{ order.total_amount }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- SHIPPING DETAILS -->
+
+        <div class="confirmation-card">
+
+            <h2>
+                Shipping Details
+            </h2>
+
+            {% if order.shipping_address %}
+
+                <div class="shipping-grid">
+
+                    <div class="shipping-item">
+
+                        <p class="shipping-label">
+                            Name
+                        </p>
+
+                        <p class="shipping-value">
+                            {{ order.shipping_address.full_name }}
+                        </p>
+
+                    </div>
+
+                    <div class="shipping-item">
+
+                        <p class="shipping-label">
+                            Phone
+                        </p>
+
+                        <p class="shipping-value">
+                            {{ order.shipping_address.phone }}
+                        </p>
+
+                    </div>
+
+                    <div class="shipping-item">
+
+                        <p class="shipping-label">
+                            Address
+                        </p>
+
+                        <p class="shipping-value">
+                            {{ order.shipping_address.address }}
+                        </p>
+
+                    </div>
+
+                    <div class="shipping-item">
+
+                        <p class="shipping-label">
+                            City
+                        </p>
+
+                        <p class="shipping-value">
+                            {{ order.shipping_address.city }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <p style="color: #6b7280; margin: 0;">
+                    No shipping information available.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ESTIMATED DELIVERY -->
+
+        {% if order.status != 'cancelled' and order.status != 'delivered' and order.status != 'return_requested' and order.status != 'returned' %}
+
+            <div class="confirmation-card">
+
+                <h2>
+                    Estimated Delivery
+                </h2>
+
+                <p class="delivery-date">
+                    {{ estimated_delivery_start|date:"F d, Y" }}
+                    -
+                    {{ estimated_delivery_end|date:"F d, Y" }}
+                </p>
+
+                <p class="delivery-note">
+                    Your order is expected to arrive within this period.
+                </p>
+
+            </div>
 
         {% endif %}
 
-        <a
-            href="/"
-            class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200"
-        >
-            Continue Shopping
-        </a>
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="confirmation-actions">
+
+            <!-- KHALTI PAYMENT -->
+
+            {% if order.status == 'pending' or order.status == 'confirmed' %}
+
+                {% if order.payment_status != 'paid' %}
+                    <button
+                        type="button"
+                        id="khalti-button"
+                        class="action-button khalti-button"
+                        onclick="payWithKhalti({{ order.id }})"
+                    >
+                        Pay with Khalti
+                    </button>
+                {% endif %}
+
+            {% endif %}
+
+
+            <!-- CANCEL ORDER -->
+
+            {% if order.payment_status != 'paid' and order.status == 'pending' or order.payment_status != 'paid' and order.status == 'confirmed' %}
+
+                <form
+                    method="POST"
+                    action="{% url 'cancel_order' order.id %}"
+                    onsubmit="return confirm('Are you sure you want to cancel this order?');"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="action-button cancel-order-button"
+                    >
+                        Cancel Order
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            <!-- RETURN ORDER -->
+
+            {% if order.status == 'delivered' %}
+
+                <form
+                    method="POST"
+                    action="{% url 'request_return' order.id %}"
+                    onsubmit="return confirm('Are you sure you want to request a return?');"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="action-button cancel-order-button"
+                    >
+                        Return Order
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            <!-- CONTINUE SHOPPING -->
+
+            <a
+                href="{% url 'products:product_list' %}"
+                class="action-button continue-shopping"
+            >
+                Continue Shopping
+            </a>
+
+        </div>
 
     </div>
+
 </div>
 
+
 <script>
+
 function getCookie(name) {
+
     const value = `; ${document.cookie}`;
+
     const parts = value.split(`; ${name}=`);
 
     if (parts.length === 2) {
         return parts.pop().split(';').shift();
     }
+
+    return null;
 }
+
 
 async function payWithKhalti(orderId) {
-    const res = await fetch('/payments/initiate/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            order_id: orderId
-        })
-    });
 
-    const data = await res.json();
+    const button = document.getElementById('khalti-button');
 
-    if (data.payment_url) {
-        window.location.href = data.payment_url;
-    } else {
-        alert(
-            data.error ||
-            "Payment failed to start. Please try again."
-        );
+    if (button) {
+
+        button.disabled = true;
+
+        button.innerText = 'Processing...';
+
     }
+
+    try {
+
+        const csrfToken = getCookie('csrftoken');
+
+        const response = await fetch(
+            "{% url 'khalti-initiate' %}",
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+
+                credentials: 'same-origin',
+
+                body: JSON.stringify({
+                    order_id: orderId
+                })
+            }
+        );
+
+        let data = {};
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            data = await response.json();
+        }
+
+        if (!response.ok || !data.payment_url) {
+            let errorMessage = data.error || data.detail ||
+                `Payment could not start (HTTP ${response.status}).`;
+            if (data.configuration_help) {
+                errorMessage += ` ${data.configuration_help}`;
+            }
+            throw new Error(errorMessage);
+        }
+
+        window.location.href = data.payment_url;
+
+    } catch (error) {
+
+        console.error(
+            'Khalti payment error:',
+            error
+        );
+
+        alert(
+            error.message || 'Unable to connect to the payment service. Please try again.'
+        );
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.innerText = 'Pay with Khalti';
+
+        }
+
+    }
+
 }
+
 </script>
 
 {% endblock %}
