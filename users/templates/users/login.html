@@ -75,10 +75,19 @@ Stationery Hub{% endblock %} {% block content %}
     </div>
 
     <button
+      id="admin-sign-in"
+      type="button"
       class="w-full border border-amber-700 text-amber-700 py-3 rounded font-semibold hover:bg-amber-50 transition"
     >
-      Continue as Admin (Demo)
+      Sign in as Admin
     </button>
+    <p
+      id="admin-sign-in-help"
+      class="hidden text-sm text-center text-gray-500 mt-3"
+    >
+      This uses the email and password above. Your account must already have
+      Admin access.
+    </p>
 
     <p class="text-center text-sm text-gray-600 mt-6">
       Don't have an account?
@@ -87,16 +96,29 @@ Stationery Hub{% endblock %} {% block content %}
         class="text-amber-700 font-semibold hover:underline"
         >Create one</a
       >
-      >
     </p>
 
-    <p class="text-center text-xs text-gray-400 mt-4">
-      Demo: use any email &amp; password to sign in as a customer
-    </p>
   </div>
 </div>
 
 <script>
+  const adminSignInButton = document.getElementById("admin-sign-in");
+  const adminSignInHelp = document.getElementById("admin-sign-in-help");
+  const loginForm = document.getElementById("login-form");
+  const loginParams = new URLSearchParams(window.location.search);
+  let adminOnly = loginParams.get("admin_only") === "1";
+
+  function signInAsAdmin() {
+    adminOnly = true;
+    adminSignInHelp.classList.remove("hidden");
+    loginForm.requestSubmit();
+  }
+
+  adminSignInButton.addEventListener("click", signInAsAdmin);
+  if (adminOnly) {
+    adminSignInHelp.classList.remove("hidden");
+  }
+
   document
     .getElementById("toggle-password")
     .addEventListener("click", function () {
@@ -123,14 +145,16 @@ Stationery Hub{% endblock %} {% block content %}
         const response = await fetch("{% url 'login' %}", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, admin_only: adminOnly }),
         });
         const data = await response.json();
 
         if (response.ok) {
           localStorage.setItem("access_token", data.access);
           localStorage.setItem("refresh_token", data.refresh);
-          const next = new URLSearchParams(window.location.search).get("next");
+          const next = adminOnly
+            ? "{% url 'dashboard' %}"
+            : loginParams.get("next");
           const destination = next
             ? new URL(next, window.location.origin)
             : new URL("/", window.location.origin);
@@ -139,7 +163,7 @@ Stationery Hub{% endblock %} {% block content %}
               ? destination.href
               : "/";
         } else {
-          errorBox.textContent = "Invalid email or password.";
+          errorBox.textContent = data.detail || "Invalid email or password.";
           errorBox.classList.remove("hidden");
         }
       } catch (err) {

@@ -63,9 +63,114 @@ class LoginTests(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
+        self.assertEqual(response.data["role"], "customer")
 
     def test_login_wrong_password(self):
         response = self.client.post(
             self.login_url, {"email": "login@example.com", "password": "wrongpass"}
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_sign_in_rejects_customer_accounts(self):
+        response = self.client.post(
+            self.login_url,
+            {
+                "email": "login@example.com",
+                "password": "TestPass123",
+                "admin_only": True,
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(
+            response.data["detail"], "This account does not have admin access."
+        )
+
+    def test_admin_sign_in_accepts_admin_accounts(self):
+        self.user.role = "admin"
+        self.user.save(update_fields=["role"])
+
+        response = self.client.post(
+            self.login_url,
+            {
+                "email": "login@example.com",
+                "password": "TestPass123",
+                "admin_only": True,
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["role"], "admin")
+
+    def test_admin_sign_in_accepts_django_superusers(self):
+        self.user.is_superuser = True
+        self.user.save(update_fields=["is_superuser"])
+
+        response = self.client.post(
+            self.login_url,
+            {
+                "email": "login@example.com",
+                "password": "TestPass123",
+                "admin_only": True,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["role"], "admin")
+
+
+class ProfileTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username="profileuser",
+            email="profile@example.com",
+            password="TestPass123",
+        )
+        self.client.force_authenticate(self.user)
+
+    def test_profile_can_save_order_shipping_details(self):
+        response = self.client.patch(
+            "/users/profile/",
+            {
+                "first_name": "Profile",
+                "last_name": "User",
+                "phone_number": "9800000000",
+                "address": "1 Stationery Street",
+                "city": "Kathmandu",
+                "postal_code": "44600",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Profile")
+        self.assertEqual(self.user.last_name, "User")
+        self.assertEqual(self.user.phone_number, "9800000000")
+        self.assertEqual(self.user.address, "1 Stationery Street")
+        self.assertEqual(self.user.city, "Kathmandu")
+        self.assertEqual(self.user.postal_code, "44600")
+
+    def test_profile_page_uses_wide_layout_and_single_full_name_field(self):
+        response = self.client.get("/users/profile-page/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, 'id="full_name"')
+        self.assertContains(response, "max-w-4xl")
+        self.assertContains(response, 'class="profile-form"')
+        self.assertContains(response, "column-gap: 2rem")
+        self.assertContains(response, "max-width: 24rem")
+        self.assertContains(response, "profile-save")
+        self.assertNotContains(response, 'id="first_name"')
+        self.assertNotContains(response, 'id="last_name"')
+
+
+class LoginPageTests(TestCase):
+    def test_admin_sign_in_explains_it_uses_existing_credentials(self):
+        response = self.client.get("/users/login-page/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Sign in as Admin")
+        self.assertContains(
+            response,
+            "This uses the email and password above. Your account must already have",
+        )

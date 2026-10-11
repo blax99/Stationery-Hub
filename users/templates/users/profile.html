@@ -1,67 +1,175 @@
 {% extends "base.html" %} {% load static %} {% block title %}My Profile -
 Stationery Hub{% endblock %} {% block content %}
+<style>
+  .profile-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+    row-gap: 1.5rem;
+  }
+
+  .profile-field {
+    min-width: 0;
+  }
+
+  .profile-field label {
+    display: block;
+    margin-bottom: 0.625rem;
+  }
+
+  .profile-field input,
+  .profile-field textarea {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    max-width: 24rem;
+  }
+
+  .profile-field--wide {
+    grid-column: 1 / -1;
+  }
+
+  .profile-field--wide textarea {
+    max-width: 42rem;
+  }
+
+  .profile-save {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(100%, 20rem);
+  }
+
+  @media (max-width: 767px) {
+    .profile-form {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 1.25rem;
+    }
+
+    .profile-field--wide,
+    .profile-save {
+      grid-column: auto;
+    }
+  }
+</style>
+
 <div
-  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] px-4 py-12"
+  class="min-h-[80vh] bg-[#f5ede0] px-4 py-12"
 >
-  <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-    <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">
-      Your account
-    </p>
-    <h1 class="text-4xl font-serif mb-8">My Profile</h1>
+  <div class="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-5 md:p-7">
+    <div class="mb-6">
+      <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">
+        Your account
+      </p>
+      <h1 class="text-4xl font-serif">My Profile</h1>
+      <p class="text-sm text-gray-500 mt-2">
+        Save your contact and delivery details for a faster checkout.
+      </p>
+    </div>
 
     <div id="message-box" class="hidden mb-4 text-sm rounded px-4 py-2"></div>
 
-    <form id="profile-form" class="space-y-5">
-      <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+    <form id="profile-form" class="profile-form">
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
           >Username</label
         >
         <input
           type="text"
           id="username"
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
         />
       </div>
 
-      <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
+          >Full Name</label
+        >
+        <input
+          type="text"
+          id="full_name"
+          autocomplete="name"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+          placeholder="Your full name"
+        />
+      </div>
+
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
           >Email Address</label
         >
         <input
           type="email"
           id="email"
           disabled
-          class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded px-4 py-3"
+          class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded px-3 py-2 text-sm"
         />
       </div>
 
-      <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
           >Phone Number</label
         >
         <input
           type="text"
           id="phone_number"
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
+          autocomplete="tel"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
           placeholder="98XXXXXXXX"
         />
       </div>
 
-      <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2">City</label>
+        <input
+          type="text"
+          id="city"
+          autocomplete="address-level2"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+          placeholder="City"
+        />
+      </div>
+
+      <div class="profile-field profile-field--wide">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
+          >Street Address</label
+        >
+        <textarea
+          id="address"
+          rows="2"
+          autocomplete="street-address"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+          placeholder="Street address"
+        ></textarea>
+      </div>
+
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
+          >Postal Code</label
+        >
+        <input
+          type="text"
+          id="postal_code"
+          autocomplete="postal-code"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+          placeholder="Postal code"
+        />
+      </div>
+
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
           >Role</label
         >
         <input
           type="text"
           id="role"
           disabled
-          class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded px-4 py-3"
+          class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded px-3 py-2 text-sm"
         />
       </div>
 
       <button
         type="submit"
-        class="w-full bg-gray-900 text-white py-3 rounded font-semibold hover:bg-gray-800 transition"
+        class="profile-save bg-gray-900 text-white py-2.5 rounded font-semibold hover:bg-gray-800 transition"
       >
         Save Changes
       </button>
@@ -88,7 +196,12 @@ Stationery Hub{% endblock %} {% block content %}
     const data = await response.json();
     document.getElementById("username").value = data.username;
     document.getElementById("email").value = data.email;
+    document.getElementById("full_name").value =
+      [data.first_name, data.last_name].filter(Boolean).join(" ");
     document.getElementById("phone_number").value = data.phone_number || "";
+    document.getElementById("address").value = data.address || "";
+    document.getElementById("city").value = data.city || "";
+    document.getElementById("postal_code").value = data.postal_code || "";
     document.getElementById("role").value = data.role;
   }
 
@@ -98,6 +211,12 @@ Stationery Hub{% endblock %} {% block content %}
       e.preventDefault();
       msgBox.classList.add("hidden");
 
+      const nameParts = document
+        .getElementById("full_name")
+        .value.trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
       const response = await fetch("{% url 'profile' %}", {
         method: "PATCH",
         headers: {
@@ -106,7 +225,12 @@ Stationery Hub{% endblock %} {% block content %}
         },
         body: JSON.stringify({
           username: document.getElementById("username").value,
+          first_name: nameParts[0] || "",
+          last_name: nameParts.slice(1).join(" "),
           phone_number: document.getElementById("phone_number").value,
+          address: document.getElementById("address").value,
+          city: document.getElementById("city").value,
+          postal_code: document.getElementById("postal_code").value,
         }),
       });
 

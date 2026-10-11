@@ -14,7 +14,7 @@ from django.core.mail import send_mail
 from django.views.generic import TemplateView
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from .permissions import IsAdmin
+from .permissions import IsAdmin, has_admin_access
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -27,8 +27,17 @@ class LoginAPIView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        if request.data.get("admin_only") and not has_admin_access(serializer.user):
+            return Response(
+                {"detail": "This account does not have admin access."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         auth_login(request._request, serializer.user)
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        response = Response(serializer.validated_data, status=status.HTTP_200_OK)
+        response.data["role"] = (
+            "admin" if serializer.user.is_superuser else serializer.user.role
+        )
+        return response
 
 
 @require_POST
