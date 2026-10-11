@@ -6,6 +6,7 @@ Stationery Hub{% endblock %} {% block content %}
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 2rem;
     row-gap: 1.5rem;
+    padding-inline: 1rem;
   }
 
   .profile-field {
@@ -37,6 +38,7 @@ Stationery Hub{% endblock %} {% block content %}
     grid-column: 1 / -1;
     justify-self: center;
     width: min(100%, 20rem);
+    margin-block: 0.75rem;
   }
 
   @media (max-width: 767px) {
@@ -53,10 +55,11 @@ Stationery Hub{% endblock %} {% block content %}
 </style>
 
 <div
-  class="min-h-[80vh] bg-[#f5ede0] px-4 py-12"
+  class="bg-[#f5ede0] px-4 py-12"
+  style="min-height: calc(100vh - 4rem); margin-bottom: -3rem"
 >
   <div class="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-5 md:p-7">
-    <div class="mb-6">
+    <div class="mb-6 px-4">
       <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">
         Your account
       </p>
