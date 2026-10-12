@@ -62,14 +62,15 @@ class RegisterView(generics.CreateAPIView):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         verify_link = f"{settings.SITE_URL}/users/verify-email/?uid={uid}&token={token}"
-
-        send_mail(
-            subject="Verify your email - Stationery Hub",
-            message=f"Click the link to verify your email: {verify_link}",
-            from_email="noreply@stationeryhub.com",
-            recipient_list=[user.email],
-        )
-
+        try:
+            send_mail(
+                subject="Verify your email - Stationery Hub",
+                message=f"Click the link to verify your email: {verify_link}",
+                from_email="noreply@stationeryhub.com",
+                recipient_list=[user.email],
+            )
+        except Exception as e:
+            print("Email failed:", e)
 
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
