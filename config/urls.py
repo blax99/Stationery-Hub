@@ -3,7 +3,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from cart import views
-
+from home import views
+from cart import views as cart_views   
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("home.urls")),
@@ -13,8 +14,9 @@ urlpatterns = [
     path("orders/", include("orders.urls")),
     path("payments/", include("payments.urls")),
     path("dashboard/", include("admin_dashboard.urls")),
-    path("wishlist/", views.wishlist, name="wishlist"),
+    path("wishlist/", cart_views.wishlist, name="wishlist"),   
     path("wishlist/api/", include("cart.wishlist_api_urls")),
+    path('api/chat/', views.chat_api, name='chat_api'),
 ]
 
 
