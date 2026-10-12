@@ -81,14 +81,6 @@ Stationery Hub{% endblock %} {% block content %}
     >
       Sign in as Admin
     </button>
-    <p
-      id="admin-sign-in-help"
-      class="hidden text-sm text-center text-gray-500 mt-3"
-    >
-      This uses the email and password above. Your account must already have
-      Admin access.
-    </p>
-
     <p class="text-center text-sm text-gray-600 mt-6">
       Don't have an account?
       <a
@@ -103,22 +95,29 @@ Stationery Hub{% endblock %} {% block content %}
 
 <script>
   const adminSignInButton = document.getElementById("admin-sign-in");
-  const adminSignInHelp = document.getElementById("admin-sign-in-help");
   const loginForm = document.getElementById("login-form");
+  const loginSubmitButton = loginForm.querySelector('button[type="submit"]');
   const loginParams = new URLSearchParams(window.location.search);
   let adminOnly = loginParams.get("admin_only") === "1";
+  let loginInProgress = false;
+  let requestedLoginButton = null;
+
+  function resetLoginButtons() {
+    loginInProgress = false;
+    loginSubmitButton.disabled = false;
+    loginSubmitButton.textContent = "Sign In";
+    adminSignInButton.disabled = false;
+    adminSignInButton.textContent = "Sign in as Admin";
+  }
 
   function signInAsAdmin() {
     adminOnly = true;
-    adminSignInHelp.classList.remove("hidden");
+    requestedLoginButton = adminSignInButton;
     loginForm.requestSubmit();
+    requestedLoginButton = null;
   }
 
   adminSignInButton.addEventListener("click", signInAsAdmin);
-  if (adminOnly) {
-    adminSignInHelp.classList.remove("hidden");
-  }
-
   document
     .getElementById("toggle-password")
     .addEventListener("click", function () {
@@ -136,6 +135,17 @@ Stationery Hub{% endblock %} {% block content %}
     .getElementById("login-form")
     .addEventListener("submit", async function (e) {
       e.preventDefault();
+      if (loginInProgress) return;
+
+      const activeButton =
+        requestedLoginButton || e.submitter || loginSubmitButton;
+      requestedLoginButton = null;
+      loginInProgress = true;
+      loginSubmitButton.disabled = true;
+      adminSignInButton.disabled = true;
+      activeButton.disabled = true;
+      activeButton.textContent = "Signing in...";
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const errorBox = document.getElementById("error-message");
@@ -167,10 +177,12 @@ Stationery Hub{% endblock %} {% block content %}
         } else {
           errorBox.textContent = data.detail || "Invalid email or password.";
           errorBox.classList.remove("hidden");
+          resetLoginButtons();
         }
       } catch (err) {
         errorBox.textContent = "Something went wrong. Please try again.";
         errorBox.classList.remove("hidden");
+        resetLoginButtons();
       }
     });
 </script>

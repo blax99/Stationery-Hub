@@ -165,12 +165,13 @@ class ProfileTests(TestCase):
 
 
 class LoginPageTests(TestCase):
-    def test_admin_sign_in_explains_it_uses_existing_credentials(self):
+    def test_admin_sign_in_does_not_show_the_admin_access_helper(self):
         response = self.client.get("/users/login-page/")
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Sign in as Admin")
-        self.assertContains(
+        self.assertContains(response, 'id="login-form"')
+        self.assertNotContains(
             response,
-            "This uses the email and password above. Your account must already have",
+            "Your account must already have Admin access.",
         )
