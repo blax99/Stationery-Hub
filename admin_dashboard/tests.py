@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase, TestCase
-from django.urls import resolve
+from django.urls import resolve, reverse
 
 from orders.models import Order
 
@@ -23,12 +23,12 @@ from .views import (
 
 class DashboardIntegrationTests(SimpleTestCase):
     dashboard_routes = {
-        "/dashboard/": dashboard_view,
-        "/dashboard/products/": products_view,
-        "/dashboard/inventory/": inventory_view,
-        "/dashboard/orders/": orders_view,
-        "/dashboard/analytics/": analytics_view,
-        "/dashboard/users/": users_view,
+        "/admin/": dashboard_view,
+        "/admin/products/": products_view,
+        "/admin/inventory/": inventory_view,
+        "/admin/orders/": orders_view,
+        "/admin/analytics/": analytics_view,
+        "/admin/users/": users_view,
     }
 
     def setUp(self):
@@ -38,6 +38,19 @@ class DashboardIntegrationTests(SimpleTestCase):
         for path, view in self.dashboard_routes.items():
             with self.subTest(path=path):
                 self.assertIs(resolve(path).func, view)
+
+    def test_legacy_dashboard_urls_redirect_to_admin_urls(self):
+        for path in ("/dashboard/", "/dashboard/products/"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 301)
+                self.assertEqual(
+                    response["Location"],
+                    path.replace("/dashboard/", "/admin/"),
+                )
+
+    def test_django_admin_is_available_at_its_new_url(self):
+        self.assertEqual(reverse("admin:index"), "/django-admin/")
 
     def test_all_modules_render_the_same_navigation_without_extra_groups(self):
         pages = {
@@ -128,7 +141,7 @@ class DashboardIntegrationTests(SimpleTestCase):
                     view(request)
 
     def test_superusers_are_allowed_to_access_the_dashboard(self):
-        request = self.factory.get("/dashboard/")
+        request = self.factory.get("/admin/")
         request.user = SimpleNamespace(
             is_authenticated=True, role="customer", is_superuser=True
         )
@@ -164,7 +177,7 @@ class DashboardUserRoleTests(TestCase):
         self.client.force_login(self.admin)
 
     def test_user_module_lists_only_admins_and_customers(self):
-        response = self.client.get("/dashboard/users/")
+        response = self.client.get("/admin/users/")
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.admin.email)
@@ -175,7 +188,7 @@ class DashboardUserRoleTests(TestCase):
 
     def test_user_module_rejects_vendor_role_on_add(self):
         response = self.client.post(
-            "/dashboard/users/",
+            "/admin/users/",
             {
                 "action": "add",
                 "full_name": "New Vendor",
@@ -193,7 +206,7 @@ class DashboardUserRoleTests(TestCase):
 
     def test_user_module_rejects_vendor_role_on_edit(self):
         response = self.client.post(
-            "/dashboard/users/",
+            "/admin/users/",
             {
                 "action": "edit",
                 "user_id": self.customer.id,
@@ -215,9 +228,9 @@ class DashboardUserRoleTests(TestCase):
             status="cancelled",
         )
 
-        dashboard_response = self.client.get("/dashboard/")
-        orders_response = self.client.get("/dashboard/orders/")
-        analytics_response = self.client.get("/dashboard/analytics/")
+        dashboard_response = self.client.get("/admin/")
+        orders_response = self.client.get("/admin/orders/")
+        analytics_response = self.client.get("/admin/analytics/")
 
         self.assertEqual(dashboard_response.context["cancelled_orders"], 1)
         self.assertContains(dashboard_response, "bg-red-100 text-red-700")
@@ -226,3 +239,9 @@ class DashboardUserRoleTests(TestCase):
         self.assertContains(orders_response, "bg-red-100 text-red-700")
         self.assertContains(orders_response, "<option>Cancelled</option>")
         self.assertEqual(analytics_response.context["cancelled_orders"], 1)
+
+    def test_dashboard_customer_count_includes_only_customer_role(self):
+        response = self.client.get("/admin/")
+
+        self.assertEqual(response.context["total_customers"], 1)
+        self.assertContains(response, "Customers")
