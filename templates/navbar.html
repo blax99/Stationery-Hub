@@ -173,9 +173,17 @@
             </button>
           </div>
         </div>
-
+<!-- DARK MODE TOGGLE — ADD HERE -->
+                <button
+                    id="theme-toggle"
+                    type="button"
+                    class="text-gray-700 hover:text-blue-600 transition cursor-pointer text-lg"
+                    aria-label="Toggle dark mode"
+                >
+                    🌙
+                </button>
         <form id="logout-csrf-form" class="hidden">{% csrf_token %}</form>
-
+  
         <!-- Mobile Hamburger -->
         <button
           id="menuButton"
