@@ -141,18 +141,31 @@ document.addEventListener("turbo:load", function () {
     });
 });
 
-document.addEventListener("turbo:load", function () {
+if (window.stationeryProductCartInitializer) {
+  document.removeEventListener(
+    "turbo:load",
+    window.stationeryProductCartInitializer,
+  );
+}
+window.stationeryProductCartInitializer = function () {
   // Product Detail - Add to Cart
   const productAddToCartButtons = document.querySelectorAll(
     ".product-add-to-cart",
   );
+  const boundCartForms =
+    window.stationeryBoundCartForms ||
+    (window.stationeryBoundCartForms = new WeakSet());
 
   productAddToCartButtons.forEach((button) => {
-    button.closest("form").addEventListener("submit", async function (event) {
+    const form = button.closest("form");
+    if (!form || boundCartForms.has(form)) return;
+    boundCartForms.add(form);
+
+    form.addEventListener("submit", async function (event) {
       event.preventDefault();
+      if (form.dataset.cartRequestPending === "true") return;
 
       const productId = button.dataset.productId;
-      const form = button.closest("form");
       const quantityInput = form.querySelector("#quantity");
       const quantity = Number(quantityInput.value);
       const maxQuantity = Number(quantityInput.max);
@@ -167,6 +180,7 @@ document.addEventListener("turbo:load", function () {
         return;
       }
 
+      form.dataset.cartRequestPending = "true";
       const originalButtonHTML = button.innerHTML;
 
       button.disabled = true;
@@ -185,6 +199,7 @@ document.addEventListener("turbo:load", function () {
         });
 
         if (response.status === 401) {
+          delete form.dataset.cartRequestPending;
           window.stationeryLoginRedirect();
           return;
         }
@@ -208,6 +223,7 @@ document.addEventListener("turbo:load", function () {
         updateCartCount();
 
         setTimeout(() => {
+          delete form.dataset.cartRequestPending;
           button.innerHTML = originalButtonHTML;
           button.disabled = false;
         }, 1200);
@@ -216,12 +232,16 @@ document.addEventListener("turbo:load", function () {
 
         alert(error.message);
 
+        delete form.dataset.cartRequestPending;
         button.innerHTML = originalButtonHTML;
         button.disabled = false;
       }
     });
   });
+};
+document.addEventListener("turbo:load", window.stationeryProductCartInitializer);
 
+document.addEventListener("turbo:load", function () {
   // =========================
   // MOBILE MENU
   // =========================

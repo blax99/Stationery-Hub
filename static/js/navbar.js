@@ -9,6 +9,29 @@
   const authLink = document.getElementById("authLink");
   const userMenu = document.getElementById("userMenu");
   const logoutButton = document.getElementById("logoutButton");
+  let authStateRequest = 0;
+
+  function showSignedOutUser() {
+    authStateRequest += 1;
+    authLink.replaceChildren(document.createTextNode("Sign In"));
+    authLink.href = authLink.dataset.loginPage;
+    authLink.className =
+      "border border-black bg-white text-black px-3 sm:px-4 py-1.5 rounded-lg hover:bg-black hover:text-white transition text-sm font-medium cursor-pointer text-center";
+    authLink.removeAttribute("aria-label");
+    userMenu.classList.remove("group");
+  }
+
+  function getCsrfToken() {
+    const cookie = document.cookie
+      .split("; ")
+      .find((value) => value.startsWith("csrftoken="));
+    return (
+      cookie?.slice("csrftoken=".length) ||
+      document.querySelector(
+        "#logout-csrf-form input[name=csrfmiddlewaretoken]",
+      )?.value
+    );
+  }
 
   searchButton?.addEventListener("click", () => {
     searchBox.classList.remove("hidden");
@@ -42,31 +65,30 @@
   });
 
   logoutButton?.addEventListener("click", async () => {
-    const csrfToken = document.querySelector(
-      "#logout-csrf-form input[name=csrfmiddlewaretoken]",
-    )?.value;
-
     try {
       const response = await fetch(authLink.dataset.logoutUrl, {
         method: "POST",
-        headers: { "X-CSRFToken": csrfToken },
+        headers: { "X-CSRFToken": getCsrfToken() },
       });
 
       if (!response.ok) {
-        throw new Error(`Logout failed: ${response.status}`);
+        throw new Error(`Logout failed with HTTP ${response.status}.`);
       }
 
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
-      window.stationeryNavigate(authLink.dataset.loginPage);
+      showSignedOutUser();
+      window.stationeryNavigate(authLink.dataset.loginPage, { reload: true });
     } catch (error) {
       console.error("Unable to sign out.", error);
-      alert("Unable to sign out. Please try again.");
+      alert(`${error.message} Please try again.`);
     }
   });
 
   async function showAuthenticatedUser() {
     if (!authLink) return;
+
+    const requestId = ++authStateRequest;
 
     try {
       const response = await window.stationeryApiFetch(
@@ -74,8 +96,11 @@
       );
 
       if (response.status === 401) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        if (requestId === authStateRequest) {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          showSignedOutUser();
+        }
         return;
       }
       if (!response.ok) {
@@ -86,6 +111,8 @@
         response,
         "Could not load profile.",
       );
+      if (requestId !== authStateRequest) return;
+
       const initials = user.username
         .split(/\s+/)
         .map((part) => part[0])
@@ -113,5 +140,6 @@
     }
   }
 
+  document.addEventListener("turbo:load", showAuthenticatedUser);
   showAuthenticatedUser();
 })();
