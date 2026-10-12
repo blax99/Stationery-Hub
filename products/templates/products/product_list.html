@@ -27,7 +27,8 @@
           <p class="text-xs text-gray-500 mt-1">
             Showing
             <span class="font-semibold text-gray-800"
-              >{{ products|length }}</span
+              >{{ page_obj.start_index }}-{{ page_obj.end_index }} of
+              {{ page_obj.paginator.count }}</span
             >
             items
           </p>
@@ -328,6 +329,40 @@
           </div>
           {% endfor %}
         </div>
+        {% if page_obj.has_other_pages %}
+        <nav
+          class="flex justify-center items-center gap-2 mt-8"
+          aria-label="Product pages"
+        >
+          {% if page_obj.has_previous %}
+          <a
+            href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
+            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors"
+            aria-label="Previous page"
+          >
+            &lt;&lt;
+          </a>
+          {% endif %}
+          {% for page_number in page_obj.paginator.page_range %}
+          <a
+            href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_number }}"
+            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold transition-colors {% if page_obj.number == page_number %}bg-[#7A2828] text-white{% else %}bg-white border border-gray-200 text-gray-700 hover:bg-gray-100{% endif %}"
+            {% if page_obj.number == page_number %}aria-current="page"{% endif %}
+          >
+            {{ page_number }}
+          </a>
+          {% endfor %}
+          {% if page_obj.has_next %}
+          <a
+            href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
+            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors"
+            aria-label="Next page"
+          >
+            &gt;&gt;
+          </a>
+          {% endif %}
+        </nav>
+        {% endif %}
       </main>
     </div>
   </div>

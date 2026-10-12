@@ -42,6 +42,40 @@ class ProductDetailTests(TestCase):
         self.assertContains(response, "No description provided for this product.")
 
 
+class ProductListPaginationTests(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(name="Writing")
+        self.products = [
+            Products.objects.create(
+                category=self.category,
+                name=f"Test pen {number}",
+                description="A smooth-writing pen.",
+                price="12.50",
+                stock=3,
+            )
+            for number in range(8)
+        ]
+
+    def test_product_list_shows_six_products_per_page(self):
+        response = self.client.get(reverse("products:product_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["products"]), 6)
+        self.assertEqual(response.context["page_obj"].paginator.count, 8)
+        self.assertContains(response, "page=2")
+
+    def test_product_list_paginates_and_preserves_query_filters(self):
+        response = self.client.get(
+            reverse("products:product_list_by_category", args=[self.category.slug]),
+            {"page": 2, "sort": "price_low", "q": "pen"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["products"]), 2)
+        self.assertContains(response, "?sort=price_low&amp;q=pen&amp;page=1")
+        self.assertContains(response, "?sort=price_low&amp;q=pen&amp;page=2")
+
+
 class CategoryDataMigrationTests(TestCase):
     def test_old_pencil_products_move_to_pens_and_sports_is_added(self):
         pens = Category.objects.get(name="Pens")
