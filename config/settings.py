@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
-
+SITE_URL = os.getenv("SITE_URL")
 
 # Application definition
 
@@ -36,7 +36,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "cloudinary_storage", 
     "django.contrib.staticfiles",
+    "cloudinary",
     "rest_framework",
     "users",
     "products",
@@ -64,6 +66,12 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
 
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ["CLOUDINARY_CLOUD_NAME"],
+    "API_KEY": os.environ["CLOUDINARY_API_KEY"],
+    "API_SECRET": os.environ["CLOUDINARY_API_SECRET"],
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -152,7 +160,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
 STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
@@ -160,10 +172,13 @@ STORAGES = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 KHALTI_SECRET_KEY = os.getenv("KHALTI_SECRET_KEY")  # or test_secret_key_xxx for sandbox
 # KHALTI_BASE_URL = "https://khalti.com/api/v2"        # prod
@@ -173,5 +188,4 @@ KHALTI_RETURN_URL = os.getenv(
     "KHALTI_RETURN_URL", "http://127.0.0.1:8000/payments/verify/"
 )
 
-SITE_URL = os.getenv("SITE_URL")
 LOGIN_URL = "/users/login-page/"
