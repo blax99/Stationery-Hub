@@ -508,7 +508,7 @@
     return null;
   }
 
-  async function payWithKhalti(orderId) {
+  window.payWithKhalti = async function (orderId) {
     const button = document.getElementById("khalti-button");
 
     if (button) {
@@ -567,7 +567,7 @@
         button.innerText = "Pay with Khalti";
       }
     }
-  }
+  };
 </script>
 
 {% endblock %}
