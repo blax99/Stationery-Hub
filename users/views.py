@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,6 +19,8 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .permissions import IsAdmin, has_admin_access
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+logger = logging.getLogger(__name__)
 
 
 class LoginPageView(TemplateView):
@@ -59,18 +63,20 @@ class RegisterView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save()
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-        verify_link = f"{settings.SITE_URL}/users/verify-email/?uid={uid}&token={token}"
         try:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            verify_link = (
+                f"{settings.SITE_URL}/users/verify-email/?uid={uid}&token={token}"
+            )
             send_mail(
                 subject="Verify your email - Stationery Hub",
                 message=f"Click the link to verify your email: {verify_link}",
-                from_email="noreply@stationeryhub.com",
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
             )
-        except Exception as e:
-            print("Email failed:", e)
+        except Exception:
+            logger.exception("Failed to send registration email for user %s", user.pk)
 
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
@@ -85,18 +91,21 @@ class PasswordResetRequestView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-
-        reset_link = (
-            f"{settings.SITE_URL}/users/password-reset-confirm/?uid={uid}&token={token}"
-        )
-        send_mail(
-            subject="Password Reset - Stationery Hub",
-            message=f"Click the link to reset your password: {reset_link}",
-            from_email="noreply@stationeryhub.com",
-            recipient_list=[email],
-        )
+        try:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            reset_link = (
+                f"{settings.SITE_URL}/users/password-reset-confirm/"
+                f"?uid={uid}&token={token}"
+            )
+            send_mail(
+                subject="Password Reset - Stationery Hub",
+                message=f"Click the link to reset your password: {reset_link}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+            )
+        except Exception:
+            logger.exception("Failed to send password reset email for user %s", user.pk)
 
         return Response(
             {"detail": "If this email exists, a reset link has been sent."},

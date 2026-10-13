@@ -1,8 +1,7 @@
-from django.test import TestCase
+from unittest.mock import patch
 
-# Create your tests here.
-from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 
@@ -14,7 +13,8 @@ class RegistrationTests(TestCase):
         self.client = APIClient()
         self.register_url = "/users/register/"
 
-    def test_register_success(self):
+    @patch("users.views.send_mail")
+    def test_register_success(self, send_mail):
         data = {
             "username": "testuser1",
             "email": "testuser1@example.com",
@@ -25,6 +25,21 @@ class RegistrationTests(TestCase):
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(User.objects.filter(email="testuser1@example.com").exists())
+        send_mail.assert_called_once()
+
+    @patch("users.views.send_mail", side_effect=TimeoutError("SMTP timed out"))
+    def test_registration_succeeds_if_verification_email_times_out(self, send_mail):
+        data = {
+            "username": "testuser-timeout",
+            "email": "timeout@example.com",
+            "password": "TestPass123",
+        }
+
+        response = self.client.post(self.register_url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(User.objects.filter(email="timeout@example.com").exists())
+        send_mail.assert_called_once()
 
     def test_register_duplicate_email(self):
         User.objects.create_user(
@@ -47,6 +62,53 @@ class RegistrationTests(TestCase):
         }
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetRequestTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.reset_url = "/users/password-reset/"
+        self.user = User.objects.create_user(
+            username="resetuser",
+            email="reset@example.com",
+            password="TestPass123",
+        )
+
+    @patch("users.views.send_mail")
+    def test_password_reset_request_sends_email(self, send_mail):
+        response = self.client.post(
+            self.reset_url, {"email": self.user.email}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["detail"], "If this email exists, a reset link has been sent."
+        )
+        send_mail.assert_called_once()
+
+    @patch("users.views.send_mail", side_effect=TimeoutError("SMTP timed out"))
+    def test_password_reset_request_succeeds_if_email_times_out(self, send_mail):
+        response = self.client.post(
+            self.reset_url, {"email": self.user.email}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["detail"], "If this email exists, a reset link has been sent."
+        )
+        send_mail.assert_called_once()
+
+    @patch("users.views.send_mail")
+    def test_password_reset_request_does_not_send_for_unknown_email(self, send_mail):
+        response = self.client.post(
+            self.reset_url, {"email": "unknown@example.com"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["detail"], "If this email exists, a reset link has been sent."
+        )
+        send_mail.assert_not_called()
 
 
 class LoginTests(TestCase):
