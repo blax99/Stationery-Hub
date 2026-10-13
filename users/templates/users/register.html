@@ -76,7 +76,7 @@ Stationery Hub{% endblock %} {% block content %}
 
       <button
         type="submit"
-        class="w-full bg-gray-900 text-white py-3 rounded font-semibold hover:bg-gray-800 transition"
+        class="w-full bg-gray-900 text-white py-3 rounded font-semibold hover:bg-gray-800 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
       >
         Create Account
       </button>
@@ -127,12 +127,20 @@ Stationery Hub{% endblock %} {% block content %}
     .getElementById("register-form")
     .addEventListener("submit", async function (e) {
       e.preventDefault();
+      const submitButton = this.querySelector('button[type="submit"]');
+      if (submitButton.disabled) {
+        return;
+      }
+
       const username = document.getElementById("username").value;
       const email = document.getElementById("email").value;
       const phone_number = document.getElementById("phone_number").value;
       const password = document.getElementById("password").value;
       const errorBox = document.getElementById("error-message");
+      let redirecting = false;
       errorBox.classList.add("hidden");
+      submitButton.disabled = true;
+      submitButton.textContent = "Creating Account...";
 
       try {
         const response = await fetch("{% url 'register' %}", {
@@ -149,20 +157,27 @@ Stationery Hub{% endblock %} {% block content %}
             role: "customer",
           }),
         });
-        const data = await response.json();
 
         if (response.ok) {
-          window.location.href = "{% url 'login-page' %}";
-        } else {
-          const firstError = Object.values(data)[0];
-          errorBox.textContent = Array.isArray(firstError)
-            ? firstError[0]
-            : "Registration failed. Please check your details.";
-          errorBox.classList.remove("hidden");
+          redirecting = true;
+          window.location.assign("{% url 'login-page' %}");
+          return;
         }
+
+        const data = await response.json();
+        const firstError = Object.values(data)[0];
+        errorBox.textContent = Array.isArray(firstError)
+          ? firstError[0]
+          : "Registration failed. Please check your details.";
+        errorBox.classList.remove("hidden");
       } catch (err) {
         errorBox.textContent = "Something went wrong. Please try again.";
         errorBox.classList.remove("hidden");
+      } finally {
+        if (!redirecting) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Create Account";
+        }
       }
     });
 </script>
