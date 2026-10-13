@@ -76,6 +76,8 @@ Stationery Hub{% endblock %} {% block content %}
 
       <button
         type="submit"
+        id="register-submit"
+        aria-busy="false"
         class="w-full bg-gray-900 text-white py-3 rounded font-semibold hover:bg-gray-800 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
       >
         Create Account
@@ -137,9 +139,9 @@ Stationery Hub{% endblock %} {% block content %}
       const phone_number = document.getElementById("phone_number").value;
       const password = document.getElementById("password").value;
       const errorBox = document.getElementById("error-message");
-      let redirecting = false;
       errorBox.classList.add("hidden");
       submitButton.disabled = true;
+      submitButton.setAttribute("aria-busy", "true");
       submitButton.textContent = "Creating Account...";
 
       try {
@@ -159,26 +161,34 @@ Stationery Hub{% endblock %} {% block content %}
         });
 
         if (response.ok) {
-          redirecting = true;
-          window.location.assign("{% url 'login-page' %}");
+          window.location.assign(
+            "{% url 'login-page' %}?account_created=1",
+          );
           return;
         }
 
-        const data = await response.json();
-        const firstError = Object.values(data)[0];
-        errorBox.textContent = Array.isArray(firstError)
-          ? firstError[0]
-          : "Registration failed. Please check your details.";
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const data = await response.json();
+          const firstError = Object.values(data)[0];
+          errorBox.textContent =
+            (Array.isArray(firstError) && firstError[0]) ||
+            (typeof firstError === "string" && firstError) ||
+            `Registration failed (HTTP ${response.status}). Please check your details.`;
+        } else {
+          errorBox.textContent = `Registration failed (HTTP ${response.status}). Please try again.`;
+        }
         errorBox.classList.remove("hidden");
       } catch (err) {
-        errorBox.textContent = "Something went wrong. Please try again.";
+        console.error("Account registration failed:", err);
+        errorBox.textContent =
+          "Unable to connect. Please check your connection and try again.";
         errorBox.classList.remove("hidden");
-      } finally {
-        if (!redirecting) {
-          submitButton.disabled = false;
-          submitButton.textContent = "Create Account";
-        }
       }
+
+      submitButton.disabled = false;
+      submitButton.setAttribute("aria-busy", "false");
+      submitButton.textContent = "Create Account";
     });
 </script>
 {% endblock %}

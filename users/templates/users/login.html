@@ -1,5 +1,33 @@
 {% extends "base.html" %} {% load static %} {% block title %}Sign In -
 Stationery Hub{% endblock %} {% block content %}
+<style>
+  #account-created-toast {
+    position: fixed;
+    top: 5rem;
+    right: 1rem;
+    left: auto;
+    z-index: 1000;
+    max-width: min(24rem, calc(100vw - 2rem));
+    border: 1px solid #15803d;
+    border-radius: 0.5rem;
+    background-color: #15803d;
+    padding: 1rem 1.25rem;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+</style>
+
+<div
+  id="account-created-toast"
+  role="status"
+  aria-live="polite"
+  class="hidden"
+>
+</div>
+
 <div
   class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] px-4 py-12"
 >
@@ -98,6 +126,25 @@ Stationery Hub{% endblock %} {% block content %}
   const loginForm = document.getElementById("login-form");
   const loginSubmitButton = loginForm.querySelector('button[type="submit"]');
   const loginParams = new URLSearchParams(window.location.search);
+  const toastMessages = {
+    account_created: "Account created successfully. Please sign in.",
+    logged_out: "You have been logged out successfully.",
+  };
+  const toast = document.getElementById("account-created-toast");
+  const toastMessage = Object.entries(toastMessages).find(
+    ([parameter]) => loginParams.get(parameter) === "1",
+  );
+  if (toastMessage) {
+    toast.textContent = toastMessage[1];
+    toast.classList.remove("hidden");
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete(toastMessage[0]);
+    window.history.replaceState({}, "", cleanUrl);
+    window.setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 6000);
+  }
+
   let adminOnly = loginParams.get("admin_only") === "1";
   let loginInProgress = false;
   let requestedLoginButton = null;

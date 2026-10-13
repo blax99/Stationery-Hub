@@ -204,7 +204,12 @@
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         showSignedOutUser();
-        window.stationeryNavigate(authLink.dataset.loginPage, { reload: true });
+        const loginPage = new URL(
+          authLink.dataset.loginPage,
+          window.location.origin,
+        );
+        loginPage.searchParams.set("logged_out", "1");
+        window.stationeryNavigate(loginPage.href, { reload: true });
       } catch (error) {
         console.error("Unable to sign out.", error);
         alert(`${error.message} Please try again.`);
