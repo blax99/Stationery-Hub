@@ -237,3 +237,8 @@ class LoginPageTests(TestCase):
             response,
             "Your account must already have Admin access.",
         )
+        self.assertContains(response, "stationery-notification")
+        self.assertContains(response, "Admin login successful.")
+        self.assertContains(response, "Login successful.")
+        self.assertContains(response, "right: 1rem")
+        self.assertContains(response, "{ reload: true }")

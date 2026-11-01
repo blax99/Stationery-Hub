@@ -1,4 +1,4 @@
-<aside class="w-64 shrink-0 bg-gray-900 p-6 text-white shadow-lg">
+<aside class="sticky top-0 flex h-screen w-64 shrink-0 self-start flex-col bg-gray-900 p-6 text-white shadow-lg">
   <h1 class="mb-8 text-2xl font-bold">Stationery Hub</h1>
 
   <nav class="space-y-2" aria-label="Admin dashboard">
@@ -45,4 +45,82 @@
       👥 Users
     </a>
   </nav>
+
+  <div class="mt-auto space-y-3 border-t border-gray-700 pt-6">
+    <a
+      href="{% url 'home' %}"
+      class="block rounded-lg px-4 py-3 text-center font-medium text-gray-200 transition hover:bg-gray-800 hover:text-white"
+    >
+      View website
+    </a>
+    <form id="adminLogoutCsrfForm" class="hidden">{% csrf_token %}</form>
+    <button
+      id="adminLogoutButton"
+      type="button"
+      data-logout-url="{% url 'logout' %}"
+      class="w-full rounded-lg bg-red-600 px-4 py-3 font-medium text-white transition hover:bg-red-700 disabled:cursor-wait disabled:opacity-70"
+    >
+      Sign out
+    </button>
+  </div>
 </aside>
+<script>
+  const pendingNotification = sessionStorage.getItem("stationery-notification");
+  if (pendingNotification) {
+    sessionStorage.removeItem("stationery-notification");
+    const notification = document.createElement("div");
+    notification.setAttribute("role", "status");
+    notification.setAttribute("aria-live", "polite");
+    notification.style.cssText = [
+      "position: fixed",
+      "top: 1rem",
+      "right: 1rem",
+      "z-index: 10000",
+      "width: max-content",
+      "max-width: min(24rem, calc(100vw - 2rem))",
+      "border: 1px solid #15803d",
+      "border-radius: 0.5rem",
+      "background: #15803d",
+      "padding: 1rem 1.25rem",
+      "color: #fff",
+      "font-size: 0.875rem",
+      "font-weight: 500",
+      "box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    ].join(";");
+    notification.textContent = pendingNotification;
+    document.body.appendChild(notification);
+    window.setTimeout(() => notification.remove(), 6000);
+  }
+
+  document.querySelector("#adminLogoutButton")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    const csrfToken = document.querySelector(
+      "#adminLogoutCsrfForm input[name=csrfmiddlewaretoken]",
+    )?.value;
+
+    button.disabled = true;
+
+    try {
+      const response = await fetch(button.dataset.logoutUrl, {
+        method: "POST",
+        headers: csrfToken ? { "X-CSRFToken": csrfToken } : {},
+      });
+
+      if (!response.ok) {
+        throw new Error(`Sign out failed with HTTP ${response.status}.`);
+      }
+
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      sessionStorage.setItem(
+        "stationery-notification",
+        "Admin logout successful.",
+      );
+      window.location.assign("/");
+    } catch (error) {
+      console.error("Unable to sign out.", error);
+      alert(`${error.message} Please try again.`);
+      button.disabled = false;
+    }
+  });
+</script>

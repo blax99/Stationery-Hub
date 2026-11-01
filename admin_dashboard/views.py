@@ -565,6 +565,8 @@ def users_view(request):
                 is_active=True,
             )
 
+            account_type = "Admin" if role == "admin" else "User"
+            messages.success(request, f"{account_type} account created successfully.")
             return redirect("users")
 
         # Edit user

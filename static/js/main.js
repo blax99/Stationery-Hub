@@ -1,4 +1,5 @@
 window.stationeryApiFetch = async function (url, options = {}) {
+  const accessToken = localStorage.getItem("access_token");
   const sendRequest = (token) => {
     const headers = new Headers(options.headers || {});
     const method = (options.method || "GET").toUpperCase();
@@ -17,7 +18,7 @@ window.stationeryApiFetch = async function (url, options = {}) {
     return fetch(url, { ...options, headers });
   };
 
-  const response = await sendRequest(localStorage.getItem("access_token"));
+  const response = await sendRequest(accessToken);
   if (response.status !== 401) {
     return response;
   }
@@ -25,6 +26,9 @@ window.stationeryApiFetch = async function (url, options = {}) {
   const refreshToken = localStorage.getItem("refresh_token");
   if (!refreshToken) {
     localStorage.removeItem("access_token");
+    if (!accessToken) {
+      return response;
+    }
     return sendRequest(null);
   }
 
@@ -78,6 +82,48 @@ window.stationeryNavigate = function (url, { reload = false } = {}) {
 
   window.location.href = destination.href;
 };
+
+function showPendingNotification() {
+  const message = sessionStorage.getItem("stationery-notification");
+  if (!message) return;
+
+  sessionStorage.removeItem("stationery-notification");
+
+  let notification = document.getElementById("stationery-notification");
+  if (!notification) {
+    notification = document.createElement("div");
+    notification.id = "stationery-notification";
+    notification.setAttribute("role", "status");
+    notification.setAttribute("aria-live", "polite");
+    notification.style.cssText = [
+      "position: fixed",
+      "top: 5rem",
+      "right: 1rem",
+      "z-index: 10000",
+      "width: max-content",
+      "max-width: min(24rem, calc(100vw - 2rem))",
+      "border: 1px solid #15803d",
+      "border-radius: 0.5rem",
+      "background: #15803d",
+      "padding: 1rem 1.25rem",
+      "color: #fff",
+      "font-size: 0.875rem",
+      "font-weight: 500",
+      "box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    ].join(";");
+    document.body.appendChild(notification);
+  }
+
+  notification.textContent = message;
+  window.clearTimeout(notification.dismissTimer);
+  notification.dismissTimer = window.setTimeout(
+    () => notification.remove(),
+    6000,
+  );
+}
+
+document.addEventListener("turbo:load", showPendingNotification);
+showPendingNotification();
 
 window.stationeryApiJson = async function (response, fallbackMessage) {
   const contentType = response.headers.get("content-type") || "";
@@ -499,6 +545,8 @@ document.addEventListener("turbo:load", function () {
             setWishlistInactive(button);
           }
         });
+
+        updateWishlistNavCount(wishlistMap.size);
       } catch (error) {
         console.error("Error loading wishlist:", error);
       }
@@ -544,7 +592,7 @@ document.addEventListener("turbo:load", function () {
               setWishlistInactive(this);
 
               if (typeof updateWishlistNavCount === "function") {
-                await updateWishlistNavCount();
+                updateWishlistNavCount(wishlistMap.size);
               }
             } else {
               alert(
@@ -587,7 +635,7 @@ document.addEventListener("turbo:load", function () {
               setWishlistActive(this);
 
               if (typeof updateWishlistNavCount === "function") {
-                await updateWishlistNavCount();
+                updateWishlistNavCount(wishlistMap.size);
               }
             } else {
               alert(
@@ -643,10 +691,19 @@ function updateCartCount() {
 
 updateCartCount();
 
-function updateWishlistNavCount() {
+function updateWishlistNavCount(count) {
   const wishlistNavCount = document.getElementById("wishlist-nav-count");
 
   if (!wishlistNavCount) {
+    return;
+  }
+
+  if (count !== undefined) {
+    wishlistNavCount.textContent = count;
+    return;
+  }
+
+  if (document.querySelector(".wishlist-btn")) {
     return;
   }
 

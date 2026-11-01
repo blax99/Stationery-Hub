@@ -23,9 +23,16 @@
       </div>
 
       {% if messages %}
-      <div class="mb-6 space-y-2" role="status">
+      <div
+        class="fixed right-4 top-4 z-[100] w-full max-w-sm space-y-2"
+        aria-live="polite"
+      >
         {% for message in messages %}
-        <p class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p
+          data-admin-notification="{% if message.tags == 'success' %}success{% else %}error{% endif %}"
+          role="{% if message.tags == 'success' %}status{% else %}alert{% endif %}"
+          class="rounded-lg border px-4 py-3 text-sm shadow-lg {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-700{% else %}border-red-200 bg-red-50 text-red-700{% endif %}"
+        >
           {{ message }}
         </p>
         {% endfor %}
@@ -629,6 +636,12 @@
       document
         .getElementById("roleFilter")
         .addEventListener("change", filterUsers);
+
+      document
+        .querySelectorAll('[data-admin-notification="success"]')
+        .forEach((notification) => {
+          window.setTimeout(() => notification.remove(), 6000);
+        });
     </script>
   </body>
 </html>

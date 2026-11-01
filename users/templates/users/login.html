@@ -209,6 +209,12 @@ Stationery Hub{% endblock %} {% block content %}
         if (response.ok) {
           localStorage.setItem("access_token", data.access);
           localStorage.setItem("refresh_token", data.refresh);
+          sessionStorage.setItem(
+            "stationery-notification",
+            data.role === "admin"
+              ? "Admin login successful."
+              : "Login successful.",
+          );
           const next = adminOnly
             ? "{% url 'dashboard' %}"
             : loginParams.get("next");
@@ -219,7 +225,7 @@ Stationery Hub{% endblock %} {% block content %}
             destination.origin === window.location.origin
               ? destination.href
               : "/",
-            { reload: adminOnly },
+            { reload: true },
           );
         } else {
           errorBox.textContent = data.detail || "Invalid email or password.";

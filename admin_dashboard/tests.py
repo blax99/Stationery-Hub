@@ -77,6 +77,14 @@ class DashboardIntegrationTests(SimpleTestCase):
                     "Users",
                 ):
                     self.assertIn(label, html)
+                self.assertIn('href="/"', html)
+                self.assertIn("View website", html)
+                self.assertIn('id="adminLogoutButton"', html)
+                self.assertIn("Sign out", html)
+                self.assertIn("Admin logout successful.", html)
+                self.assertIn("right: 1rem", html)
+                self.assertIn("sticky top-0", html)
+                self.assertIn("h-screen", html)
                 self.assertNotIn(">Management<", html)
                 self.assertIn('aria-current="page"', html)
                 self.assertIn("Stationery Hub - Admin", html)
@@ -186,6 +194,17 @@ class DashboardUserRoleTests(TestCase):
         self.assertNotContains(response, 'value="vendor"')
         self.assertNotContains(response, "Vendor")
 
+    def test_admin_can_sign_out_and_is_redirected_from_dashboard(self):
+        response = self.client.post("/users/logout/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"success": True})
+        self.assertRedirects(
+            self.client.get("/admin/"),
+            "/users/login-page/?next=/admin/",
+            fetch_redirect_response=False,
+        )
+
     def test_user_module_rejects_vendor_role_on_add(self):
         response = self.client.post(
             "/admin/users/",
@@ -203,6 +222,32 @@ class DashboardUserRoleTests(TestCase):
             get_user_model().objects.filter(email="new-vendor@example.com").exists()
         )
         self.assertContains(response, "Choose either Admin or Customer.")
+
+    def test_user_module_notifies_when_admin_or_customer_account_is_created(self):
+        for role, message in (
+            ("admin", "Admin account created successfully."),
+            ("customer", "User account created successfully."),
+        ):
+            with self.subTest(role=role):
+                email = f"new-{role}@example.com"
+                response = self.client.post(
+                    "/admin/users/",
+                    {
+                        "action": "add",
+                        "full_name": "New Account",
+                        "email": email,
+                        "password": "TestPass123",
+                        "role": role,
+                    },
+                    follow=True,
+                )
+
+                self.assertContains(response, message)
+                self.assertContains(
+                    response,
+                    'data-admin-notification="success"',
+                )
+                self.assertTrue(get_user_model().objects.filter(email=email).exists())
 
     def test_user_module_rejects_vendor_role_on_edit(self):
         response = self.client.post(
