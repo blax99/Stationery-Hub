@@ -183,6 +183,9 @@ Stationery Hub{% endblock %} {% block content %}
 <script>
   const token = localStorage.getItem("access_token");
   const msgBox = document.getElementById("message-box");
+  const profileSaveButton = document.querySelector(
+    '#profile-form button[type="submit"]',
+  );
 
   if (!token) {
     window.location.href = "{% url 'login-page' %}";
@@ -212,40 +215,55 @@ Stationery Hub{% endblock %} {% block content %}
     .getElementById("profile-form")
     .addEventListener("submit", async function (e) {
       e.preventDefault();
+      if (profileSaveButton.disabled) return;
+
+      profileSaveButton.disabled = true;
+      profileSaveButton.setAttribute("aria-busy", "true");
       msgBox.classList.add("hidden");
 
-      const nameParts = document
-        .getElementById("full_name")
-        .value.trim()
-        .split(/\s+/)
-        .filter(Boolean);
+      try {
+        const nameParts = document
+          .getElementById("full_name")
+          .value.trim()
+          .split(/\s+/)
+          .filter(Boolean);
 
-      const response = await fetch("{% url 'profile' %}", {
-        method: "PATCH",
-        headers: {
-          Authorization: "Bearer " + token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: document.getElementById("username").value,
-          first_name: nameParts[0] || "",
-          last_name: nameParts.slice(1).join(" "),
-          phone_number: document.getElementById("phone_number").value,
-          address: document.getElementById("address").value,
-          city: document.getElementById("city").value,
-          postal_code: document.getElementById("postal_code").value,
-        }),
-      });
+        const response = await fetch("{% url 'profile' %}", {
+          method: "PATCH",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: document.getElementById("username").value,
+            first_name: nameParts[0] || "",
+            last_name: nameParts.slice(1).join(" "),
+            phone_number: document.getElementById("phone_number").value,
+            address: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            postal_code: document.getElementById("postal_code").value,
+          }),
+        });
 
-      if (response.ok) {
-        msgBox.textContent = "Profile updated successfully.";
-        msgBox.className =
-          "mb-4 text-sm rounded px-4 py-2 bg-green-50 text-green-700 border border-green-200";
-      } else {
+        if (response.ok) {
+          msgBox.textContent = "Profile updated successfully.";
+          msgBox.className =
+            "mb-4 text-sm rounded px-4 py-2 bg-green-50 text-green-700 border border-green-200";
+        } else {
+          msgBox.textContent =
+            "Could not update profile. Please check your details.";
+          msgBox.className =
+            "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200";
+        }
+      } catch (error) {
+        console.error("Profile update failed:", error);
         msgBox.textContent =
-          "Could not update profile. Please check your details.";
+          "Unable to update your profile. Please check your connection and try again.";
         msgBox.className =
           "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200";
+      } finally {
+        profileSaveButton.disabled = false;
+        profileSaveButton.removeAttribute("aria-busy");
       }
       msgBox.classList.remove("hidden");
     });

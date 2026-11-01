@@ -125,6 +125,34 @@ function showPendingNotification() {
 document.addEventListener("turbo:load", showPendingNotification);
 showPendingNotification();
 
+document.addEventListener("submit", (event) => {
+  if (event.defaultPrevented) return;
+
+  const submitter = event.submitter;
+  if (!(submitter instanceof HTMLButtonElement)) return;
+
+  submitter.disabled = true;
+  submitter.setAttribute("aria-busy", "true");
+});
+
+document.addEventListener("turbo:submit-start", (event) => {
+  const submitter = event.detail.formSubmission.submitter;
+  if (!(submitter instanceof HTMLButtonElement)) return;
+
+  submitter.disabled = true;
+  submitter.setAttribute("aria-busy", "true");
+});
+
+document.addEventListener("turbo:submit-end", (event) => {
+  if (event.detail.success) return;
+
+  const submitter = event.detail.formSubmission.submitter;
+  if (!(submitter instanceof HTMLButtonElement)) return;
+
+  submitter.disabled = false;
+  submitter.removeAttribute("aria-busy");
+});
+
 window.stationeryApiJson = async function (response, fallbackMessage) {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("json")) {
@@ -230,6 +258,7 @@ window.stationeryProductCartInitializer = function () {
       const originalButtonHTML = button.innerHTML;
 
       button.disabled = true;
+      button.setAttribute("aria-busy", "true");
       button.innerHTML = "Adding...";
 
       try {
@@ -265,6 +294,7 @@ window.stationeryProductCartInitializer = function () {
         }
 
         button.innerHTML = "Added to Cart";
+        button.removeAttribute("aria-busy");
 
         updateCartCount();
 
@@ -272,6 +302,7 @@ window.stationeryProductCartInitializer = function () {
           delete form.dataset.cartRequestPending;
           button.innerHTML = originalButtonHTML;
           button.disabled = false;
+          button.removeAttribute("aria-busy");
         }, 1200);
       } catch (error) {
         console.error("Add to cart error:", error);
@@ -281,6 +312,7 @@ window.stationeryProductCartInitializer = function () {
         delete form.dataset.cartRequestPending;
         button.innerHTML = originalButtonHTML;
         button.disabled = false;
+        button.removeAttribute("aria-busy");
       }
     });
   });
@@ -559,6 +591,7 @@ document.addEventListener("turbo:load", function () {
         const wishlistItemId = wishlistMap.get(productId);
 
         this.disabled = true;
+        this.setAttribute("aria-busy", "true");
 
         try {
           // =========================
@@ -651,6 +684,7 @@ document.addEventListener("turbo:load", function () {
           alert("Unable to update wishlist.");
         } finally {
           this.disabled = false;
+          this.removeAttribute("aria-busy");
         }
       });
     });

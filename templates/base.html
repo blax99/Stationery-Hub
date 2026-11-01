@@ -19,6 +19,41 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"
     />
+    <style>
+      button:not(:disabled),
+      input[type="button"]:not(:disabled),
+      input[type="submit"]:not(:disabled),
+      input[type="reset"]:not(:disabled) {
+        cursor: pointer;
+      }
+
+      @keyframes stationery-button-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      button[aria-busy="true"]::before,
+      input[type="submit"][aria-busy="true"]::before {
+        content: "";
+        display: inline-block;
+        width: 0.9rem;
+        height: 0.9rem;
+        margin-right: 0.5rem;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        vertical-align: -0.1em;
+        animation: stationery-button-spin 0.7s linear infinite;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        button[aria-busy="true"]::before,
+        input[type="submit"][aria-busy="true"]::before {
+          animation-duration: 1.5s;
+        }
+      }
+    </style>
 
     <!-- Your Compiled CSS -->
     <link rel="stylesheet" href="{% static 'css/output.css' %}" />
@@ -32,7 +67,7 @@
 
     {% include "footer.html" %}
 
-    <script src="{% static 'js/main.js' %}?v=11" data-turbo-eval="false"></script>
-    <script src="{% static 'js/navbar.js' %}?v=11"></script>
+    <script src="{% static 'js/main.js' %}?v=12" data-turbo-eval="false"></script>
+    <script src="{% static 'js/navbar.js' %}?v=12"></script>
   </body>
 </html>

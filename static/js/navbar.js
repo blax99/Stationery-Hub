@@ -191,15 +191,7 @@
         logoutButton.disabled = true;
       });
       button.setAttribute("aria-busy", "true");
-      button.innerHTML = `
-        <svg class="mr-2 inline-block h-4 w-4 align-[-3px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".3" stroke-width="3"></circle>
-          <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"></animateTransform>
-          </path>
-        </svg>
-        Signing out...
-      `;
+      button.textContent = "Signing out...";
 
       try {
         const headers = {};
