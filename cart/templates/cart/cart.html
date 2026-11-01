@@ -771,7 +771,8 @@ async function loadCart() {
 
 async function updateQuantity(
     cartItem,
-    change
+    change,
+    button
 ) {
 
     const itemId =
@@ -798,6 +799,12 @@ async function updateQuantity(
         return;
     }
 
+    if (button.disabled) {
+        return;
+    }
+
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
 
     try {
 
@@ -870,6 +877,9 @@ async function updateQuantity(
             error
         );
 
+    } finally {
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
     }
 
 }
@@ -879,7 +889,13 @@ async function updateQuantity(
    DELETE CART ITEM
 ========================================================= */
 
-async function deleteCartItem(cartItem, itemId) {
+async function deleteCartItem(cartItem, itemId, button) {
+    if (button.disabled) {
+        return;
+    }
+
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
 
     try {
 
@@ -934,6 +950,11 @@ async function deleteCartItem(cartItem, itemId) {
         );
 
     }
+
+    finally {
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
+    }
 }
 
 /* =========================================================
@@ -973,7 +994,8 @@ container.addEventListener(
 
                 updateQuantity(
                     cartItem,
-                    1
+                    1,
+                    increaseButton
                 );
 
             }
@@ -1006,7 +1028,8 @@ container.addEventListener(
 
                 updateQuantity(
                     cartItem,
-                    -1
+                    -1,
+                    decreaseButton
                 );
 
             }
@@ -1046,7 +1069,8 @@ container.addEventListener(
 
             deleteCartItem(
                 cartItem,
-                itemId
+                itemId,
+                deleteButton
             );
 
         }

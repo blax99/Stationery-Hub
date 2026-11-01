@@ -513,7 +513,7 @@
 
     if (button) {
       button.disabled = true;
-
+      button.setAttribute("aria-busy", "true");
       button.innerText = "Processing...";
     }
 
@@ -563,7 +563,7 @@
 
       if (button) {
         button.disabled = false;
-
+        button.removeAttribute("aria-busy");
         button.innerText = "Pay with Khalti";
       }
     }

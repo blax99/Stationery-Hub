@@ -315,10 +315,15 @@ Wishlist
                 button.addEventListener(
                     "click",
                     function () {
+                        if (button.disabled) {
+                            return;
+                        }
 
                         const itemId =
                             this.dataset.itemId;
 
+                        button.disabled = true;
+                        button.setAttribute("aria-busy", "true");
 
                         fetch("/wishlist/api/", {
                             method: "DELETE",
@@ -392,6 +397,10 @@ Wishlist
                                 error
                             );
 
+                        })
+                        .finally(function () {
+                            button.disabled = false;
+                            button.removeAttribute("aria-busy");
                         });
                     }
                 );
@@ -414,6 +423,9 @@ Wishlist
             button.addEventListener(
                 "click",
                 async function () {
+                    if (button.disabled) {
+                        return;
+                    }
 
                     const productId =
                         this.dataset.productId;
@@ -428,6 +440,9 @@ Wishlist
 
                     const wishlistItemId =
                         removeButton.dataset.itemId;
+
+                    button.disabled = true;
+                    button.setAttribute("aria-busy", "true");
 
                     try {
 
@@ -583,6 +598,10 @@ Wishlist
                             error
                         );
 
+                    }
+                    finally {
+                        button.disabled = false;
+                        button.removeAttribute("aria-busy");
                     }
 
                 }
