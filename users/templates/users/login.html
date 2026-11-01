@@ -128,7 +128,6 @@ Stationery Hub{% endblock %} {% block content %}
   const loginParams = new URLSearchParams(window.location.search);
   const toastMessages = {
     account_created: "Account created successfully. Please sign in.",
-    logged_out: "You have been logged out successfully.",
   };
   const toast = document.getElementById("account-created-toast");
   const toastMessage = Object.entries(toastMessages).find(
@@ -153,8 +152,23 @@ Stationery Hub{% endblock %} {% block content %}
     loginInProgress = false;
     loginSubmitButton.disabled = false;
     loginSubmitButton.textContent = "Sign In";
+    loginSubmitButton.setAttribute("aria-busy", "false");
     adminSignInButton.disabled = false;
     adminSignInButton.textContent = "Sign in as Admin";
+    adminSignInButton.setAttribute("aria-busy", "false");
+  }
+
+  function setButtonLoading(button, label) {
+    button.setAttribute("aria-busy", "true");
+    button.innerHTML = `
+      <svg class="mr-2 inline-block h-4 w-4 align-[-3px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".3" stroke-width="3"></circle>
+        <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"></animateTransform>
+        </path>
+      </svg>
+      ${label}
+    `;
   }
 
   function signInAsAdmin() {
@@ -191,7 +205,7 @@ Stationery Hub{% endblock %} {% block content %}
       loginSubmitButton.disabled = true;
       adminSignInButton.disabled = true;
       activeButton.disabled = true;
-      activeButton.textContent = "Signing in...";
+      setButtonLoading(activeButton, "Signing in...");
 
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
