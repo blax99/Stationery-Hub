@@ -1,3 +1,31 @@
+<style>
+  button:not(:disabled),
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  @keyframes stationery-admin-button-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  button[aria-busy="true"]::before {
+    content: "";
+    display: inline-block;
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-right: 0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    vertical-align: -0.1em;
+    animation: stationery-admin-button-spin 0.7s linear infinite;
+  }
+</style>
+
 <aside class="sticky top-0 flex h-screen w-64 shrink-0 self-start flex-col bg-gray-900 p-6 text-white shadow-lg">
   <h1 class="mb-8 text-2xl font-bold">Stationery Hub</h1>
 
@@ -102,15 +130,7 @@
 
     button.disabled = true;
     button.setAttribute("aria-busy", "true");
-    button.innerHTML = `
-      <svg class="mr-2 inline-block h-4 w-4 align-[-3px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".3" stroke-width="3"></circle>
-        <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-          <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"></animateTransform>
-        </path>
-      </svg>
-      Signing out...
-    `;
+    button.textContent = "Signing out...";
 
     try {
       const response = await fetch(button.dataset.logoutUrl, {
@@ -136,5 +156,16 @@
       button.textContent = originalLabel;
       button.removeAttribute("aria-busy");
     }
+  });
+</script>
+<script>
+  document.addEventListener("submit", (event) => {
+    if (event.defaultPrevented) return;
+
+    const submitter = event.submitter;
+    if (!(submitter instanceof HTMLButtonElement)) return;
+
+    submitter.disabled = true;
+    submitter.setAttribute("aria-busy", "true");
   });
 </script>

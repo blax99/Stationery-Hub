@@ -320,6 +320,9 @@
             return;
           }
 
+          button.disabled = true;
+          button.setAttribute("aria-busy", "true");
+
           const form = document.createElement("form");
 
           form.method = "POST";

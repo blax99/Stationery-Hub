@@ -382,7 +382,10 @@
 
     <script>
       /* Submit order action */
-      function submitOrderAction(orderId, action) {
+      function submitOrderAction(orderId, action, button) {
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+
         const form = document.createElement("form");
 
         form.method = "POST";
@@ -427,7 +430,7 @@
           );
 
           if (confirmed) {
-            submitOrderAction(orderId, "approve");
+            submitOrderAction(orderId, "approve", this);
           }
         });
       });
@@ -444,7 +447,7 @@
           );
 
           if (confirmed) {
-            submitOrderAction(orderId, "ship");
+            submitOrderAction(orderId, "ship", this);
           }
         });
       });
@@ -461,7 +464,7 @@
           );
 
           if (confirmed) {
-            submitOrderAction(orderId, "deliver");
+            submitOrderAction(orderId, "deliver", this);
           }
         });
       });
