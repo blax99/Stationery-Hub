@@ -1,7 +1,13 @@
+from html import unescape
 from unittest.mock import patch
+from urllib.parse import urlsplit
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.contrib.auth.tokens import default_token_generator
+from django.core import mail
+from django.test import TestCase, override_settings
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from rest_framework.test import APIClient
 from rest_framework import status
 
@@ -64,6 +70,14 @@ class RegistrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    }
+)
 class PasswordResetRequestTests(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -74,8 +88,7 @@ class PasswordResetRequestTests(TestCase):
             password="TestPass123",
         )
 
-    @patch("users.views.send_mail")
-    def test_password_reset_request_sends_email(self, send_mail):
+    def test_password_reset_request_sends_decorated_email_with_working_reset_link(self):
         response = self.client.post(
             self.reset_url, {"email": self.user.email}, format="json"
         )
@@ -84,10 +97,29 @@ class PasswordResetRequestTests(TestCase):
         self.assertEqual(
             response.data["detail"], "If this email exists, a reset link has been sent."
         )
-        send_mail.assert_called_once()
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, "Reset your Stationery Hub password")
+        self.assertEqual(email.to, [self.user.email])
+        self.assertEqual(len(email.alternatives), 1)
+        self.assertEqual(email.alternatives[0].mimetype, "text/html")
+        self.assertIn("Reset my password", email.alternatives[0].content)
+        self.assertIn("Hello resetuser", email.body)
 
-    @patch("users.views.send_mail", side_effect=TimeoutError("SMTP timed out"))
-    def test_password_reset_request_succeeds_if_email_times_out(self, send_mail):
+        reset_link = unescape(
+            email.alternatives[0].content.split('href="', 1)[1].split('"', 1)[0]
+        )
+        reset_path = urlsplit(reset_link)
+        response = self.client.get(f"{reset_path.path}?{reset_path.query}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, "Choose a new password")
+
+    @patch(
+        "users.views.EmailMultiAlternatives.send",
+        side_effect=TimeoutError("SMTP timed out"),
+    )
+    def test_password_reset_request_succeeds_if_email_times_out(self, send_email):
         response = self.client.post(
             self.reset_url, {"email": self.user.email}, format="json"
         )
@@ -96,10 +128,10 @@ class PasswordResetRequestTests(TestCase):
         self.assertEqual(
             response.data["detail"], "If this email exists, a reset link has been sent."
         )
-        send_mail.assert_called_once()
+        send_email.assert_called_once()
 
-    @patch("users.views.send_mail")
-    def test_password_reset_request_does_not_send_for_unknown_email(self, send_mail):
+    @patch("users.views.EmailMultiAlternatives")
+    def test_password_reset_request_does_not_send_for_unknown_email(self, email_class):
         response = self.client.post(
             self.reset_url, {"email": "unknown@example.com"}, format="json"
         )
@@ -108,7 +140,76 @@ class PasswordResetRequestTests(TestCase):
         self.assertEqual(
             response.data["detail"], "If this email exists, a reset link has been sent."
         )
-        send_mail.assert_not_called()
+        email_class.assert_not_called()
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    }
+)
+class PasswordResetConfirmTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="reset-confirm-user",
+            email="reset-confirm@example.com",
+            password="OriginalPassword123!",
+        )
+        self.uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        self.token = default_token_generator.make_token(self.user)
+        self.confirm_url = (
+            f"/users/password-reset-confirm/?uid={self.uid}&token={self.token}"
+        )
+
+    def test_reset_link_opens_password_form(self):
+        response = self.client.get(self.confirm_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="reset-password-form"')
+        self.assertContains(response, "Choose a new password")
+
+    def test_invalid_reset_link_shows_recovery_action(self):
+        response = self.client.get(
+            f"/users/password-reset-confirm/?uid={self.uid}&token=invalid"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reset link unavailable")
+        self.assertContains(response, "Request a new link")
+        self.assertNotContains(response, 'id="reset-password-form"')
+
+    def test_valid_reset_link_updates_password(self):
+        response = self.client.post(
+            "/users/password-reset-confirm/",
+            {
+                "uid": self.uid,
+                "token": self.token,
+                "new_password": "NewStrongPassword456!",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("NewStrongPassword456!"))
+
+    def test_reset_rejects_weak_password(self):
+        response = self.client.post(
+            "/users/password-reset-confirm/",
+            {
+                "uid": self.uid,
+                "token": self.token,
+                "new_password": "short",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("OriginalPassword123!"))
 
 
 class LoginTests(TestCase):

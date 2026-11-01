@@ -1,21 +1,26 @@
 import logging
+from urllib.parse import urlencode
 
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
+from django.urls import reverse
 from .serializers import RegisterSerializer, ProfileSerializer
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .permissions import IsAdmin, has_admin_access
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -78,6 +83,7 @@ class RegisterView(generics.CreateAPIView):
         except Exception:
             logger.exception("Failed to send registration email for user %s", user.pk)
 
+
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
 
@@ -94,16 +100,35 @@ class PasswordResetRequestView(APIView):
         try:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            reset_link = (
-                f"{settings.SITE_URL}/users/password-reset-confirm/"
-                f"?uid={uid}&token={token}"
+            reset_url = request.build_absolute_uri(
+                reverse("password-reset-confirm")
             )
-            send_mail(
-                subject="Password Reset - Stationery Hub",
-                message=f"Click the link to reset your password: {reset_link}",
+            reset_link = f"{reset_url}?{urlencode({'uid': uid, 'token': token})}"
+            context = {
+                "username": user.get_short_name() or user.username,
+                "reset_link": reset_link,
+                "site_url": request.build_absolute_uri("/").rstrip("/"),
+            }
+            text_message = (
+                f"Hello {context['username']},\n\n"
+                "We received a request to reset your Stationery Hub password. "
+                f"Use this link to choose a new password:\n{reset_link}\n\n"
+                "If you did not request this, you can safely ignore this email."
+            )
+            email = EmailMultiAlternatives(
+                subject="Reset your Stationery Hub password",
+                body=text_message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
+                to=[user.email],
             )
+            email.attach_alternative(
+                render_to_string(
+                    "users/emails/password_reset.html",
+                    context,
+                ),
+                "text/html",
+            )
+            email.send()
         except Exception:
             logger.exception("Failed to send password reset email for user %s", user.pk)
 
@@ -115,6 +140,29 @@ class PasswordResetRequestView(APIView):
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+
+    def get(self, request):
+        uid = request.query_params.get("uid", "")
+        token = request.query_params.get("token", "")
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError):
+            user = None
+
+        token_is_valid = bool(
+            user and default_token_generator.check_token(user, token)
+        )
+        return render(
+            request,
+            "users/password-reset-confirm.html",
+            {
+                "uid": uid,
+                "token": token,
+                "token_is_valid": token_is_valid,
+            },
+        )
 
     def post(self, request):
         uid = request.data.get("uid")
@@ -132,6 +180,20 @@ class PasswordResetConfirmView(APIView):
         if not default_token_generator.check_token(user, token):
             return Response(
                 {"detail": "Invalid or expired token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not isinstance(new_password, str) or not new_password:
+            return Response(
+                {"detail": "Enter a new password."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            validate_password(new_password, user)
+        except ValidationError as error:
+            return Response(
+                {"detail": error.messages},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
