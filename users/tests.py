@@ -88,6 +88,7 @@ class PasswordResetRequestTests(TestCase):
             password="TestPass123",
         )
 
+    @override_settings(SITE_URL="https://stationery.example")
     def test_password_reset_request_sends_decorated_email_with_working_reset_link(self):
         response = self.client.post(
             self.reset_url, {"email": self.user.email}, format="json"
@@ -110,6 +111,8 @@ class PasswordResetRequestTests(TestCase):
             email.alternatives[0].content.split('href="', 1)[1].split('"', 1)[0]
         )
         reset_path = urlsplit(reset_link)
+        self.assertEqual(reset_path.netloc, "stationery.example")
+        self.assertEqual(reset_path.scheme, "https")
         response = self.client.get(f"{reset_path.path}?{reset_path.query}")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

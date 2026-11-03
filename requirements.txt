@@ -4,6 +4,7 @@ charset-normalizer==3.5.1
 cloudinary==1.46.3
 dj-database-url==3.1.2
 Django==5.2.17
+django-anymail==15.2
 django-cloudinary-storage==0.3.0
 djangorestframework==3.18.0
 djangorestframework_simplejwt==5.5.1

@@ -100,14 +100,15 @@ class PasswordResetRequestView(APIView):
         try:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            reset_url = request.build_absolute_uri(
-                reverse("password-reset-confirm")
-            )
+            site_url = (
+                settings.SITE_URL or request.build_absolute_uri("/")
+            ).rstrip("/")
+            reset_url = f"{site_url}{reverse('password-reset-confirm')}"
             reset_link = f"{reset_url}?{urlencode({'uid': uid, 'token': token})}"
             context = {
                 "username": user.get_short_name() or user.username,
                 "reset_link": reset_link,
-                "site_url": request.build_absolute_uri("/").rstrip("/"),
+                "site_url": site_url,
             }
             text_message = (
                 f"Hello {context['username']},\n\n"
