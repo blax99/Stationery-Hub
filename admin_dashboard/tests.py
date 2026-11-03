@@ -9,6 +9,7 @@ from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import resolve, reverse
 
 from orders.models import Order
+from products.models import Category, Products
 
 from .views import (
     analytics_view,
@@ -83,8 +84,15 @@ class DashboardIntegrationTests(SimpleTestCase):
                 self.assertIn("Sign out", html)
                 self.assertIn("Admin logout successful.", html)
                 self.assertIn("right: 1rem", html)
-                self.assertIn("sticky top-0", html)
-                self.assertIn("h-screen", html)
+                self.assertIn('id="adminSidebarToggle"', html)
+                self.assertIn('aria-controls="adminSidebarContent"', html)
+                self.assertIn('aria-expanded="false"', html)
+                self.assertIn('data-menu-icon="open"', html)
+                self.assertIn('data-menu-icon="close" class="hidden', html)
+                self.assertIn("willExpand ? \"Close admin navigation\"", html)
+                self.assertIn('id="adminSidebarContent"', html)
+                self.assertIn("md:sticky", html)
+                self.assertIn("md:h-screen", html)
                 self.assertNotIn(">Management<", html)
                 self.assertIn('aria-current="page"', html)
                 self.assertIn("Stationery Hub - Admin", html)
@@ -119,7 +127,7 @@ class DashboardIntegrationTests(SimpleTestCase):
             (analytics_html, "Analytics"),
         ):
             with self.subTest(title=title):
-                self.assertIn('class="flex-1 p-8"', html)
+                self.assertIn('class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8"', html)
                 self.assertIn('class="mb-8', html)
                 self.assertIn('class="text-3xl font-bold text-gray-800"', html)
                 self.assertIn(f">{title}</h2>", html)
@@ -282,7 +290,7 @@ class DashboardUserRoleTests(TestCase):
         self.assertContains(orders_response, 'data-status="cancelled"')
         self.assertEqual(orders_response.context["cancelled_orders"], 1)
         self.assertContains(orders_response, "bg-red-100 text-red-700")
-        self.assertContains(orders_response, "<option>Cancelled</option>")
+        self.assertContains(orders_response, '<option value="cancelled"')
         self.assertEqual(analytics_response.context["cancelled_orders"], 1)
 
     def test_dashboard_customer_count_includes_only_customer_role(self):
@@ -290,3 +298,82 @@ class DashboardUserRoleTests(TestCase):
 
         self.assertEqual(response.context["total_customers"], 1)
         self.assertContains(response, "Customers")
+
+    def test_user_search_is_filtered_and_paginated(self):
+        for index in range(26):
+            get_user_model().objects.create_user(
+                username=f"pagination-customer-{index}",
+                email=f"pagination-customer-{index}@example.com",
+                password="TestPass123",
+                role="customer",
+            )
+
+        response = self.client.get(
+            "/admin/users/?q=pagination-customer&role=customer"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_obj"].paginator.count, 26)
+        self.assertEqual(response.context["page_obj"].paginator.per_page, 10)
+        self.assertEqual(len(response.context["users"]), 10)
+        self.assertContains(response, "Page 1 of 3")
+        self.assertContains(response, "role=customer")
+
+        response = self.client.get(
+            "/admin/users/?q=pagination-customer&role=customer&page=2"
+        )
+
+        self.assertEqual(response.context["page_obj"].number, 2)
+        self.assertEqual(len(response.context["users"]), 10)
+
+    def test_product_and_inventory_lists_are_paginated_and_filtered(self):
+        category = Category.objects.create(name="Pagination supplies")
+        for index in range(26):
+            Products.objects.create(
+                category=category,
+                name=f"Pagination product {index}",
+                description="Admin list pagination test",
+                price="5.00",
+                stock=index % 12,
+            )
+
+        products_response = self.client.get(
+            f"/admin/products/?q=Pagination&category={category.id}"
+        )
+        inventory_response = self.client.get(
+            "/admin/inventory/?q=Pagination&status=low_stock"
+        )
+
+        self.assertEqual(products_response.status_code, 200)
+        self.assertEqual(products_response.context["page_obj"].paginator.count, 26)
+        self.assertEqual(products_response.context["page_obj"].paginator.per_page, 10)
+        self.assertEqual(len(products_response.context["products"]), 10)
+        self.assertContains(products_response, "Page 1 of 3")
+
+        self.assertEqual(inventory_response.status_code, 200)
+        self.assertEqual(inventory_response.context["page_obj"].paginator.count, 21)
+        self.assertEqual(len(inventory_response.context["products"]), 10)
+        self.assertTrue(
+            all(
+                0 < product.stock <= 10
+                for product in inventory_response.context["products"]
+            )
+        )
+
+    def test_order_list_is_paginated_and_searchable(self):
+        for index in range(26):
+            Order.objects.create(
+                user=self.customer,
+                total_amount="25.00",
+                status="pending",
+            )
+
+        response = self.client.get(
+            f"/admin/orders/?q={self.customer.username}&status=pending"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_obj"].paginator.count, 26)
+        self.assertEqual(response.context["page_obj"].paginator.per_page, 10)
+        self.assertEqual(len(response.context["orders"]), 10)
+        self.assertContains(response, "Page 1 of 3")

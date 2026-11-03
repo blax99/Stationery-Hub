@@ -11,10 +11,10 @@
   </head>
 
   <body class="bg-gray-100 text-gray-800">
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen flex-col md:flex-row">
       {% include "admin_dashboard/_sidebar.html" with active_page="users" %}
 
-    <main class="min-w-0 flex-1 p-8">
+    <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
       <div class="mb-8">
         <h2 class="text-3xl font-bold text-gray-800">Users</h2>
         <p class="mt-1 text-gray-500">
@@ -116,7 +116,7 @@
             </button>
           </div>
 
-          <div class="flex flex-col gap-4 border-b bg-gray-50 p-6 md:flex-row">
+          <form method="get" class="flex flex-col gap-4 border-b bg-gray-50 p-4 sm:p-6 md:flex-row">
             <div class="relative flex-1">
               <span
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -127,6 +127,8 @@
               <input
                 id="searchInput"
                 type="text"
+                name="q"
+                value="{{ search_query }}"
                 placeholder="Search users by name or email..."
                 class="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
@@ -134,16 +136,21 @@
 
             <select
               id="roleFilter"
-              class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              name="role"
+              onchange="this.form.submit()"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 md:w-auto"
             >
-              <option value="">All Roles</option>
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
+              <option value="" {% if not selected_user_role %}selected{% endif %}>All Roles</option>
+              <option value="customer" {% if selected_user_role == "customer" %}selected{% endif %}>Customer</option>
+              <option value="admin" {% if selected_user_role == "admin" %}selected{% endif %}>Admin</option>
             </select>
-          </div>
+            <button type="submit" class="w-full rounded-lg bg-gray-800 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-700 md:w-auto">
+              Search
+            </button>
+          </form>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+            <table class="w-full min-w-[720px] text-left text-sm">
               <thead class="bg-gray-50 text-xs uppercase text-gray-500">
                 <tr>
                   <th class="px-6 py-4 font-semibold">User</th>
@@ -284,11 +291,7 @@
             </table>
           </div>
 
-          <div class="flex items-center justify-between border-t px-6 py-4">
-            <p class="text-sm text-gray-500">
-              Showing {{ users|length }} users
-            </p>
-          </div>
+          {% include "admin_dashboard/_pagination.html" %}
         </div>
     </main>
     </div>
@@ -594,28 +597,6 @@
         form.submit();
       }
 
-      function filterUsers() {
-        const searchValue = document
-          .getElementById("searchInput")
-          .value.toLowerCase();
-
-        const roleValue = document
-          .getElementById("roleFilter")
-          .value.toLowerCase();
-
-        const rows = document.querySelectorAll(".user-row");
-
-        rows.forEach(function (row) {
-          const rowText = row.textContent.toLowerCase();
-          const rowRole = row.dataset.role;
-
-          const matchesSearch = rowText.includes(searchValue);
-          const matchesRole = !roleValue || rowRole === roleValue;
-
-          row.style.display = matchesSearch && matchesRole ? "" : "none";
-        });
-      }
-
       document
         .getElementById("userModal")
         .addEventListener("click", function (event) {
@@ -631,14 +612,6 @@
             closeViewUserModal();
           }
         });
-
-      document
-        .getElementById("searchInput")
-        .addEventListener("input", filterUsers);
-
-      document
-        .getElementById("roleFilter")
-        .addEventListener("change", filterUsers);
 
       document
         .querySelectorAll('[data-admin-notification="success"]')

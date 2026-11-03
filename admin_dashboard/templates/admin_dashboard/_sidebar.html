@@ -26,73 +26,112 @@
   }
 </style>
 
-<aside class="sticky top-0 flex h-screen w-64 shrink-0 self-start flex-col bg-gray-900 p-6 text-white shadow-lg">
-  <h1 class="mb-8 text-2xl font-bold">Stationery Hub</h1>
-
-  <nav class="space-y-2" aria-label="Admin dashboard">
-    <a
-      href="{% url 'dashboard' %}"
-      class="block rounded-lg px-4 py-3 transition {% if active_page == 'dashboard' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
-      {% if active_page == 'dashboard' %}aria-current="page"{% endif %}
-    >
-      📊 Dashboard
-    </a>
-    <a
-      href="{% url 'products' %}"
-      class="block rounded-lg px-4 py-3 transition {% if active_page == 'products' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
-      {% if active_page == 'products' %}aria-current="page"{% endif %}
-    >
-      📦 Products
-    </a>
-    <a
-      href="{% url 'inventory' %}"
-      class="block rounded-lg px-4 py-3 transition {% if active_page == 'inventory' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
-      {% if active_page == 'inventory' %}aria-current="page"{% endif %}
-    >
-      📋 Inventory
-    </a>
-    <a
-      href="{% url 'orders' %}"
-      class="block rounded-lg px-4 py-3 transition {% if active_page == 'orders' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
-      {% if active_page == 'orders' %}aria-current="page"{% endif %}
-    >
-      🛒 Orders
-    </a>
-    <a
-      href="{% url 'analytics' %}"
-      class="block rounded-lg px-4 py-3 transition {% if active_page == 'analytics' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
-      {% if active_page == 'analytics' %}aria-current="page"{% endif %}
-    >
-      📈 Analytics
-    </a>
-    <a
-      href="{% url 'users' %}"
-      class="block rounded-lg px-4 py-3 transition {% if active_page == 'users' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
-      {% if active_page == 'users' %}aria-current="page"{% endif %}
-    >
-      👥 Users
-    </a>
-  </nav>
-
-  <div class="mt-auto space-y-3 border-t border-gray-700 pt-6">
-    <a
-      href="{% url 'home' %}"
-      class="block rounded-lg px-4 py-3 text-center font-medium text-gray-200 transition hover:bg-gray-800 hover:text-white"
-    >
-      View website
-    </a>
-    <form id="adminLogoutCsrfForm" class="hidden">{% csrf_token %}</form>
+<aside class="sticky top-0 z-20 flex h-auto w-full shrink-0 flex-col self-start bg-gray-900 p-4 text-white shadow-lg md:sticky md:h-screen md:w-64 md:p-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-bold md:mb-8 md:text-2xl">Stationery Hub</h1>
     <button
-      id="adminLogoutButton"
+      id="adminSidebarToggle"
       type="button"
-      data-logout-url="{% url 'logout' %}"
-      class="w-full rounded-lg bg-red-600 px-4 py-3 font-medium text-white transition hover:bg-red-700 disabled:cursor-wait disabled:opacity-70"
+      class="rounded-lg p-2 text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white md:hidden"
+      aria-controls="adminSidebarContent"
+      aria-expanded="false"
+      aria-label="Open admin navigation"
     >
-      Sign out
+      <svg data-menu-icon="open" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <svg data-menu-icon="close" class="hidden h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6M6 6l12 12" />
+      </svg>
     </button>
+  </div>
+
+  <div id="adminSidebarContent" class="hidden flex-col md:flex md:flex-1">
+    <nav class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 md:mt-0 md:flex md:flex-col md:space-y-2" aria-label="Admin dashboard">
+      <a
+        href="{% url 'dashboard' %}"
+        class="block rounded-lg px-3 py-2 text-sm transition md:px-4 md:py-3 md:text-base {% if active_page == 'dashboard' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+        {% if active_page == 'dashboard' %}aria-current="page"{% endif %}
+      >
+        📊 Dashboard
+      </a>
+      <a
+        href="{% url 'products' %}"
+        class="block rounded-lg px-3 py-2 text-sm transition md:px-4 md:py-3 md:text-base {% if active_page == 'products' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+        {% if active_page == 'products' %}aria-current="page"{% endif %}
+      >
+        📦 Products
+      </a>
+      <a
+        href="{% url 'inventory' %}"
+        class="block rounded-lg px-3 py-2 text-sm transition md:px-4 md:py-3 md:text-base {% if active_page == 'inventory' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+        {% if active_page == 'inventory' %}aria-current="page"{% endif %}
+      >
+        📋 Inventory
+      </a>
+      <a
+        href="{% url 'orders' %}"
+        class="block rounded-lg px-3 py-2 text-sm transition md:px-4 md:py-3 md:text-base {% if active_page == 'orders' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+        {% if active_page == 'orders' %}aria-current="page"{% endif %}
+      >
+        🛒 Orders
+      </a>
+      <a
+        href="{% url 'analytics' %}"
+        class="block rounded-lg px-3 py-2 text-sm transition md:px-4 md:py-3 md:text-base {% if active_page == 'analytics' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+        {% if active_page == 'analytics' %}aria-current="page"{% endif %}
+      >
+        📈 Analytics
+      </a>
+      <a
+        href="{% url 'users' %}"
+        class="block rounded-lg px-3 py-2 text-sm transition md:px-4 md:py-3 md:text-base {% if active_page == 'users' %}bg-gray-800{% else %}hover:bg-gray-800{% endif %}"
+        {% if active_page == 'users' %}aria-current="page"{% endif %}
+      >
+        👥 Users
+      </a>
+    </nav>
+
+    <div class="mt-4 grid grid-cols-2 gap-3 border-t border-gray-700 pt-4 md:mt-auto md:flex md:flex-col md:space-y-3 md:pt-6">
+      <a
+        href="{% url 'home' %}"
+        class="block rounded-lg px-3 py-2 text-center text-sm font-medium text-gray-200 transition hover:bg-gray-800 hover:text-white md:px-4 md:py-3 md:text-base"
+      >
+        View website
+      </a>
+      <form id="adminLogoutCsrfForm" class="hidden">{% csrf_token %}</form>
+      <button
+        id="adminLogoutButton"
+        type="button"
+        data-logout-url="{% url 'logout' %}"
+        class="w-full rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-wait disabled:opacity-70 md:px-4 md:py-3 md:text-base"
+      >
+        Sign out
+      </button>
+    </div>
   </div>
 </aside>
 <script>
+  const adminSidebarToggle = document.querySelector("#adminSidebarToggle");
+  const adminSidebarContent = document.querySelector("#adminSidebarContent");
+
+  adminSidebarToggle?.addEventListener("click", () => {
+    const isExpanded = adminSidebarToggle.getAttribute("aria-expanded") === "true";
+    const willExpand = !isExpanded;
+    adminSidebarToggle.setAttribute("aria-expanded", String(willExpand));
+    adminSidebarToggle.setAttribute(
+      "aria-label",
+      willExpand ? "Close admin navigation" : "Open admin navigation",
+    );
+    adminSidebarContent?.classList.toggle("hidden", !willExpand);
+    adminSidebarToggle
+      .querySelector('[data-menu-icon="open"]')
+      ?.classList.toggle("hidden", willExpand);
+    adminSidebarToggle
+      .querySelector('[data-menu-icon="close"]')
+      ?.classList.toggle("hidden", !willExpand);
+  });
+
   const pendingNotification = sessionStorage.getItem("stationery-notification");
   if (pendingNotification) {
     sessionStorage.removeItem("stationery-notification");

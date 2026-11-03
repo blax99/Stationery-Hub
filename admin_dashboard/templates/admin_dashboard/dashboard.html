@@ -11,11 +11,11 @@
   </head>
 
   <body class="bg-gray-100 text-gray-800">
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen flex-col md:flex-row">
       {% include "admin_dashboard/_sidebar.html" with active_page="dashboard" %}
 
       <!-- Main Content -->
-      <main class="flex-1 p-8">
+      <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
         <form id="csrfForm" class="hidden">{% csrf_token %}</form>
 
         <div class="mb-8">

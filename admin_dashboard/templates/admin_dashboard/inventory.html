@@ -11,11 +11,11 @@
   </head>
 
   <body class="bg-gray-100">
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen flex-col md:flex-row">
       {% include "admin_dashboard/_sidebar.html" with active_page="inventory" %}
 
       <!-- Main Content -->
-      <main class="flex-1 p-8">
+      <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
         <form id="csrfForm" class="hidden">{% csrf_token %}</form>
 
         <!-- Header -->
@@ -34,7 +34,7 @@
               id="totalProducts"
               class="text-3xl font-bold text-gray-800 mt-2"
             >
-              0
+              {{ total_products }}
             </h3>
           </div>
 
@@ -42,7 +42,7 @@
             <p class="text-gray-500 text-sm">Low Stock</p>
 
             <h3 id="lowStock" class="text-3xl font-bold text-gray-800 mt-2">
-              0
+              {{ low_stock_count }}
             </h3>
           </div>
 
@@ -50,7 +50,7 @@
             <p class="text-gray-500 text-sm">Out of Stock</p>
 
             <h3 id="outOfStock" class="text-3xl font-bold text-gray-800 mt-2">
-              0
+              {{ out_of_stock_count }}
             </h3>
           </div>
         </div>
@@ -59,32 +59,35 @@
         <div
           class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
         >
-          <div class="flex gap-4">
+          <form method="get" class="flex flex-col gap-3 sm:flex-row sm:gap-4">
             <input
               id="inventorySearch"
               type="text"
+              name="q"
+              value="{{ search_query }}"
               placeholder="Search products..."
-              class="flex-1 border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
             />
 
             <select
               id="stockFilter"
-              class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              name="status"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 sm:w-auto"
             >
-              <option>All Stock Status</option>
-              <option>In Stock</option>
-              <option>Low Stock</option>
-              <option>Out of Stock</option>
+              <option value="">All Stock Status</option>
+              <option value="in_stock" {% if selected_stock_status == "in_stock" %}selected{% endif %}>In Stock</option>
+              <option value="low_stock" {% if selected_stock_status == "low_stock" %}selected{% endif %}>Low Stock</option>
+              <option value="out_of_stock" {% if selected_stock_status == "out_of_stock" %}selected{% endif %}>Out of Stock</option>
             </select>
 
             <button
               id="inventorySearchBtn"
-              type="button"
-              class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
+              type="submit"
+              class="w-full rounded-lg bg-gray-800 px-6 py-3 text-white transition hover:bg-gray-700 sm:w-auto"
             >
               Search
             </button>
-          </div>
+          </form>
         </div>
 
         <!-- Inventory Table -->
@@ -100,7 +103,7 @@
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left">
+            <table class="w-full min-w-[600px] text-left">
               <thead class="bg-gray-50 border-b">
                 <tr>
                   <th class="px-6 py-4 text-sm font-semibold text-gray-600">
@@ -174,17 +177,12 @@
               </tbody>
             </table>
           </div>
+          {% include "admin_dashboard/_pagination.html" %}
         </div>
       </main>
     </div>
 
     <script>
-      const inventorySearch = document.getElementById("inventorySearch");
-
-      const inventorySearchBtn = document.getElementById("inventorySearchBtn");
-
-      const stockFilter = document.getElementById("stockFilter");
-
       const inventoryTableBody = document.getElementById("inventoryTableBody");
 
       /* Update stock status */
@@ -221,73 +219,6 @@
           }
         });
       }
-
-      /* Update summary */
-
-      function updateInventorySummary() {
-        const products = inventoryTableBody.querySelectorAll("tr[data-id]");
-
-        let total = 0;
-        let lowStockCount = 0;
-        let outOfStockCount = 0;
-
-        products.forEach(function (product) {
-          const quantityElement = product.querySelector(".stock-quantity");
-
-          const quantity = parseInt(quantityElement.textContent.trim());
-
-          if (isNaN(quantity)) {
-            return;
-          }
-
-          total++;
-
-          if (quantity > 0 && quantity <= 10) {
-            lowStockCount++;
-          }
-
-          if (quantity === 0) {
-            outOfStockCount++;
-          }
-        });
-
-        document.getElementById("totalProducts").textContent = total;
-
-        document.getElementById("lowStock").textContent = lowStockCount;
-
-        document.getElementById("outOfStock").textContent = outOfStockCount;
-      }
-
-      /* Search + filter */
-
-      inventorySearchBtn.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        const searchText = inventorySearch.value.toLowerCase().trim();
-
-        const selectedStatus = stockFilter.value.toLowerCase().trim();
-
-        const products = inventoryTableBody.querySelectorAll("tr[data-id]");
-
-        products.forEach(function (product) {
-          const productName = (product.dataset.name || "").toLowerCase().trim();
-
-          const statusElement = product.querySelector(".stock-status");
-
-          const productStatus = (statusElement?.textContent || "")
-            .toLowerCase()
-            .trim();
-
-          const matchesSearch = productName.includes(searchText);
-
-          const matchesStatus =
-            selectedStatus === "all" ||
-            selectedStatus === "all stock status" ||
-            productStatus === selectedStatus;
-
-          product.style.display = matchesSearch && matchesStatus ? "" : "none";
-        });
-      });
 
       /* Update stock buttons */
 
@@ -363,7 +294,6 @@
       /* Initial page load */
 
       updateAllStockStatuses();
-      updateInventorySummary();
     </script>
   </body>
 </html>

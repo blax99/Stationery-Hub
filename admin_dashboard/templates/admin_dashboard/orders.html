@@ -11,11 +11,11 @@
   </head>
 
   <body class="bg-gray-100 text-gray-800">
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen flex-col md:flex-row">
       {% include "admin_dashboard/_sidebar.html" with active_page="orders" %}
 
       <!-- Main Content -->
-      <main class="flex-1 p-8">
+      <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
         <form id="csrfForm" class="hidden">{% csrf_token %}</form>
 
         <!-- Header -->
@@ -75,34 +75,38 @@
         <div
           class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
         >
-          <div class="flex flex-col lg:flex-row gap-4">
+          <form method="get" class="flex flex-col gap-3 lg:flex-row lg:gap-4">
             <input
               id="orderSearch"
               type="text"
+              name="q"
+              value="{{ search_query }}"
               placeholder="Search by order ID or customer..."
-              class="flex-1 border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
             />
 
             <select
               id="orderStatusFilter"
-              class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              name="status"
+              onchange="this.form.submit()"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 lg:w-auto"
             >
-              <option>All Status</option>
-              <option>Pending</option>
-              <option>Confirmed</option>
-              <option>Shipped</option>
-              <option>Delivered</option>
-              <option>Cancelled</option>
+              <option value="">All Status</option>
+              <option value="pending" {% if selected_order_status == "pending" %}selected{% endif %}>Pending</option>
+              <option value="confirmed" {% if selected_order_status == "confirmed" %}selected{% endif %}>Confirmed</option>
+              <option value="shipped" {% if selected_order_status == "shipped" %}selected{% endif %}>Shipped</option>
+              <option value="delivered" {% if selected_order_status == "delivered" %}selected{% endif %}>Delivered</option>
+              <option value="cancelled" {% if selected_order_status == "cancelled" %}selected{% endif %}>Cancelled</option>
             </select>
 
             <button
               id="orderSearchBtn"
-              type="button"
-              class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
+              type="submit"
+              class="w-full rounded-lg bg-gray-800 px-6 py-3 text-white transition hover:bg-gray-700 lg:w-auto"
             >
               Search
             </button>
-          </div>
+          </form>
         </div>
 
         <!-- Orders Table -->
@@ -117,7 +121,7 @@
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left">
+            <table class="w-full min-w-[760px] text-left">
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-6 py-4 text-sm font-semibold text-gray-600">
@@ -293,6 +297,7 @@
               </tbody>
             </table>
           </div>
+          {% include "admin_dashboard/_pagination.html" %}
         </div>
       </main>
 
@@ -582,46 +587,6 @@
         }
       });
 
-      /* Search + filter */
-      const orderSearch = document.getElementById("orderSearch");
-
-      const orderStatusFilter = document.getElementById("orderStatusFilter");
-
-      const orderSearchBtn = document.getElementById("orderSearchBtn");
-
-      const orderRows = document.querySelectorAll(".order-row");
-
-      function filterOrders() {
-        const searchText = orderSearch.value.toLowerCase().trim();
-
-        const selectedStatus = orderStatusFilter.value.toLowerCase();
-
-        orderRows.forEach(function (row) {
-          const orderId = row.dataset.orderId.toLowerCase();
-
-          const customer = row.dataset.customer;
-
-          const status = row.dataset.status;
-
-          const matchesSearch =
-            orderId.includes(searchText) || customer.includes(searchText);
-
-          const matchesStatus =
-            selectedStatus === "all status" || status === selectedStatus;
-
-          row.style.display = matchesSearch && matchesStatus ? "" : "none";
-        });
-      }
-
-      orderSearchBtn.addEventListener("click", filterOrders);
-
-      orderStatusFilter.addEventListener("change", filterOrders);
-
-      orderSearch.addEventListener("keyup", function (event) {
-        if (event.key === "Enter") {
-          filterOrders();
-        }
-      });
     </script>
   </body>
 </html>

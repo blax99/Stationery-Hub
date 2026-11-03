@@ -2,6 +2,7 @@ from functools import wraps
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate, TruncMonth
 from django.contrib import messages
@@ -15,6 +16,10 @@ from products.forms import ProductForm
 from orders.models import Order
 from users.models import User
 from users.permissions import has_admin_access
+
+
+def paginate_queryset(request, queryset):
+    return Paginator(queryset, 10).get_page(request.GET.get("page"))
 
 
 def admin_required(view_func):
@@ -123,12 +128,23 @@ def products_view(request):
                 form.save()
 
     products = Products.objects.select_related("category").all()
+    search_query = request.GET.get("q", "").strip()
+    category_id = request.GET.get("category", "").strip()
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+    if category_id.isdigit():
+        products = products.filter(category_id=category_id)
+
     categories = Category.objects.all()
+    page_obj = paginate_queryset(request, products.order_by("name", "id"))
 
     context = {
-        "products": products,
+        "products": page_obj,
         "categories": categories,
         "form": form,
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "selected_category": category_id,
     }
 
     return render(request, "admin_dashboard/products.html", context)
@@ -158,8 +174,30 @@ def inventory_view(request):
                 pass
 
     products = Products.objects.select_related("category").all()
+    search_query = request.GET.get("q", "").strip()
+    stock_status = request.GET.get("status", "")
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+    if stock_status == "in_stock":
+        products = products.filter(stock__gt=10)
+    elif stock_status == "low_stock":
+        products = products.filter(stock__gt=0, stock__lte=10)
+    elif stock_status == "out_of_stock":
+        products = products.filter(stock=0)
 
-    context = {"products": products}
+    page_obj = paginate_queryset(request, products.order_by("name", "id"))
+
+    context = {
+        "products": page_obj,
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "selected_stock_status": stock_status,
+        "total_products": Products.objects.count(),
+        "low_stock_count": Products.objects.filter(
+            stock__gt=0, stock__lte=10
+        ).count(),
+        "out_of_stock_count": Products.objects.filter(stock=0).count(),
+    }
 
     return render(request, "admin_dashboard/inventory.html", context)
 
@@ -195,6 +233,26 @@ def orders_view(request):
         .prefetch_related("items")
         .all()
     )
+    search_query = request.GET.get("q", "").strip()
+    order_status = request.GET.get("status", "")
+    if search_query:
+        search_filter = Q(user__username__icontains=search_query) | Q(
+            user__email__icontains=search_query
+        )
+        try:
+            search_filter |= Q(pk=int(search_query))
+        except ValueError:
+            pass
+        orders = orders.filter(search_filter)
+    if order_status in {
+        "pending",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled",
+    }:
+        orders = orders.filter(status=order_status)
+    page_obj = paginate_queryset(request, orders.order_by("-created_at", "-id"))
 
     total_orders = Order.objects.count()
     pending_orders = Order.objects.filter(status="pending").count()
@@ -204,7 +262,10 @@ def orders_view(request):
     cancelled_orders = Order.objects.filter(status="cancelled").count()
 
     context = {
-        "orders": orders,
+        "orders": page_obj,
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "selected_order_status": order_status,
         "total_orders": total_orders,
         "pending_orders": pending_orders,
         "confirmed_orders": confirmed_orders,
@@ -607,18 +668,36 @@ def users_view(request):
 
     users = (
         User.objects.filter(Q(role__in=("admin", "customer")) | Q(is_superuser=True))
-        .order_by("-date_joined")
+        .order_by("-date_joined", "-id")
     )
 
     total_users = users.count()
     total_customers = users.filter(role="customer", is_superuser=False).count()
     total_admins = users.filter(Q(role="admin") | Q(is_superuser=True)).count()
 
+    search_query = request.GET.get("q", "").strip()
+    user_role = request.GET.get("role", "")
+    if search_query:
+        users = users.filter(
+            Q(username__icontains=search_query)
+            | Q(first_name__icontains=search_query)
+            | Q(last_name__icontains=search_query)
+            | Q(email__icontains=search_query)
+        )
+    if user_role == "admin":
+        users = users.filter(Q(role="admin") | Q(is_superuser=True))
+    elif user_role == "customer":
+        users = users.filter(role="customer", is_superuser=False)
+
+    page_obj = paginate_queryset(request, users)
     context = {
-        "users": users,
+        "users": page_obj,
         "total_users": total_users,
         "total_customers": total_customers,
         "total_admins": total_admins,
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "selected_user_role": user_role,
     }
 
     return render(request, "admin_dashboard/users.html", context)
