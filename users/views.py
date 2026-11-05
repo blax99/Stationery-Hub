@@ -10,11 +10,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.template.loader import render_to_string
@@ -30,6 +30,11 @@ logger = logging.getLogger(__name__)
 
 class LoginPageView(TemplateView):
     template_name = "users/login.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("home")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoginAPIView(TokenObtainPairView):
@@ -62,6 +67,41 @@ class ForgotPasswordPageView(TemplateView):
 User = get_user_model()
 
 
+def send_verification_email(user, site_url):
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = default_token_generator.make_token(user)
+    site_url = site_url.rstrip("/")
+    verify_link = (
+        f"{site_url}{reverse('verify-email')}?"
+        f"{urlencode({'uid': uid, 'token': token})}"
+    )
+    context = {
+        "username": user.get_short_name() or user.username,
+        "verify_link": verify_link,
+        "site_url": site_url,
+    }
+    text_message = (
+        f"Hello {context['username']},\n\n"
+        "Please verify your Stationery Hub email address using this link:\n"
+        f"{verify_link}\n\n"
+        "If you did not create this account, you can ignore this email."
+    )
+    email = EmailMultiAlternatives(
+        subject="Verify your Stationery Hub email",
+        body=text_message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.email],
+    )
+    email.attach_alternative(
+        render_to_string(
+            "users/emails/email_verification.html",
+            context,
+        ),
+        "text/html",
+    )
+    email.send()
+
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
@@ -69,17 +109,10 @@ class RegisterView(generics.CreateAPIView):
     def perform_create(self, serializer):
         user = serializer.save()
         try:
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            verify_link = (
-                f"{settings.SITE_URL}/users/verify-email/?uid={uid}&token={token}"
+            site_url = (
+                settings.SITE_URL or self.request.build_absolute_uri("/")
             )
-            send_mail(
-                subject="Verify your email - Stationery Hub",
-                message=f"Click the link to verify your email: {verify_link}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-            )
+            send_verification_email(user, site_url)
         except Exception:
             logger.exception("Failed to send registration email for user %s", user.pk)
 
@@ -210,6 +243,11 @@ class PasswordResetConfirmView(APIView):
 class RegisterPageView(TemplateView):
     template_name = "users/register.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("home")
+        return super().dispatch(request, *args, **kwargs)
+
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
@@ -228,29 +266,58 @@ class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        uid = request.GET.get("uid")
-        token = request.GET.get("token")
+        uid = request.query_params.get("uid", "")
+        token = request.query_params.get("token", "")
 
         try:
             user_id = force_str(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=user_id)
         except (User.DoesNotExist, ValueError, TypeError):
-            return Response(
-                {"detail": "Invalid verification link."},
+            return render(
+                request,
+                "users/email_verification_result.html",
+                {
+                    "verified": False,
+                    "already_verified": False,
+                    "message": "This verification link is invalid. Please check the link or create a new account.",
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if user.is_email_verified:
+            return render(
+                request,
+                "users/email_verification_result.html",
+                {
+                    "verified": True,
+                    "already_verified": True,
+                    "message": "Your email address has already been verified.",
+                },
+            )
+
         if not default_token_generator.check_token(user, token):
-            return Response(
-                {"detail": "Invalid or expired token."},
+            return render(
+                request,
+                "users/email_verification_result.html",
+                {
+                    "verified": False,
+                    "already_verified": False,
+                    "message": "This verification link has expired or is invalid. Please register again or contact support.",
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         user.is_email_verified = True
-        user.save()
+        user.save(update_fields=["is_email_verified"])
 
-        return Response(
-            {"detail": "Email verified successfully."}, status=status.HTTP_200_OK
+        return render(
+            request,
+            "users/email_verification_result.html",
+            {
+                "verified": True,
+                "already_verified": False,
+                "message": "Your email address is verified. You can now sign in to your account.",
+            },
         )
 
 

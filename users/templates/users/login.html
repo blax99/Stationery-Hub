@@ -131,7 +131,8 @@ Stationery Hub{% endblock %} {% block content %}
   const loginSubmitButton = loginForm.querySelector('button[type="submit"]');
   const loginParams = new URLSearchParams(window.location.search);
   const toastMessages = {
-    account_created: "Account created successfully. Please sign in.",
+    account_created:
+      "Account created. Check your email and verify your address before signing in.",
   };
   const toast = document.getElementById("account-created-toast");
   const toastMessage = Object.entries(toastMessages).find(

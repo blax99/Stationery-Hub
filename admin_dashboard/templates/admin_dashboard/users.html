@@ -171,6 +171,9 @@
                   data-id="{{ user.id }}"
                   data-name="{{ user.first_name }} {{ user.last_name }}"
                   data-email="{{ user.email }}"
+                  data-phone="{{ user.phone_number }}"
+                  data-address="{{ user.address }}"
+                  data-email-verified="{{ user.is_email_verified|yesno:'true,false' }}"
                   data-role-value="{{ user.role }}"
                   data-username="{{ user.username }}"
                   data-joined="{{ user.date_joined|date:'M d, Y' }}"
@@ -195,7 +198,35 @@
                     </div>
                   </td>
 
-                  <td class="px-6 py-4 text-gray-600">{{ user.email }}</td>
+                  <td class="px-6 py-4 text-gray-600">
+                    <div class="flex items-center gap-2">
+                      <span>{{ user.email }}</span>
+                      {% if user.is_email_verified %}
+                      <span
+                        class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-600/20"
+                        role="img"
+                        aria-label="Email verified"
+                        title="Email verified"
+                      >
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                          <path d="m5 10.5 3.25 3.25L15.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </span>
+                      {% else %}
+                      <span
+                        class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-600/20"
+                        role="img"
+                        aria-label="Email not verified"
+                        title="Email not verified"
+                      >
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                          <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.7" />
+                          <path d="M10 6.5v4.25m0 2.75h.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+                        </svg>
+                      </span>
+                      {% endif %}
+                    </div>
+                  </td>
 
                   <td class="px-6 py-4">
                     {% if user.role == "admin" or user.is_superuser %}
@@ -457,6 +488,21 @@
           </div>
 
           <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Phone number</p>
+            <p id="viewPhone" class="mt-1 text-sm font-medium text-gray-900"></p>
+          </div>
+
+          <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Address</p>
+            <p id="viewAddress" class="mt-1 break-words text-sm font-medium text-gray-900"></p>
+          </div>
+
+          <div>
+            <p class="text-xs font-medium uppercase text-gray-500">Email verification</p>
+            <p id="viewEmailVerification" class="mt-1 text-sm font-medium text-gray-900"></p>
+          </div>
+
+          <div>
             <p class="text-xs font-medium uppercase text-gray-500">Role</p>
             <p id="viewRole" class="mt-1 text-sm font-medium text-gray-900"></p>
           </div>
@@ -468,10 +514,25 @@
               class="mt-1 text-sm font-medium text-gray-900"
             ></p>
           </div>
+          <p class="text-xs text-gray-500">
+            Review the account details before sending a verification email.
+          </p>
         </div>
 
         <!-- Footer -->
-        <div class="flex justify-end border-t px-6 py-4">
+        <div class="flex flex-wrap justify-between gap-3 border-t px-6 py-4">
+          <form method="POST" id="sendVerificationEmailForm" class="hidden">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="send_verification_email" />
+            <input type="hidden" name="user_id" id="verificationUserId" />
+            <button
+              type="submit"
+              onclick="return confirm('Send a verification email to this user?')"
+              class="rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800"
+            >
+              Send verification email
+            </button>
+          </form>
           <button
             type="button"
             onclick="closeViewUserModal()"
@@ -556,10 +617,23 @@
           row.dataset.name.trim();
 
         document.getElementById("viewEmail").textContent = row.dataset.email;
+        document.getElementById("viewPhone").textContent =
+          row.dataset.phone || "Not provided";
+        document.getElementById("viewAddress").textContent =
+          row.dataset.address || "Not provided";
 
         document.getElementById("viewRole").textContent = row.dataset.roleValue;
 
         document.getElementById("viewJoined").textContent = row.dataset.joined;
+        const isVerified = row.dataset.emailVerified === "true";
+        document.getElementById("viewEmailVerification").textContent =
+          isVerified ? "Verified" : "Not verified";
+        document.getElementById("verificationUserId").value = userId;
+        const verifyForm = document.getElementById("sendVerificationEmailForm");
+        verifyForm.classList.toggle(
+          "hidden",
+          isVerified || row.dataset.role !== "customer",
+        );
 
         const modal = document.getElementById("viewUserModal");
 

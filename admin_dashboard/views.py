@@ -1,5 +1,7 @@
+import logging
 from functools import wraps
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -7,7 +9,7 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate, TruncMonth
 from django.contrib import messages
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from datetime import timedelta
 
@@ -16,6 +18,9 @@ from products.forms import ProductForm
 from orders.models import Order
 from users.models import User
 from users.permissions import has_admin_access
+from users.views import send_verification_email
+
+logger = logging.getLogger(__name__)
 
 
 def paginate_queryset(request, queryset):
@@ -648,6 +653,8 @@ def users_view(request):
 
             user.first_name = name_parts[0] if name_parts else ""
             user.last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+            if user.email != email:
+                user.is_email_verified = False
             user.email = email
             user.role = role
 
@@ -656,6 +663,34 @@ def users_view(request):
 
             user.save()
 
+            return redirect("users")
+
+        # Send a fresh verification link after the admin has reviewed the details.
+        elif action == "send_verification_email":
+            user = get_object_or_404(
+                User, id=request.POST.get("user_id"), role="customer", is_superuser=False
+            )
+            if user.is_email_verified:
+                messages.info(request, "This user's email is already verified.")
+            else:
+                site_url = (
+                    settings.SITE_URL or request.build_absolute_uri("/")
+                ).rstrip("/")
+                try:
+                    send_verification_email(user, site_url)
+                except Exception:
+                    logger.exception(
+                        "Failed to send verification email for user %s", user.pk
+                    )
+                    messages.error(
+                        request,
+                        "The verification email could not be sent. Please try again later.",
+                    )
+                else:
+                    messages.success(
+                        request,
+                        f"Verification email sent to {user.email}.",
+                    )
             return redirect("users")
 
         # Delete user

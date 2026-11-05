@@ -14,13 +14,21 @@ from rest_framework import status
 User = get_user_model()
 
 
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    }
+)
 class RegistrationTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.register_url = "/users/register/"
 
-    @patch("users.views.send_mail")
-    def test_register_success(self, send_mail):
+    @patch("users.views.EmailMultiAlternatives.send")
+    def test_register_success(self, send_email):
         data = {
             "username": "testuser1",
             "email": "testuser1@example.com",
@@ -31,10 +39,52 @@ class RegistrationTests(TestCase):
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(User.objects.filter(email="testuser1@example.com").exists())
-        send_mail.assert_called_once()
+        send_email.assert_called_once()
 
-    @patch("users.views.send_mail", side_effect=TimeoutError("SMTP timed out"))
-    def test_registration_succeeds_if_verification_email_times_out(self, send_mail):
+    @override_settings(SITE_URL="https://stationery.example")
+    def test_register_sends_clickable_html_verification_email(self):
+        response = self.client.post(
+            self.register_url,
+            {
+                "username": "verificationuser",
+                "email": "verification@example.com",
+                "password": "TestPass123",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, "Verify your Stationery Hub email")
+        self.assertEqual(email.to, ["verification@example.com"])
+        self.assertIn("verify your Stationery Hub email address", email.body)
+        self.assertEqual(len(email.alternatives), 1)
+        self.assertEqual(email.alternatives[0].mimetype, "text/html")
+        self.assertIn("Verify my email", email.alternatives[0].content)
+
+        verify_link = unescape(
+            email.alternatives[0].content.split('href="', 1)[1].split('"', 1)[0]
+        )
+        verify_url = urlsplit(verify_link)
+        self.assertEqual(verify_url.scheme, "https")
+        self.assertEqual(verify_url.netloc, "stationery.example")
+        response = self.client.get(f"{verify_url.path}?{verify_url.query}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, "Your email address is verified.")
+        self.assertContains(response, "Continue to sign in")
+        self.assertTrue(
+            User.objects.get(email="verification@example.com").is_email_verified
+        )
+        response = self.client.get(f"{verify_url.path}?{verify_url.query}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, "already been verified")
+
+    @patch(
+        "users.views.EmailMultiAlternatives.send",
+        side_effect=TimeoutError("SMTP timed out"),
+    )
+    def test_registration_succeeds_if_verification_email_times_out(self, send_email):
         data = {
             "username": "testuser-timeout",
             "email": "timeout@example.com",
@@ -45,7 +95,14 @@ class RegistrationTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(User.objects.filter(email="timeout@example.com").exists())
-        send_mail.assert_called_once()
+        send_email.assert_called_once()
+
+    def test_invalid_verification_link_shows_recovery_page(self):
+        response = self.client.get("/users/verify-email/?uid=invalid&token=invalid")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertContains(response, "We couldn't verify your email", status_code=400)
+        self.assertContains(response, "Create an account", status_code=400)
 
     def test_register_duplicate_email(self):
         User.objects.create_user(
@@ -283,6 +340,14 @@ class LoginTests(TestCase):
         self.assertEqual(response.data["role"], "admin")
 
 
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    }
+)
 class ProfileTests(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -316,6 +381,21 @@ class ProfileTests(TestCase):
         self.assertEqual(self.user.city, "Kathmandu")
         self.assertEqual(self.user.postal_code, "44600")
 
+    def test_profile_api_returns_read_only_email_verification_status(self):
+        response = self.client.get("/users/profile/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data["is_email_verified"])
+
+        response = self.client.patch(
+            "/users/profile/",
+            {"is_email_verified": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.is_email_verified)
+
     def test_profile_page_uses_wide_layout_and_single_full_name_field(self):
         response = self.client.get("/users/profile-page/")
 
@@ -323,14 +403,39 @@ class ProfileTests(TestCase):
         self.assertContains(response, 'id="full_name"')
         self.assertContains(response, "max-w-4xl")
         self.assertContains(response, 'class="profile-form"')
-        self.assertContains(response, "column-gap: 2rem")
-        self.assertContains(response, "max-width: 24rem")
+        self.assertContains(response, "grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr)")
+        self.assertContains(response, 'id="city"')
+        self.assertContains(response, 'id="address"')
+        self.assertContains(response, 'id="postal_code"')
         self.assertContains(response, "profile-save")
+        self.assertNotContains(response, 'id="role"')
+        self.assertNotContains(response, ">Role</label>")
         self.assertNotContains(response, 'id="first_name"')
         self.assertNotContains(response, 'id="last_name"')
 
 
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    }
+)
 class LoginPageTests(TestCase):
+    def test_authenticated_user_is_redirected_from_login_and_signup_pages(self):
+        user = User.objects.create_user(
+            username="already-signed-in",
+            email="already-signed-in@example.com",
+            password="TestPass123",
+        )
+        self.client.force_login(user)
+
+        for path in ("/users/login-page/", "/users/register-page/"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertRedirects(response, "/")
+
     def test_admin_sign_in_does_not_show_the_admin_access_helper(self):
         response = self.client.get("/users/login-page/")
 
