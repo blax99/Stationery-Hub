@@ -427,16 +427,14 @@
       const approveButtons = document.querySelectorAll(".approve-order-btn");
 
       approveButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", async function () {
           const orderId = this.dataset.orderId;
-
-          const confirmed = confirm(
-            "Are you sure you want to approve this order?",
-          );
-
-          if (confirmed) {
-            submitOrderAction(orderId, "approve", this);
-          }
+          const result = await window.showAdminConfirmation({
+            title: "Approve order?",
+            message: "This order will move to confirmed status.",
+            confirmLabel: "Approve order",
+          });
+          if (result?.confirmed) submitOrderAction(orderId, "approve", this);
         });
       });
 
@@ -444,16 +442,14 @@
       const shipButtons = document.querySelectorAll(".ship-order-btn");
 
       shipButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", async function () {
           const orderId = this.dataset.orderId;
-
-          const confirmed = confirm(
-            "Are you sure you want to ship this order?",
-          );
-
-          if (confirmed) {
-            submitOrderAction(orderId, "ship", this);
-          }
+          const result = await window.showAdminConfirmation({
+            title: "Ship order?",
+            message: "Confirm that this order is ready to ship.",
+            confirmLabel: "Ship order",
+          });
+          if (result?.confirmed) submitOrderAction(orderId, "ship", this);
         });
       });
 
@@ -461,16 +457,14 @@
       const deliverButtons = document.querySelectorAll(".deliver-order-btn");
 
       deliverButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", async function () {
           const orderId = this.dataset.orderId;
-
-          const confirmed = confirm(
-            "Are you sure you want to mark this order as delivered?",
-          );
-
-          if (confirmed) {
-            submitOrderAction(orderId, "deliver", this);
-          }
+          const result = await window.showAdminConfirmation({
+            title: "Mark order as delivered?",
+            message: "Confirm that this order has been delivered.",
+            confirmLabel: "Mark delivered",
+          });
+          if (result?.confirmed) submitOrderAction(orderId, "deliver", this);
         });
       });
 

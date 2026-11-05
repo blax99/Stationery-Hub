@@ -450,19 +450,15 @@
       const deleteButtons = document.querySelectorAll("[data-delete-id]");
 
       deleteButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", async function () {
           const productId = this.dataset.deleteId;
-
-          const confirmed = confirm(
-            "Are you sure you want to delete this product?",
-          );
-
-          if (!confirmed) {
-            return;
-          }
-
-          this.disabled = true;
-          this.setAttribute("aria-busy", "true");
+          const result = await window.showAdminConfirmation({
+            title: "Delete product?",
+            message: "This product will be permanently deleted.",
+            confirmLabel: "Delete product",
+            danger: true,
+          });
+          if (!result?.confirmed) return;
 
           const form = document.createElement("form");
 
@@ -490,6 +486,8 @@
 
           document.body.appendChild(form);
 
+          this.disabled = true;
+          this.setAttribute("aria-busy", "true");
           form.submit();
         });
       });

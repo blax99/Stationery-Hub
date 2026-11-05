@@ -118,6 +118,24 @@ class DashboardIntegrationTests(SimpleTestCase):
                     html,
                 )
 
+    def test_admin_pages_use_in_page_confirmation_instead_of_browser_prompts(self):
+        pages = (
+            "users.html",
+            "products.html",
+            "inventory.html",
+            "orders.html",
+        )
+        for template_name in pages:
+            with self.subTest(template=template_name):
+                html = render_to_string(
+                    f"admin_dashboard/{template_name}",
+                    {"active_page": template_name.removesuffix(".html")},
+                )
+                self.assertIn('id="adminConfirmationModal"', html)
+                self.assertIn("window.showAdminConfirmation", html)
+                self.assertNotIn("confirm(", html)
+                self.assertNotIn("prompt(", html)
+
     def test_dashboard_and_analytics_use_orders_page_heading_style(self):
         dashboard_html = render_to_string("admin_dashboard/dashboard.html")
         analytics_html = render_to_string("admin_dashboard/analytics.html")

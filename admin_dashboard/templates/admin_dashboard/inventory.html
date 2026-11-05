@@ -225,34 +225,31 @@
       const updateStockButtons = document.querySelectorAll(".update-stock-btn");
 
       updateStockButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", async function () {
           const productRow = button.closest("tr");
 
           const productName = productRow.cells[0].textContent.trim();
-
           const quantityElement = productRow.querySelector(".stock-quantity");
-
           const currentQuantity = parseInt(quantityElement.textContent.trim());
+          const result = await window.showAdminConfirmation({
+            title: "Update stock quantity",
+            message: `Set a new stock quantity for ${productName}.`,
+            confirmLabel: "Update stock",
+            inputLabel: "New stock quantity",
+            inputValue: currentQuantity,
+          });
+          if (!result?.confirmed) return;
 
-          const newQuantity = prompt(
-            "Enter new stock quantity for " + productName + ":",
-            currentQuantity,
-          );
-
-          if (newQuantity === null) {
+          const quantity = Number(result.value);
+          if (!Number.isInteger(quantity) || quantity < 0) {
+            window.showAdminConfirmation({
+              title: "Invalid quantity",
+              message: "Enter a whole number that is zero or greater.",
+              confirmLabel: "Close",
+              showCancel: false,
+            });
             return;
           }
-
-          const quantity = parseInt(newQuantity);
-
-          if (isNaN(quantity) || quantity < 0) {
-            alert("Please enter a valid stock quantity.");
-
-            return;
-          }
-
-          button.disabled = true;
-          button.setAttribute("aria-busy", "true");
 
           const form = document.createElement("form");
 
@@ -287,6 +284,8 @@
 
           document.body.appendChild(form);
 
+          button.disabled = true;
+          button.setAttribute("aria-busy", "true");
           form.submit();
         });
       });
