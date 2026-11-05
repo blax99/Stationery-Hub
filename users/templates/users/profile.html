@@ -4,8 +4,8 @@ Stationery Hub{% endblock %} {% block content %}
   .profile-form {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 2rem;
-    row-gap: 1.5rem;
+    column-gap: 1.5rem;
+    row-gap: 1.25rem;
     padding-inline: 1rem;
   }
 
@@ -15,23 +15,92 @@ Stationery Hub{% endblock %} {% block content %}
 
   .profile-field label {
     display: block;
-    margin-bottom: 0.625rem;
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .profile-field input,
-  .profile-field textarea {
+  .profile-control {
     box-sizing: border-box;
     display: block;
     width: 100%;
-    max-width: 24rem;
+    min-height: 2.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.65rem 0.8rem;
+    color: #111827;
+    font-size: 0.875rem;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background-color 0.15s ease;
   }
 
-  .profile-field--wide {
+  .profile-control:hover {
+    border-color: #9ca3af;
+  }
+
+  .profile-control:focus {
+    border-color: #b45309;
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(180 83 9 / 15%);
+  }
+
+  .profile-control:disabled {
+    border-color: #e5e7eb;
+    background: #f9fafb;
+    color: #6b7280;
+  }
+
+  .profile-field--address-details {
     grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+    gap: 1.25rem;
   }
 
-  .profile-field--wide textarea {
-    max-width: 42rem;
+  #email-verification-status {
+    position: relative;
+    overflow: visible;
+  }
+
+  #email-verification-status::after {
+    position: absolute;
+    z-index: 20;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    width: max-content;
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.375rem;
+    background: #111827;
+    color: #fff;
+    content: attr(data-tooltip);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 0.25rem);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+    visibility: hidden;
+  }
+
+  #email-verification-status:hover::after,
+  #email-verification-status:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    visibility: visible;
+  }
+
+  #email-verification-status:focus-visible {
+    outline: 2px solid #92400e;
+    outline-offset: 3px;
   }
 
   .profile-save {
@@ -47,9 +116,14 @@ Stationery Hub{% endblock %} {% block content %}
       row-gap: 1.25rem;
     }
 
-    .profile-field--wide,
+    .profile-field--address-details,
     .profile-save {
       grid-column: auto;
+    }
+
+    .profile-field--address-details {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
     }
   }
 </style>
@@ -79,7 +153,7 @@ Stationery Hub{% endblock %} {% block content %}
         <input
           type="text"
           id="username"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="profile-control"
         />
       </div>
 
@@ -91,7 +165,7 @@ Stationery Hub{% endblock %} {% block content %}
           type="text"
           id="full_name"
           autocomplete="name"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="profile-control"
           placeholder="Your full name"
         />
       </div>
@@ -100,12 +174,40 @@ Stationery Hub{% endblock %} {% block content %}
         <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
           >Email Address</label
         >
-        <input
-          type="email"
-          id="email"
-          disabled
-          class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded px-3 py-2 text-sm"
-        />
+        <div class="flex max-w-[24rem] items-center gap-2">
+          <input
+            type="email"
+            id="email"
+            disabled
+            class="profile-control min-w-0 flex-1"
+          />
+          <button
+            type="button"
+            id="email-verification-status"
+            class="hidden h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
+            aria-label="Email verification status"
+          >
+            <svg
+              id="email-verified-icon"
+              class="hidden h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="m5 10.5 3.25 3.25L15.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <svg
+              id="email-unverified-icon"
+              class="hidden h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.7" />
+              <path d="M10 6.5v4.25m0 2.75h.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div class="profile-field">
@@ -116,58 +218,42 @@ Stationery Hub{% endblock %} {% block content %}
           type="text"
           id="phone_number"
           autocomplete="tel"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="profile-control"
           placeholder="98XXXXXXXX"
         />
       </div>
 
-      <div class="profile-field">
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2">City</label>
-        <input
-          type="text"
-          id="city"
-          autocomplete="address-level2"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
-          placeholder="City"
-        />
-      </div>
-
-      <div class="profile-field profile-field--wide">
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
-          >Street Address</label
-        >
-        <textarea
-          id="address"
-          rows="2"
-          autocomplete="street-address"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
-          placeholder="Street address"
-        ></textarea>
-      </div>
-
-      <div class="profile-field">
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
-          >Postal Code</label
-        >
-        <input
-          type="text"
-          id="postal_code"
-          autocomplete="postal-code"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
-          placeholder="Postal code"
-        />
-      </div>
-
-      <div class="profile-field">
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-2"
-          >Role</label
-        >
-        <input
-          type="text"
-          id="role"
-          disabled
-          class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded px-3 py-2 text-sm"
-        />
+      <div class="profile-field profile-field--address-details">
+        <div class="profile-field">
+          <label for="city">City</label>
+          <input
+            type="text"
+            id="city"
+            autocomplete="address-level2"
+            class="profile-control"
+            placeholder="City"
+          />
+        </div>
+        <div class="profile-field">
+          <label for="address">Street Address</label>
+          <input
+            type="text"
+            id="address"
+            autocomplete="street-address"
+            class="profile-control"
+            placeholder="Street address"
+          />
+        </div>
+        <div class="profile-field">
+          <label for="postal_code">Postal Code</label>
+          <input
+            type="text"
+            id="postal_code"
+            autocomplete="postal-code"
+            class="profile-control"
+            placeholder="Postal code"
+          />
+        </div>
       </div>
 
       <button
@@ -202,13 +288,32 @@ Stationery Hub{% endblock %} {% block content %}
     const data = await response.json();
     document.getElementById("username").value = data.username;
     document.getElementById("email").value = data.email;
+    const verificationStatus = document.getElementById(
+      "email-verification-status",
+    );
+    if (data.is_email_verified) {
+      verificationStatus.className =
+        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-600/20";
+      verificationStatus.dataset.tooltip = "Verified";
+      verificationStatus.setAttribute("aria-label", "Email verified");
+      document
+        .getElementById("email-verified-icon")
+        .classList.remove("hidden");
+    } else {
+      verificationStatus.className =
+        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-600/20";
+      verificationStatus.dataset.tooltip = "Not verified";
+      verificationStatus.setAttribute("aria-label", "Email not verified");
+      document
+        .getElementById("email-unverified-icon")
+        .classList.remove("hidden");
+    }
     document.getElementById("full_name").value =
       [data.first_name, data.last_name].filter(Boolean).join(" ");
     document.getElementById("phone_number").value = data.phone_number || "";
     document.getElementById("address").value = data.address || "";
     document.getElementById("city").value = data.city || "";
     document.getElementById("postal_code").value = data.postal_code || "";
-    document.getElementById("role").value = data.role;
   }
 
   document

@@ -50,6 +50,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "id",
             "username",
             "email",
+            "is_email_verified",
             "first_name",
             "last_name",
             "phone_number",
@@ -59,4 +60,4 @@ class ProfileSerializer(serializers.ModelSerializer):
             "role",
             "profile_picture",
         ]
-        read_only_fields = ["id", "email", "role"]
+        read_only_fields = ["id", "email", "is_email_verified", "role"]
