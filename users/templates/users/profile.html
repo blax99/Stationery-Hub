@@ -351,9 +351,11 @@ Stationery Hub{% endblock %} {% block content %}
         });
 
         if (response.ok) {
-          msgBox.textContent = "Profile updated successfully.";
-          msgBox.className =
-            "mb-4 text-sm rounded px-4 py-2 bg-green-50 text-green-700 border border-green-200";
+          sessionStorage.setItem(
+            "stationery-notification",
+            "Profile updated successfully."
+          );
+          window.location.reload();
         } else {
           msgBox.textContent =
             "Could not update profile. Please check your details.";
