@@ -667,9 +667,7 @@ def users_view(request):
 
         # Send a fresh verification link after the admin has reviewed the details.
         elif action == "send_verification_email":
-            user = get_object_or_404(
-                User, id=request.POST.get("user_id"), role="customer", is_superuser=False
-            )
+            user = get_object_or_404(User, id=request.POST.get("user_id"))
             if user.is_email_verified:
                 messages.info(request, "This user's email is already verified.")
             else:
@@ -691,6 +689,20 @@ def users_view(request):
                         request,
                         f"Verification email sent to {user.email}.",
                     )
+            return redirect("users")
+
+        # Mark an admin user's email as verified directly (no email sent)
+        elif action == "mark_verified":
+            user = get_object_or_404(User, id=request.POST.get("user_id"))
+            if user.is_email_verified:
+                messages.info(request, "This user's email is already verified.")
+            else:
+                user.is_email_verified = True
+                user.save(update_fields=["is_email_verified"])
+                messages.success(
+                    request,
+                    f"Email marked as verified for {user.email}.",
+                )
             return redirect("users")
 
         # Delete user

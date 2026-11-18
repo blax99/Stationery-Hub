@@ -31,7 +31,7 @@
         <p
           data-admin-notification="{% if message.tags == 'success' %}success{% else %}error{% endif %}"
           role="{% if message.tags == 'success' %}status{% else %}alert{% endif %}"
-          class="rounded-lg border px-4 py-3 text-sm shadow-lg {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-700{% else %}border-red-200 bg-red-50 text-red-700{% endif %}"
+          class="rounded-lg border px-4 py-3 text-sm shadow-lg {% if message.tags == 'success' %}border-green-200 bg-green-100 text-green-700{% else %}border-red-200 bg-red-100 text-red-700{% endif %}"
         >
           {{ message }}
         </p>
@@ -523,17 +523,18 @@
         <div class="flex flex-wrap justify-between gap-3 border-t px-6 py-4">
           <form
             method="POST"
-            id="sendVerificationEmailForm"
+            id="verificationActionForm"
             class="hidden"
             data-confirm-title="Send verification email?"
             data-confirm-message="Send a fresh verification link to this user?"
             data-confirm-label="Send email"
           >
             {% csrf_token %}
-            <input type="hidden" name="action" value="send_verification_email" />
+            <input type="hidden" name="action" id="verificationAction" value="send_verification_email" />
             <input type="hidden" name="user_id" id="verificationUserId" />
             <button
               type="submit"
+              id="verificationActionButton"
               class="rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800"
             >
               Send verification email
@@ -645,11 +646,34 @@
         document.getElementById("viewEmailVerification").textContent =
           isVerified ? "Verified" : "Not verified";
         document.getElementById("verificationUserId").value = userId;
-        const verifyForm = document.getElementById("sendVerificationEmailForm");
-        verifyForm.classList.toggle(
-          "hidden",
-          isVerified || row.dataset.role !== "customer",
-        );
+        const actionForm = document.getElementById("verificationActionForm");
+        const actionInput = document.getElementById("verificationAction");
+        const actionButton = document.getElementById("verificationActionButton");
+
+        if (isVerified) {
+          actionForm.classList.add("hidden");
+        } else {
+          actionForm.classList.remove("hidden");
+          if (row.dataset.role === "admin") {
+            actionInput.value = "mark_verified";
+            actionButton.textContent = "Mark as verified";
+            actionButton.className =
+              "rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800";
+            actionForm.dataset.confirmTitle = "Mark as verified?";
+            actionForm.dataset.confirmMessage =
+              "Mark this admin user's email as verified?";
+            actionForm.dataset.confirmLabel = "Mark verified";
+          } else {
+            actionInput.value = "send_verification_email";
+            actionButton.textContent = "Send verification email";
+            actionButton.className =
+              "rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800";
+            actionForm.dataset.confirmTitle = "Send verification email?";
+            actionForm.dataset.confirmMessage =
+              "Send a fresh verification link to this user?";
+            actionForm.dataset.confirmLabel = "Send email";
+          }
+        }
 
         const modal = document.getElementById("viewUserModal");
 
