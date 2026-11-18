@@ -14,6 +14,7 @@ from rest_framework.response import Response
 
 from orders.models import Order
 from .models import ACTIVE_TRANSACTION_TIMEOUT, KhaltiTransaction
+from users.permissions import IsEmailVerified
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,7 @@ def _render_verification_result(request, result, order=None, status_code=200):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsEmailVerified])
 def initiate_khalti_payment(request):
     order_id = request.data.get("order_id")
     try:

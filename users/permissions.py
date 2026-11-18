@@ -28,3 +28,18 @@ class IsAdminOrVendor(BasePermission):
             "admin",
             "vendor",
         ]
+
+
+class IsEmailVerified(BasePermission):
+    """
+    Allows access only to users whose email is verified.
+    Admins and superusers bypass this check.
+    """
+
+    def has_permission(self, request, view):
+        user = request.user
+        if not user or not user.is_authenticated:
+            return False
+        if user.is_superuser or user.role in ("admin", "vendor"):
+            return True
+        return bool(user.is_email_verified)

@@ -7,9 +7,11 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from datetime import timedelta
 from .models import Order, OrderItem, ShippingAddress
 from cart.models import Cart
+from users.decorators import email_verification_required
 
 
 @login_required
+@email_verification_required
 def checkout(request):
     cart = Cart.objects.filter(user=request.user).first()
     cart_items = list(cart.items.select_related("product") if cart else [])
@@ -63,6 +65,7 @@ def checkout(request):
 
 
 @login_required
+@email_verification_required
 @ensure_csrf_cookie
 def checkout_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
@@ -83,6 +86,7 @@ def checkout_confirmation(request, order_id):
 
 
 @login_required
+@email_verification_required
 def order_history(request):
     orders = Order.objects.filter(user=request.user).order_by("-created_at")
 
@@ -90,6 +94,7 @@ def order_history(request):
 
 
 @login_required
+@email_verification_required
 def cancel_order(request, order_id):
     if request.method != "POST":
         return redirect("order_history")
@@ -135,6 +140,7 @@ def cancel_order(request, order_id):
 
 
 @login_required
+@email_verification_required
 def request_return(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
