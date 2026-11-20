@@ -515,7 +515,7 @@
             ></p>
           </div>
           <p class="text-xs text-gray-500">
-            Review the account details before sending a verification email.
+            Review the account details before marking the email as verified.
           </p>
         </div>
 
@@ -525,19 +525,19 @@
             method="POST"
             id="verificationActionForm"
             class="hidden"
-            data-confirm-title="Send verification email?"
-            data-confirm-message="Send a fresh verification link to this user?"
-            data-confirm-label="Send email"
+            data-confirm-title="Mark as verified?"
+            data-confirm-message="Mark this user's email as verified?"
+            data-confirm-label="Mark verified"
           >
             {% csrf_token %}
-            <input type="hidden" name="action" id="verificationAction" value="send_verification_email" />
+            <input type="hidden" name="action" id="verificationAction" value="mark_verified" />
             <input type="hidden" name="user_id" id="verificationUserId" />
             <button
               type="submit"
               id="verificationActionButton"
-              class="rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800"
+              class="rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
             >
-              Send verification email
+              Mark as verified
             </button>
           </form>
           <button
@@ -654,25 +654,14 @@
           actionForm.classList.add("hidden");
         } else {
           actionForm.classList.remove("hidden");
-          if (row.dataset.role === "admin") {
-            actionInput.value = "mark_verified";
-            actionButton.textContent = "Mark as verified";
-            actionButton.className =
-              "rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800";
-            actionForm.dataset.confirmTitle = "Mark as verified?";
-            actionForm.dataset.confirmMessage =
-              "Mark this admin user's email as verified?";
-            actionForm.dataset.confirmLabel = "Mark verified";
-          } else {
-            actionInput.value = "send_verification_email";
-            actionButton.textContent = "Send verification email";
-            actionButton.className =
-              "rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800";
-            actionForm.dataset.confirmTitle = "Send verification email?";
-            actionForm.dataset.confirmMessage =
-              "Send a fresh verification link to this user?";
-            actionForm.dataset.confirmLabel = "Send email";
-          }
+          actionInput.value = "mark_verified";
+          actionButton.textContent = "Mark as verified";
+          actionButton.className =
+            "rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800";
+          actionForm.dataset.confirmTitle = "Mark as verified?";
+          actionForm.dataset.confirmMessage =
+            "Mark this user's email as verified?";
+          actionForm.dataset.confirmLabel = "Mark verified";
         }
 
         const modal = document.getElementById("viewUserModal");
