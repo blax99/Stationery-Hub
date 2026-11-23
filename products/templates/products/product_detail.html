@@ -18,7 +18,7 @@
     </a>
     {% endif %}
     <span>/</span>
-    <span class="text-gray-900 font-semibold truncate">{{ product.name }}</span>
+    <span class="	text-gray-900 dark:text-white font-semibold truncate">{{ product.name }}</span>
   </nav>
 
   <!-- Main Container -->
@@ -28,7 +28,7 @@
     <!-- Left: Image Gallery -->
     <div class="flex flex-col gap-4">
       <div
-        class="w-full aspect-square bg-white border border-[#e5dfd5] rounded-sm overflow-hidden p-4 flex items-center justify-center"
+        class="w-full aspect-square 	bg-white dark:bg-gray-800 border border-[#e5dfd5] rounded-sm overflow-hidden p-4 flex items-center justify-center"
       >
         {% if product.image %}
         <img
@@ -47,7 +47,7 @@
         <button
           type="button"
           onclick="document.getElementById('main-product-image').src='{{ product.image.url }}'"
-          class="w-16 h-16 bg-white border border-gray-900 rounded-sm overflow-hidden p-1 focus:outline-none"
+          class="w-16 h-16 	bg-white dark:bg-gray-800 border border-gray-900 rounded-sm overflow-hidden p-1 focus:outline-none"
         >
           <img
             src="{{ product.image.url }}"
@@ -77,12 +77,12 @@
         </span>
         {% endif %}
 
-        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
+        <h1 class="text-3xl font-bold 	text-gray-900 dark:text-white tracking-tight">
           {{ product.name }}
         </h1>
 
         <div class="flex items-center gap-4 py-2 border-y border-[#e5dfd5]">
-          <span class="text-2xl font-bold font-mono text-gray-900"
+          <span class="text-2xl font-bold font-mono 	text-gray-900 dark:text-white"
             >Rs. {{ product.price }}</span
           >
           {% if product.in_stock %}
@@ -101,7 +101,7 @@
         </div>
 
         <!-- Description -->
-        <div class="text-sm text-gray-700 leading-relaxed font-sans space-y-2">
+        <div class="text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 leading-relaxed font-sans space-y-2">
           <p class="font-mono text-xs uppercase tracking-widest text-gray-500">
             Description
           </p>
@@ -117,7 +117,7 @@
           >
             Specifications
           </p>
-          <dl class="grid grid-cols-2 gap-y-2 text-xs font-mono text-gray-700">
+          <dl class="grid grid-cols-2 gap-y-2 text-xs font-mono 	text-gray-700 dark:text-gray-300 dark:text-gray-300">
             <dt class="text-gray-500">Item ID:</dt>
             <dd class="font-semibold">
               SH-{{ product.id|stringformat:"04d" }}
@@ -157,7 +157,7 @@
               min="1"
               max="{{ product.stock }}"
               value="1"
-              class="w-20 bg-white border border-gray-900 font-mono text-sm px-3 py-2 text-center focus:outline-none rounded-sm"
+              class="w-20 	bg-white dark:bg-gray-800 border border-gray-900 font-mono text-sm px-3 py-2 text-center focus:outline-none rounded-sm"
             />
           </div>
 
@@ -197,7 +197,7 @@
         class="bg-[#faf8f5] border border-[#e5dfd5] p-3 block hover:border-gray-900 transition rounded-sm"
       >
         <div
-          class="aspect-square bg-white border border-[#e5dfd5] mb-2 p-1 overflow-hidden flex items-center justify-center"
+          class="aspect-square 	bg-white dark:bg-gray-800 border border-[#e5dfd5] mb-2 p-1 overflow-hidden flex items-center justify-center"
         >
           {% if item.image %}
           <img
@@ -213,10 +213,10 @@
           </div>
           {% endif %}
         </div>
-        <p class="font-semibold text-gray-900 text-sm truncate">
+        <p class="font-semibold 	text-gray-900 dark:text-white text-sm truncate">
           {{ item.name }}
         </p>
-        <p class="font-mono text-xs text-gray-600 mt-1">Rs. {{ item.price }}</p>
+        <p class="font-mono text-xs 	text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Rs. {{ item.price }}</p>
       </a>
       {% endfor %}
     </div>

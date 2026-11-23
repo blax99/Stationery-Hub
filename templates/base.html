@@ -7,7 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>{% block title %}Stationery Hub{% endblock %}</title>
-
+<script>
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  }
+</script>   
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -60,7 +64,7 @@
     <script src="{% static 'js/turbo.js' %}" defer></script>
   </head>
 
-  <body class="min-h-screen bg-gray-50 flex flex-col">
+ <body class="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">  
     {% include "navbar.html" %}
 
     <main class="grow">{% block content %} {% endblock %}</main>
@@ -69,5 +73,23 @@
 
     <script src="{% static 'js/main.js' %}?v=12" data-turbo-eval="false"></script>
     <script src="{% static 'js/navbar.js' %}?v=12"></script>
+    <script>
+  const toggleBtn = document.getElementById('theme-toggle');
+  const icon = toggleBtn.querySelector('i');
+
+  function updateIcon() {
+    const isDark = document.documentElement.classList.contains('dark');
+    icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  }
+
+  updateIcon();
+
+  toggleBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    localStorage.theme = document.documentElement.classList.contains('dark')
+      ? 'dark' : 'light';
+    updateIcon();
+  });
+</script>   
   </body>
 </html>

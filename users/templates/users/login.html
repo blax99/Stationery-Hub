@@ -35,7 +35,7 @@ Stationery Hub{% endblock %} {% block content %}
 <div
   class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] px-4 py-12"
 >
-  <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+  <div class="w-full max-w-md 	bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
     <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">Welcome</p>
     <h1 class="text-4xl font-serif mb-8">Sign In</h1>
 
@@ -46,7 +46,7 @@ Stationery Hub{% endblock %} {% block content %}
 
     <form id="login-form" class="space-y-5">
       <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-1"
           >Email Address</label
         >
         <input
@@ -59,7 +59,7 @@ Stationery Hub{% endblock %} {% block content %}
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-1"
           >Password</label
         >
         <div class="relative">
@@ -73,7 +73,7 @@ Stationery Hub{% endblock %} {% block content %}
           <button
             type="button"
             id="toggle-password"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:	text-gray-700 dark:text-gray-300 dark:text-gray-300 text-sm"
           >
             Show
           </button>
@@ -81,7 +81,7 @@ Stationery Hub{% endblock %} {% block content %}
       </div>
 
       <div class="flex items-center justify-between text-sm">
-        <label class="flex items-center gap-2 text-gray-600">
+        <label class="flex items-center gap-2 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
           <input type="checkbox" class="rounded" />
           Remember me
         </label>
@@ -113,7 +113,7 @@ Stationery Hub{% endblock %} {% block content %}
     >
       Sign in as Admin
     </button>
-    <p class="text-center text-sm text-gray-600 mt-6">
+    <p class="text-center text-sm 	text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-6">
       Don't have an account?
       <a
         href="{% url 'register-page' %}"

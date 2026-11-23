@@ -9,9 +9,9 @@ Wishlist
 {% if user.is_authenticated %}
 <div class="max-w-7xl mx-auto px-6 py-10">
 
-    <div class="flex items-end justify-between mb-8 border-b border-gray-200 pb-4">
+    <div class="flex items-end justify-between mb-8 border-b 	border-gray-200 dark:border-gray-700 dark:border-gray-700 pb-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight">
+            <h1 class="text-2xl sm:text-3xl font-serif font-bold 	text-gray-900 dark:text-white tracking-tight">
                 My Wishlist
             </h1>
 
@@ -211,7 +211,7 @@ Wishlist
             document.createElement("div");
 
         card.className =
-            "wishlist-card border border-gray-200 bg-white relative";
+            "wishlist-card border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	bg-white dark:bg-gray-800 relative";
 
 
         const imageHTML = item.image
@@ -228,7 +228,7 @@ Wishlist
             :
             `
                 <div
-                    class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 mb-4"
+                    class="w-full h-48 	bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 mb-4"
                 >
                     No Image
                 </div>
@@ -284,7 +284,7 @@ Wishlist
     class="remove-wishlist absolute top-3 right-3
            w-8 h-8 rounded-full
            flex items-center justify-center
-           bg-gray-100 text-gray-500
+           	bg-gray-100 dark:bg-gray-800 text-gray-500
            hover:bg-red-50 hover:text-red-600
            transition duration-200
            text-lg font-medium"
@@ -642,10 +642,10 @@ Wishlist
 {% else %}
 <div class="mx-auto max-w-2xl px-6 py-20 text-center">
     <div class="mb-5 text-5xl text-gray-400" aria-hidden="true">♡</div>
-    <h1 class="text-2xl font-serif font-bold text-gray-900">
+    <h1 class="text-2xl font-serif font-bold 	text-gray-900 dark:text-white">
         Log in to view your wishlist
     </h1>
-    <p class="mt-3 text-gray-600">
+    <p class="mt-3 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
         Sign in to see the products you have saved.
     </p>
     <a

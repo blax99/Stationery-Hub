@@ -104,9 +104,9 @@
 </style>
 
 <div class="max-w-7xl mx-auto px-6 py-10">
-  <div class="mb-8 border-b border-gray-200 pb-4">
+  <div class="mb-8 border-b 	border-gray-200 dark:border-gray-700 dark:border-gray-700 pb-4">
     <h1
-      class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight"
+      class="text-2xl sm:text-3xl font-serif font-bold 	text-gray-900 dark:text-white tracking-tight"
     >
       My Orders
     </h1>
@@ -120,7 +120,7 @@
     <div class="order-card p-5 sm:p-6">
       <div class="flex justify-between items-center gap-3 mb-5">
         <div class="min-w-0">
-          <h2 class="text-lg font-semibold text-gray-900">
+          <h2 class="text-lg font-semibold 	text-gray-900 dark:text-white">
             Order #{{ order.id|stringformat:"04d" }}
           </h2>
           <p class="text-xs text-gray-500 mt-1">
@@ -129,7 +129,7 @@
         </div>
 
         <span
-          class="inline-flex w-fit shrink-0 whitespace-nowrap items-center rounded-md px-2 py-0.5 text-[11px] font-semibold {% if order.status == 'cancelled' or order.status == 'returned' %}bg-gray-100 text-gray-700 {% elif order.status == 'return_requested' %}bg-amber-50 text-amber-800 {% elif order.status == 'delivered' %}bg-emerald-50 text-emerald-800 {% elif order.status == 'shipped' %}bg-blue-50 text-blue-800 {% elif order.status == 'pending' %}order-status-pending {% else %}bg-[#7A2828]/10 text-[#7A2828]{% endif %}"
+          class="inline-flex w-fit shrink-0 whitespace-nowrap items-center rounded-md px-2 py-0.5 text-[11px] font-semibold {% if order.status == 'cancelled' or order.status == 'returned' %}	bg-gray-100 dark:bg-gray-800 	text-gray-700 dark:text-gray-300 dark:text-gray-300 {% elif order.status == 'return_requested' %}bg-amber-50 text-amber-800 {% elif order.status == 'delivered' %}bg-emerald-50 text-emerald-800 {% elif order.status == 'shipped' %}bg-blue-50 text-blue-800 {% elif order.status == 'pending' %}order-status-pending {% else %}bg-[#7A2828]/10 text-[#7A2828]{% endif %}"
         >
           {{ order.get_status_display }}
         </span>
@@ -137,8 +137,8 @@
 
       {% if order.status == 'cancelled' %}
 
-      <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4">
-        <p class="font-semibold text-gray-700">Order Cancelled</p>
+      <div class="border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 mb-4">
+        <p class="font-semibold 	text-gray-700 dark:text-gray-300 dark:text-gray-300">Order Cancelled</p>
 
         <p class="text-sm text-gray-500 mt-1">This order has been cancelled.</p>
       </div>
@@ -146,7 +146,7 @@
       {% elif order.status == 'return_requested' %}
 
       <div class="border border-amber-200 rounded-lg p-4 bg-amber-50 mb-4">
-        <p class="font-semibold text-gray-700">Return Requested</p>
+        <p class="font-semibold 	text-gray-700 dark:text-gray-300 dark:text-gray-300">Return Requested</p>
 
         <p class="text-sm text-gray-500 mt-1">
           Your return request has been submitted.
@@ -155,8 +155,8 @@
 
       {% elif order.status == 'returned' %}
 
-      <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4">
-        <p class="font-semibold text-gray-700">Order Returned</p>
+      <div class="border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 mb-4">
+        <p class="font-semibold 	text-gray-700 dark:text-gray-300 dark:text-gray-300">Order Returned</p>
 
         <p class="text-sm text-gray-500 mt-1">This order has been returned.</p>
       </div>
@@ -167,7 +167,7 @@
         <div
           class="md:col-span-3 rounded-lg bg-[#faf8f5] border border-[#e5dfd5] p-4"
         >
-          <strong class="text-sm text-gray-700">Order Status</strong>
+          <strong class="text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300">Order Status</strong>
 
           <div
             class="flex items-center justify-between mt-4 text-xs sm:text-sm"
@@ -256,24 +256,24 @@
           </div>
         </div>
 
-        <div class="rounded-lg bg-gray-50 border border-gray-100 p-4">
+        <div class="rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-100 p-4">
           <strong
             class="block text-xs uppercase tracking-wide text-gray-500 mb-1"
             >Payment</strong
           >
 
-          <span class="font-semibold text-gray-900"
+          <span class="font-semibold 	text-gray-900 dark:text-white"
             >{{ order.get_payment_status_display }}</span
           >
         </div>
 
-        <div class="rounded-lg bg-gray-50 border border-gray-100 p-4">
+        <div class="rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-100 p-4">
           <strong
             class="block text-xs uppercase tracking-wide text-gray-500 mb-1"
             >Total</strong
           >
 
-          <span class="font-semibold text-gray-900"
+          <span class="font-semibold 	text-gray-900 dark:text-white"
             >Rs. {{ order.total_amount }}</span
           >
         </div>
@@ -341,7 +341,7 @@
   {% else %}
 
   <div class="border rounded-lg p-6 text-center">
-    <p class="text-gray-600">You have no orders yet.</p>
+    <p class="	text-gray-600 dark:text-gray-400 dark:text-gray-400">You have no orders yet.</p>
   </div>
 
   {% endif %}
