@@ -8,7 +8,7 @@
       >
         <a
           href="{% url 'products:product_list' %}"
-          class="hover:	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition-colors"
+          class="hover:	text-gray-700 dark:hover:text-gray-300 transition-colors"
           >Home</a
         >
         <span>/</span>
@@ -146,15 +146,15 @@
           <nav class="space-y-1">
             <a
               href="{% url 'products:product_list' %}"
-              class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors {% if not selected_category %}bg-[#7A2828]/10 text-[#7A2828] font-semibold{% else %}	text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900 hover:	text-gray-900 dark:text-white{% endif %}"
-            >
+              class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors {% if not selected_category %}bg-[#7A2828]/10 dark:bg-[#7A2828]/30 text-[#7A2828] dark:text-red-400 font-semibold{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white{% endif %}"
+>
               <span>All Collection</span>
             </a>
 
             {% for category in categories %}
             <a
               href="{% url 'products:product_list_by_category' category.slug %}"
-              class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors {% if selected_category and selected_category.id == category.id %}bg-[#7A2828]/10 text-[#7A2828] font-semibold{% else %}	text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900 hover:	text-gray-900 dark:text-white{% endif %}"
+                class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors {% if selected_category and selected_category.id == category.id %}bg-[#7A2828]/10 dark:bg-[#7A2828]/30 text-[#7A2828] dark:text-red-400 font-semibold{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white{% endif %}"
             >
               <span>{{ category.name }}</span>
               <span
@@ -180,7 +180,7 @@
             <div>
               <!-- Image Wrapper -->
               <div
-                class="relative bg-gray-50 dark:bg-gray-900 aspect-square overflow-hidden flex items-center justify-center p-6 border-b border-gray-100"
+                class="relative bg-gray-50 dark:bg-gray-900 aspect-square overflow-hidden flex items-center justify-center p-6 border-b border-gray-100 dark:border-gray-800" 
               >
                 <button
                   type="button"
@@ -231,7 +231,7 @@
                       />
                     </svg>
                     <span
-                      class="text-[10px] uppercase font-semibold tracking-wider"
+                      class="dark:text-gray-200"
                       >No Image</span
                     >
                   </div>
@@ -259,10 +259,8 @@
                   href="{% url 'products:product_detail' product.slug %}"
                   class="block mt-1"
                 >
-                  <h2
-                    class="text-sm font-semibold 	text-gray-900 dark:text-white line-clamp-1 group-hover:text-[#7A2828] transition-colors"
-                  >
-                    {{ product.name }}
+                  <h2 class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-[#7A2828] dark:group-hover:text-red-400 transition-colors">
+                   {{ product.name }}
                   </h2>
                 </a>
               </div>
@@ -286,7 +284,7 @@
               {% else %}
               <button
                 disabled
-                class="text-xs bg-gray-200 text-gray-500 px-3.5 py-2 rounded-lg font-semibold uppercase tracking-wider cursor-not-allowed"
+                class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-3.5 py-2 rounded-lg font-semibold uppercase tracking-wider cursor-not-allowed"
               >
                 Sold Out
               </button>
@@ -298,7 +296,7 @@
             class="col-span-full py-16 	bg-white dark:bg-gray-800 rounded-xl border 	border-gray-200 dark:border-gray-700 dark:border-gray-700/80 text-center"
           >
             <div
-              class="w-12 h-12 	bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400"
+              class="w-12 h-12 	bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400"
             >
               <svg
                 class="w-6 h-6"
@@ -322,7 +320,7 @@
             </p>
             <a
               href="{% url 'products:product_list' %}"
-              class="inline-block mt-4 text-xs font-semibold text-[#7A2828] hover:underline"
+              class="inline-block mt-4 text-xs font-semibold text-[#7A2828] dark:text-red-400 hover:underline"
             >
               Clear Filters
             </a>
@@ -337,7 +335,7 @@
           {% if page_obj.has_previous %}
           <a
             href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
-            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold 	bg-white dark:bg-gray-800 border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:	bg-gray-100 dark:bg-gray-800 transition-colors"
+            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold 	bg-white dark:bg-gray-800 border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             aria-label="Previous page"
           >
             &lt;&lt;
@@ -346,7 +344,7 @@
           {% for page_number in page_obj.paginator.page_range %}
           <a
             href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_number }}"
-            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold transition-colors {% if page_obj.number == page_number %}bg-[#7A2828] text-white{% else %}	bg-white dark:bg-gray-800 border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:	bg-gray-100 dark:bg-gray-800{% endif %}"
+            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold transition-colors {% if page_obj.number == page_number %}bg-[#7A2828] text-white{% else %}	bg-white dark:bg-gray-800 border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}"
             {% if page_obj.number == page_number %}aria-current="page"{% endif %}
           >
             {{ page_number }}
@@ -355,7 +353,7 @@
           {% if page_obj.has_next %}
           <a
             href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
-            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold 	bg-white dark:bg-gray-800 border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:	bg-gray-100 dark:bg-gray-800 transition-colors"
+            class="min-w-9 h-9 px-3 flex items-center justify-center rounded-lg text-sm font-semibold 	bg-white dark:bg-gray-800 border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             aria-label="Next page"
           >
             &gt;&gt;

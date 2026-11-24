@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
-
+/* Dark mode number input spinners */
+.dark input[type="number"]::-webkit-inner-spin-button,
+.dark input[type="number"]::-webkit-outer-spin-button {
+  filter: invert(1);
+}   
 @source "../../templates";
 @source "../../home/templates";
 @source "../../cart/templates";
