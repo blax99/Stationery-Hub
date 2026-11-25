@@ -16,7 +16,6 @@ Stationery Hub{% endblock %} {% block content %}
   .profile-field label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #4b5563;
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -28,11 +27,9 @@ Stationery Hub{% endblock %} {% block content %}
     display: block;
     width: 100%;
     min-height: 2.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #d1d5db;   
     border-radius: 0.5rem;
-    background: #fff;
     padding: 0.65rem 0.8rem;
-    color: #111827;
     font-size: 0.875rem;
     transition:
       border-color 0.15s ease,
@@ -129,7 +126,7 @@ Stationery Hub{% endblock %} {% block content %}
 </style>
 
 <div
-  class="bg-[#f5ede0] px-4 py-12"
+  class="bg-[#f5ede0] dark:bg-gray-900 px-4 py-12"
   style="min-height: calc(100vh - 4rem); margin-bottom: -3rem"
 >
   <div class="w-full max-w-4xl mx-auto 	bg-white dark:bg-gray-800 rounded-lg shadow-md p-5 md:p-7">
@@ -147,25 +144,25 @@ Stationery Hub{% endblock %} {% block content %}
 
     <form id="profile-form" class="profile-form">
       <div class="profile-field">
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-2"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-2"
           >Username</label
         >
         <input
           type="text"
           id="username"
-          class="profile-control"
+          class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
         />
       </div>
 
       <div class="profile-field">
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-2"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-2"
           >Full Name</label
         >
         <input
           type="text"
           id="full_name"
           autocomplete="name"
-          class="profile-control"
+          class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           placeholder="Your full name"
         />
       </div>
@@ -179,7 +176,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="email"
             id="email"
             disabled
-            class="profile-control min-w-0 flex-1"
+            class="profile-control min-w-0 flex-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           />
           <button
             type="button"
@@ -218,7 +215,7 @@ Stationery Hub{% endblock %} {% block content %}
           type="text"
           id="phone_number"
           autocomplete="tel"
-          class="profile-control"
+          class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           placeholder="98XXXXXXXX"
         />
       </div>
@@ -230,7 +227,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="text"
             id="city"
             autocomplete="address-level2"
-            class="profile-control"
+            class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
             placeholder="City"
           />
         </div>
@@ -240,7 +237,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="text"
             id="address"
             autocomplete="street-address"
-            class="profile-control"
+            class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
             placeholder="Street address"
           />
         </div>
@@ -250,7 +247,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="text"
             id="postal_code"
             autocomplete="postal-code"
-            class="profile-control"
+            class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
             placeholder="Postal code"
           />
         </div>

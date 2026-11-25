@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{% if verified %}Email verified{% else %}Email verification{% endif %} - Stationery Hub{% endblock %}
 {% block content %}
-<section class="min-h-[70vh] flex items-center justify-center bg-[#f5ede0] px-4 py-16">
+<section class="min-h-[70vh] flex items-center justify-center bg-[#f5ede0] dark:bg-gray-900 px-4 py-16">
   <div class="w-full max-w-xl rounded-2xl 	bg-white dark:bg-gray-800 p-8 text-center shadow-lg sm:p-12">
     <div
       class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full {% if verified %}bg-green-100 text-green-700{% else %}bg-amber-100 text-amber-800{% endif %}"
@@ -17,13 +17,13 @@
       </svg>
       {% endif %}
     </div>
-    <p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-800 dark:text-amber-400">
       Stationery Hub
     </p>
     <h1 class="mb-4 font-serif text-3xl 	text-gray-900 dark:text-white sm:text-4xl">
       {% if verified %}You're all set{% else %}We couldn't verify your email{% endif %}
     </h1>
-    <p class="mx-auto mb-8 max-w-md leading-7 	text-gray-600 dark:text-gray-400 dark:text-gray-400">{{ message }}</p>
+    <p class="mx-auto mb-8 max-w-md leading-7 	text-gray-600 dark:text-gray-400">{{ message }}</p>
     {% if verified %}
     <a
       href="{% url 'login-page' %}"

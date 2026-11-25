@@ -1,9 +1,6 @@
 {% extends "base.html" %} {% load static %} {% block title %}Sign In -
 Stationery Hub{% endblock %} {% block content %}
 <style>
-  body {
-    background-color: #f5ede0;
-  }
 
   #account-created-toast {
     position: fixed;
@@ -33,7 +30,7 @@ Stationery Hub{% endblock %} {% block content %}
 </div>
 
 <div
-  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] px-4 py-12"
+  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] dark:bg-gray-900 px-4 py-12"
 >
   <div class="w-full max-w-md 	bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
     <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">Welcome</p>
@@ -41,25 +38,25 @@ Stationery Hub{% endblock %} {% block content %}
 
     <div
       id="error-message"
-      class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2"
+      class="hidden mb-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded px-4 py-2"
     ></div>
 
     <form id="login-form" class="space-y-5">
       <div>
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
           >Email Address</label
         >
         <input
           type="email"
           id="email"
           required
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:border-gray-600"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
           >Password</label
         >
         <div class="relative">
@@ -67,13 +64,13 @@ Stationery Hub{% endblock %} {% block content %}
             type="password"
             id="password"
             required
-            class="w-full border border-gray-300 rounded px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600"
+            class="w-full border border-gray-300 rounded px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:border-gray-600"
             placeholder="••••••••"
           />
           <button
             type="button"
             id="toggle-password"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:	text-gray-700 dark:text-gray-300 dark:text-gray-300 text-sm"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-300 text-sm"
           >
             Show
           </button>
@@ -81,7 +78,7 @@ Stationery Hub{% endblock %} {% block content %}
       </div>
 
       <div class="flex items-center justify-between text-sm">
-        <label class="flex items-center gap-2 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+        <label class="flex items-center gap-2 	text-gray-600 dark:text-gray-400">
           <input type="checkbox" class="rounded" />
           Remember me
         </label>
@@ -101,7 +98,7 @@ Stationery Hub{% endblock %} {% block content %}
     </form>
 
     <div class="flex items-center gap-4 my-6">
-      <div class="flex-1 h-px bg-gray-200"></div>
+      <div class="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
       <span class="text-sm text-gray-400">or</span>
       <div class="flex-1 h-px bg-gray-200"></div>
     </div>
@@ -109,7 +106,7 @@ Stationery Hub{% endblock %} {% block content %}
     <button
       id="admin-sign-in"
       type="button"
-      class="w-full border border-amber-700 text-amber-700 py-3 rounded font-semibold hover:bg-amber-50 transition cursor-pointer"
+      class="w-full border border-amber-700 dark:border-amber-500 text-amber-700 dark:text-amber-400 py-3 rounded font-semibold hover:bg-amber-50 dark:hover:bg-amber-900/20 transition cursor-pointer"
     >
       Sign in as Admin
     </button>

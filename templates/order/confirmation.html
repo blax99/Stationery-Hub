@@ -498,7 +498,7 @@
     <div class="confirmation-actions">
       {% if order.status == 'pending' or order.status == 'confirmed' %}
       {% if order.payment_status != 'paid' %}
-      <button type="button" id="khalti-button" class="action-button khalti-button" onclick="payWithKhalti({{ order.id }})">
+      <button type="button" id="khalti-button" class="action-button khalti-button" onclick="payWithKhalti('{{ order.id }}')">
         Pay with Khalti
       </button>
       {% endif %}
