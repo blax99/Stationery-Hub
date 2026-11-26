@@ -1,11 +1,13 @@
 {% extends "base.html" %} {% load static %} {% block title %}Create Account -
-Stationery Hub{% endblock %} {% block content %}
+Stationery Hub{% endblock %}
+{% block page_background %}bg-[#f5ede0] dark:bg-gray-950{% endblock %}
+{% block content %}
 <div
-  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] dark:bg-gray-900 px-4 py-12"
+  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] dark:bg-gray-950 px-4 py-12"
 >
-  <div class="w-full max-w-md 	bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-    <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">Join us</p>
-    <h1 class="text-4xl font-serif mb-8">Create Account</h1>
+  <div class="w-full max-w-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl shadow-md p-8">
+    <p class="text-xs tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">Join us</p>
+    <h1 class="text-4xl font-serif mb-8 text-gray-900 dark:text-gray-50">Create Account</h1>
 
     <div
       id="error-message"
@@ -14,45 +16,45 @@ Stationery Hub{% endblock %} {% block content %}
 
     <form id="register-form" class="space-y-5">
       <div>
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-1"
           >Username</label
         >
         <input
           type="text"
           id="username"
           required
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-red-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
           placeholder="yourname"
         />
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-1"
           >Email Address</label
         >
         <input
           type="email"
           id="email"
           required
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-red-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-1"
           >Phone Number</label
         >
         <input
           type="text"
           id="phone_number"
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-red-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
           placeholder="98XXXXXXXX"
         />
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-1"
           >Password</label
         >
         <div class="relative">
@@ -61,7 +63,7 @@ Stationery Hub{% endblock %} {% block content %}
             id="password"
             required
             minlength="8"
-            class="w-full border border-gray-300 rounded px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-red-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             placeholder="••••••••"
           />
           <button
@@ -78,17 +80,17 @@ Stationery Hub{% endblock %} {% block content %}
         type="submit"
         id="register-submit"
         aria-busy="false"
-        class="w-full bg-gray-900 text-white py-3 rounded font-semibold hover:bg-gray-800 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+        class="w-full rounded-md border border-gray-900 dark:border-red-800 bg-gray-900 dark:bg-red-800 text-white py-3 font-semibold hover:border-gray-800 dark:hover:border-red-700 hover:bg-gray-800 dark:hover:bg-red-700 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
       >
         Create Account
       </button>
     </form>
 
-    <p class="text-center text-sm 	text-gray-600 dark:text-gray-400 mt-6">
+    <p class="text-center text-sm text-gray-600 dark:text-gray-300 mt-6">
       Already have an account?
       <a
         href="{% url 'login-page' %}"
-        class="text-amber-700 font-semibold hover:underline"
+        class="text-[#7a4b2a] dark:text-[#d6a77a] font-semibold"
         >Sign In</a
       >
     </p>

@@ -3,9 +3,6 @@
   if (!navbar || navbar.dataset.navbarInitialized === "true") return;
   navbar.dataset.navbarInitialized = "true";
 
-  const searchButton = document.getElementById("searchButton");
-  const searchBox = document.getElementById("searchBox");
-  const searchInput = document.getElementById("searchInput");
   const menuButton = document.getElementById("menuButton");
   const mobileMenu = document.getElementById("mobileMenu");
   const menuIcon = document.getElementById("menuIcon");
@@ -93,26 +90,10 @@
     button.setAttribute("aria-label", `Account options for ${username}`);
   }
 
-  searchButton?.addEventListener("click", () => {
-    searchBox.classList.remove("hidden");
-    searchButton.classList.add("hidden");
-    searchInput.focus();
-  });
-
   document.addEventListener("click", (event) => {
     const target = event.target;
     const clickedElement = target instanceof Element ? target : null;
     if (!clickedElement) return;
-
-    if (
-      searchBox &&
-      searchButton &&
-      !searchBox.contains(target) &&
-      !searchButton.contains(target)
-    ) {
-      searchBox.classList.add("hidden");
-      searchButton.classList.remove("hidden");
-    }
 
     if (clickedElement.closest("#mobileMenu a")) {
       closeMobileMenu();

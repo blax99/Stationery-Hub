@@ -401,6 +401,12 @@ class ProfileTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, 'id="full_name"')
+        self.assertContains(response, "dark:bg-gray-950")
+        self.assertContains(response, "dark:text-gray-50")
+        self.assertContains(response, "dark:bg-red-800")
+        self.assertContains(response, "grid-column: 1 / -1;\n    width: 100%;")
+        self.assertContains(response, 'window.stationeryApiFetch("/users/profile/")')
+        self.assertNotContains(response, "if (!token)")
         self.assertContains(response, "max-w-4xl")
         self.assertContains(response, 'class="profile-form"')
         self.assertContains(response, "grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr)")
@@ -423,6 +429,32 @@ class ProfileTests(TestCase):
     }
 )
 class LoginPageTests(TestCase):
+    def test_login_and_register_pages_match_order_dark_theme(self):
+        for path in ("/users/login-page/", "/users/register-page/"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(
+                    response,
+                    'class="min-h-screen flex flex-col bg-[#f5ede0] dark:bg-gray-950"',
+                )
+                self.assertContains(response, "dark:bg-gray-950")
+                self.assertContains(response, "dark:bg-gray-800")
+                self.assertContains(response, "dark:bg-gray-900")
+                self.assertContains(response, "dark:border-gray-700")
+                self.assertContains(response, "dark:bg-red-800")
+                self.assertContains(response, "dark:hover:bg-red-700")
+                self.assertContains(response, "dark:focus:ring-red-600")
+
+        link_class = "text-[#7a4b2a] dark:text-[#d6a77a] font-semibold"
+        login_response = self.client.get("/users/login-page/")
+        register_response = self.client.get("/users/register-page/")
+        self.assertContains(login_response, link_class)
+        self.assertContains(register_response, link_class)
+        self.assertNotContains(login_response, "hover:underline")
+        self.assertNotContains(register_response, "hover:underline")
+
     def test_authenticated_user_is_redirected_from_login_and_signup_pages(self):
         user = User.objects.create_user(
             username="already-signed-in",

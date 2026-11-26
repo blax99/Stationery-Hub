@@ -5,6 +5,10 @@
 Wishlist
 {% endblock %}
 
+{% block extra_head %}
+<meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
 {% block content %}
 {% if user.is_authenticated %}
 <div class="max-w-7xl mx-auto px-6 py-10">
@@ -15,12 +19,12 @@ Wishlist
                 My Wishlist
             </h1>
 
-            <p id="wishlist-subtitle" class="text-xs text-gray-500 mt-1">
+            <p id="wishlist-subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 0 saved items
             </p>
         </div>
 
-        <span id="wishlist-count" class="text-xs text-gray-500">
+        <span id="wishlist-count" class="text-xs text-gray-500 dark:text-gray-400">
             0 items
         </span>
     </div>
@@ -30,31 +34,47 @@ Wishlist
     <section
         id="wishlist-items"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        aria-live="polite"
     >
-        <p class="col-span-full text-center text-gray-500 py-20">
-            Loading wishlist...
-        </p>
+        <div class="col-span-full flex items-center justify-center gap-3 py-20 text-gray-500 dark:text-gray-400" role="status">
+            <svg class="page-loading-spinner h-5 w-5 shrink-0 text-slate-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <span>Loading wishlist...</span>
+        </div>
     </section>
 
 
     <!-- Empty Wishlist -->
     <div id="empty-wishlist" class="text-center py-20 hidden">
 
-        <div class="text-5xl mb-5">
-            ♡
+        <div class="mb-5 flex justify-center">
+            <svg
+                class="wishlist-empty-heart h-12 w-12 text-red-600 dark:text-red-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/>
+            </svg>
         </div>
 
-        <h2 class="text-2xl font-normal">
+        <h2 class="text-2xl font-normal text-gray-900 dark:text-white">
             Your wishlist is empty
         </h2>
 
-        <p class="text-gray-500 mt-3">
+        <p class="text-gray-500 dark:text-gray-400 mt-3">
             Save products you love and find them here later.
         </p>
 
         <a
             href="{% url 'products:product_list' %}"
-            class="inline-block bg-slate-800 text-white px-6 py-3 mt-6 text-sm hover:bg-slate-700 transition"
+            class="inline-block rounded-md bg-slate-800 dark:bg-red-800 text-white px-6 py-3 mt-6 text-sm hover:bg-slate-700 dark:hover:bg-red-700 transition"
         >
             Continue Shopping
         </a>
@@ -66,8 +86,6 @@ Wishlist
 
 <script>
 (function initializeWishlistPage() {
-
-    const token = localStorage.getItem("access_token");
 
     const wishlistItems =
         document.getElementById("wishlist-items");
@@ -132,13 +150,20 @@ Wishlist
     ========================================
     */
 
-    function loadWishlist() {
+    let wishlistLoadPending = false;
 
-        fetch("/wishlist/api/", {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token
-            }
+    function loadWishlist() {
+        if (wishlistLoadPending) {
+            return;
+        }
+
+        wishlistLoadPending = true;
+
+        return Promise.resolve()
+        .then(function () {
+            return window.stationeryApiFetch("/wishlist/api/", {
+                cache: "no-store"
+            });
         })
 
         .then(function (response) {
@@ -191,10 +216,13 @@ Wishlist
             );
 
             wishlistItems.innerHTML = `
-                <p class="col-span-full text-center text-red-500 py-20">
+                <p class="col-span-full text-center text-red-500 dark:text-red-400 py-20">
                     Failed to load wishlist.
                 </p>
             `;
+        })
+        .finally(function () {
+            wishlistLoadPending = false;
         });
     }
 
@@ -211,7 +239,7 @@ Wishlist
             document.createElement("div");
 
         card.className =
-            "wishlist-card border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	bg-white dark:bg-gray-800 relative";
+            "wishlist-card border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	bg-white dark:bg-gray-800 rounded-xl overflow-hidden relative";
 
 
         const imageHTML = item.image
@@ -238,7 +266,7 @@ Wishlist
         const categoryHTML = item.category
             ?
             `
-                <p class="text-sm text-gray-500 mt-1">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     ${item.category}
                 </p>
             `
@@ -252,13 +280,13 @@ Wishlist
 
                 ${imageHTML}
 
-                <h3 class="text-lg font-normal">
+                <h3 class="text-lg font-normal text-gray-900 dark:text-white">
                     ${item.product}
                 </h3>
 
                 ${categoryHTML}
 
-                <p class="text-lg mt-3">
+                <p class="text-lg mt-3 text-gray-900 dark:text-gray-100">
                     Rs. ${item.price}
                 </p>
 
@@ -266,7 +294,7 @@ Wishlist
 
                     <button
                         type="button"
-                        class="add-to-cart w-full bg-slate-800 text-white py-2 text-sm hover:bg-slate-700 transition"
+                        class="add-to-cart w-full rounded-md border border-slate-800 dark:border-red-800 bg-slate-800 dark:bg-red-800 text-white py-2 text-sm hover:border-slate-700 dark:hover:border-red-700 hover:bg-slate-700 dark:hover:bg-red-700 transition"
                         data-product-id="${item.product_id}"
                     >
                         Move to Cart
@@ -280,19 +308,31 @@ Wishlist
             <!-- Remove Wishlist -->
 
             <button
-    type="button"
-    class="remove-wishlist absolute top-3 right-3
-           w-8 h-8 rounded-full
-           flex items-center justify-center
-           	bg-gray-100 dark:bg-gray-800 text-gray-500
-           hover:bg-red-50 hover:text-red-600
-           transition duration-200
-           text-lg font-medium"
-    data-item-id="${item.id}"
-    title="Remove from wishlist"
->
-    ×
-</button>
+                type="button"
+                class="remove-wishlist absolute top-3 right-3
+                       flex h-8 w-8 items-center justify-center rounded-full
+                       border border-red-200 dark:border-transparent
+                       bg-red-50 dark:bg-black text-red-700 dark:text-red-200
+                       hover:bg-red-100 hover:border-red-300 hover:text-red-800
+                       dark:hover:bg-gray-950 dark:hover:border-transparent dark:hover:text-white
+                       transition duration-200
+                       text-lg font-medium"
+                data-item-id="${item.id}"
+                aria-label="Remove from wishlist"
+                title="Remove from wishlist"
+            >
+                <svg
+                    class="wishlist-remove-icon h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    aria-hidden="true"
+                >
+                    <path d="M6 6l12 12M18 6 6 18"/>
+                </svg>
+            </button>
         `;
 
 
@@ -315,25 +355,20 @@ Wishlist
                 button.addEventListener(
                     "click",
                     function () {
-                        if (button.disabled) {
+                        if (button.dataset.removePending === "true") {
                             return;
                         }
 
                         const itemId =
                             this.dataset.itemId;
 
-                        button.disabled = true;
-                        button.setAttribute("aria-busy", "true");
+                        button.dataset.removePending = "true";
 
-                        fetch("/wishlist/api/", {
+                        window.stationeryApiFetch("/wishlist/api/", {
                             method: "DELETE",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json",
-
-                                "Authorization":
-                                    "Bearer " + token
+                                "Content-Type": "application/json"
                             },
 
                             body: JSON.stringify({
@@ -399,8 +434,7 @@ Wishlist
 
                         })
                         .finally(function () {
-                            button.disabled = false;
-                            button.removeAttribute("aria-busy");
+                            delete button.dataset.removePending;
                         });
                     }
                 );
@@ -451,17 +485,13 @@ Wishlist
                         ========================= */
 
                         const cartResponse =
-                            await fetch(
+                            await window.stationeryApiFetch(
                                 "/cart/items/",
                                 {
                                     method: "POST",
 
                                     headers: {
-                                        "Content-Type":
-                                            "application/json",
-
-                                        "Authorization":
-                                            "Bearer " + token
+                                        "Content-Type": "application/json"
                                     },
 
                                     body: JSON.stringify({
@@ -494,17 +524,13 @@ Wishlist
                         ========================= */
 
                         const wishlistResponse =
-                            await fetch(
+                            await window.stationeryApiFetch(
                                 "/wishlist/api/",
                                 {
                                     method: "DELETE",
 
                                     headers: {
-                                        "Content-Type":
-                                            "application/json",
-
-                                        "Authorization":
-                                            "Bearer " + token
+                                        "Content-Type": "application/json"
                                     },
 
                                     body: JSON.stringify({
@@ -617,31 +643,39 @@ Wishlist
     ========================================
     */
 
-    if (!token) {
-
-        wishlistItems.innerHTML = "";
-
-        updateWishlistCount(0);
-
-        showEmptyWishlist();
-
-        return;
-    }
-
-
     /*
     ========================================
     START
     ========================================
     */
 
-    loadWishlist();
+    function startWishlistLoad() {
+        if (document.getElementById("wishlist-items") !== wishlistItems) {
+            return;
+        }
+
+        loadWishlist();
+    }
+
+    startWishlistLoad();
 
 })();
 </script>
 {% else %}
 <div class="mx-auto max-w-2xl px-6 py-20 text-center">
-    <div class="mb-5 text-5xl text-gray-400" aria-hidden="true">♡</div>
+    <div class="mb-5 flex justify-center" aria-hidden="true">
+        <svg
+            class="wishlist-empty-heart h-12 w-12 text-red-600 dark:text-red-400"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/>
+        </svg>
+    </div>
     <h1 class="text-2xl font-serif font-bold 	text-gray-900 dark:text-white">
         Log in to view your wishlist
     </h1>
@@ -650,7 +684,7 @@ Wishlist
     </p>
     <a
         href="{% url 'login-page' %}?next={% url 'wishlist' %}"
-        class="mt-6 inline-block bg-slate-800 px-6 py-3 text-sm text-white transition hover:bg-slate-700"
+        class="mt-6 inline-block rounded-md bg-slate-800 dark:bg-red-800 px-6 py-3 text-sm text-white transition hover:bg-slate-700 dark:hover:bg-red-700"
     >
         Log in
     </a>

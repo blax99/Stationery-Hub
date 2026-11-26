@@ -4,6 +4,10 @@
 Shopping Cart
 {% endblock %}
 
+{% block extra_head %}
+<meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
 {% block content %}
 {% if user.is_authenticated %}
 
@@ -15,7 +19,7 @@ Shopping Cart
             Shopping Cart
         </h1>
 
-        <p class="text-xs text-gray-500 mt-1">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Review your selected products
         </p>
     </div>
@@ -32,7 +36,7 @@ Shopping Cart
                 <!-- CART HEADER -->
                 <div
                     id="cart-header"
-                    class="hidden lg:grid grid-cols-[minmax(0,1fr)_140px_140px_40px] gap-5 pb-3 border-b 	border-gray-200 dark:border-gray-700 dark:border-gray-700 text-xs text-gray-500 uppercase tracking-wide"
+                    class="hidden lg:grid grid-cols-[minmax(0,1fr)_140px_140px_40px] gap-5 pb-3 border-b 	border-gray-200 dark:border-gray-700 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                 >
 
                     <div>
@@ -57,9 +61,13 @@ Shopping Cart
                     id="api-cart-items"
                     class="space-y-0"
                 >
-                    <p class="text-gray-500">
-                        Loading cart...
-                    </p>
+                    <div class="flex items-center gap-3 py-8 text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
+                        <svg class="page-loading-spinner h-5 w-5 shrink-0 text-slate-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+                            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                        <span>Loading cart...</span>
+                    </div>
                 </div>
 
             </div>
@@ -81,9 +89,9 @@ Shopping Cart
         <!-- ORDER SUMMARY -->
         <div>
 
-            <div class="border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	bg-white dark:bg-gray-800 p-6">
+            <div class="rounded-md border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	bg-white dark:bg-gray-800 p-6 text-gray-900 dark:text-gray-100">
 
-                <h2 class="text-xl font-medium mb-6">
+                <h2 class="text-xl font-medium mb-6 text-gray-900 dark:text-white">
                     Order Summary
                 </h2>
 
@@ -93,16 +101,20 @@ Shopping Cart
                     id="order-summary-items"
                     class="space-y-4 pb-5 border-b 	border-gray-200 dark:border-gray-700 dark:border-gray-700"
                 >
-                    <p class="text-sm text-gray-400">
-                        Loading...
-                    </p>
+                    <div class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500" role="status" aria-live="polite">
+                        <svg class="page-loading-spinner h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+                            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                        <span>Loading...</span>
+                    </div>
                 </div>
 
 
                 <!-- SUBTOTAL -->
                 <div class="flex justify-between text-sm mt-6 mb-4">
 
-                    <span class="text-gray-500">
+                    <span class="text-gray-500 dark:text-gray-400">
                         Subtotal
                     </span>
 
@@ -116,11 +128,11 @@ Shopping Cart
                 <!-- SHIPPING -->
                 <div class="flex justify-between text-sm mb-4">
 
-                    <span class="text-gray-500">
+                    <span class="text-gray-500 dark:text-gray-400">
                         Shipping
                     </span>
 
-                    <span class="text-emerald-700">
+                    <span class="text-emerald-700 dark:text-emerald-400">
                         Free
                     </span>
 
@@ -128,7 +140,7 @@ Shopping Cart
 
 
                 <!-- TOTAL -->
-                <div class="border-t 	border-gray-200 dark:border-gray-700 dark:border-gray-700 pt-5">
+                <div class="border-t 	border-gray-200 dark:border-gray-700 dark:border-gray-700 pt-5 text-gray-900 dark:text-white">
 
                     <div class="flex justify-between text-lg font-medium">
 
@@ -148,7 +160,7 @@ Shopping Cart
                 <!-- CHECKOUT -->
                 <a
                     href="{% url 'checkout' %}"
-                    class="block w-full bg-slate-800 text-white py-3 mt-6 text-center text-sm font-medium hover:bg-slate-700 transition"
+                    class="block w-full rounded-md border border-slate-800 dark:border-red-800 bg-slate-800 dark:bg-red-800 text-white py-3 mt-6 text-center text-sm font-medium hover:border-slate-700 dark:hover:border-red-700 hover:bg-slate-700 dark:hover:bg-red-700 transition"
                 >
                     Proceed to Checkout
                 </a>
@@ -164,130 +176,8 @@ Shopping Cart
 
 <script>
 
-/* =========================================================
-   JWT
-========================================================= */
-
-function getAccessToken() {
-
-    return localStorage.getItem("access_token");
-
-}
-
-
-async function refreshAccessToken() {
-
-    const refreshToken =
-        localStorage.getItem("refresh_token");
-
-    if (!refreshToken) {
-        return null;
-    }
-
-
-    const response = await fetch(
-        "/api/users/login/refresh/",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                refresh: refreshToken
-            })
-        }
-    );
-
-
-    if (!response.ok) {
-        return null;
-    }
-
-
-    const data =
-        await response.json();
-
-
-    localStorage.setItem(
-        "access_token",
-        data.access
-    );
-
-
-    return data.access;
-
-}
-
-
-/* =========================================================
-   CART REQUEST
-========================================================= */
-
-async function cartRequest(
-    url,
-    options = {}
-) {
-
-    let token =
-        getAccessToken();
-
-
-    options.headers = {
-
-        ...(options.headers || {}),
-
-        "Authorization":
-            "Bearer " + token
-
-    };
-
-
-    let response =
-        await fetch(
-            url,
-            options
-        );
-
-
-    /*
-        If access token expired,
-        refresh it and try again.
-    */
-
-    if (response.status === 401) {
-
-        token =
-            await refreshAccessToken();
-
-
-        if (!token) {
-            return response;
-        }
-
-
-        options.headers = {
-
-            ...(options.headers || {}),
-
-            "Authorization":
-                "Bearer " + token
-
-        };
-
-
-        response =
-            await fetch(
-                url,
-                options
-            );
-
-    }
-
-
-    return response;
-
+function cartRequest(url, options = {}) {
+    return window.stationeryApiFetch(url, options);
 }
 
 
@@ -385,7 +275,7 @@ async function loadCart() {
         if (!response.ok) {
 
             container.innerHTML = `
-                <p class="text-red-500">
+                <p class="text-red-500 dark:text-red-400">
                     Unable to load cart.
                 </p>
             `;
@@ -425,7 +315,7 @@ async function loadCart() {
 
             container.innerHTML = `
 
-                <div class="text-center py-20">
+                <div class="text-center py-20 text-gray-900 dark:text-white">
 
                     <div class="text-5xl mb-5">
                         🛒
@@ -437,7 +327,7 @@ async function loadCart() {
                     </h2>
 
 
-                    <p class="text-gray-500 mt-3">
+                    <p class="text-gray-500 dark:text-gray-400 mt-3">
                         Add some products to your cart.
                     </p>
 
@@ -448,7 +338,7 @@ async function loadCart() {
 
             summaryContainer.innerHTML = `
 
-                <p class="text-sm text-gray-400">
+                <p class="text-sm text-gray-400 dark:text-gray-500">
                     No items
                 </p>
 
@@ -591,7 +481,7 @@ async function loadCart() {
 
 
                             <p
-                                class="text-sm text-gray-500 mt-1"
+                                class="text-sm text-gray-500 dark:text-gray-400 mt-1"
                             >
                                 Rs. ${item.price}
                             </p>
@@ -609,7 +499,7 @@ async function loadCart() {
 
                         <button
                             type="button"
-                            class="decrease w-9 h-9 flex items-center justify-center hover:bg-gray-50 dark:bg-gray-900"
+                            class="decrease w-9 h-9 flex items-center justify-center text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                             aria-label="Decrease quantity"
                         >
                             −
@@ -617,7 +507,7 @@ async function loadCart() {
 
 
                         <span
-                            class="quantity w-9 text-center text-sm"
+                            class="quantity w-9 text-center text-sm text-gray-900 dark:text-gray-100"
                         >
                             ${item.quantity}
                         </span>
@@ -625,7 +515,7 @@ async function loadCart() {
 
                         <button
                             type="button"
-                            class="increase w-9 h-9 flex items-center justify-center hover:bg-gray-50 dark:bg-gray-900"
+                            class="increase w-9 h-9 flex items-center justify-center text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                             aria-label="Increase quantity"
                         >
                             +
@@ -637,7 +527,7 @@ async function loadCart() {
                     <!-- ITEM TOTAL -->
 
                     <span
-                        class="text-sm font-medium text-center w-full"
+                        class="text-sm font-medium text-center w-full text-gray-900 dark:text-gray-100"
                     >
                         Rs. ${item.item_total}
                     </span>
@@ -647,7 +537,7 @@ async function loadCart() {
 
                     <button
                         type="button"
-                        class="delete text-gray-400 hover:text-red-600 transition"
+                        class="delete text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition"
                         title="Remove from cart"
                         aria-label="Remove from cart"
                     >
@@ -696,7 +586,7 @@ async function loadCart() {
                 summaryItem.innerHTML = `
 
                     <span
-                        class="text-gray-500 truncate"
+                        class="text-gray-500 dark:text-gray-400 truncate"
                         title="${item.product}"
                     >
                         ${item.product}
@@ -704,7 +594,7 @@ async function loadCart() {
 
 
                     <span
-                        class="font-medium whitespace-nowrap"
+                        class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-100"
                     >
                         Rs. ${item.item_total}
                     </span>
@@ -753,7 +643,7 @@ async function loadCart() {
 
         container.innerHTML = `
 
-            <p class="text-red-500">
+            <p class="text-red-500 dark:text-red-400">
                 Something went wrong
                 while loading the cart.
             </p>
@@ -890,12 +780,11 @@ async function updateQuantity(
 ========================================================= */
 
 async function deleteCartItem(cartItem, itemId, button) {
-    if (button.disabled) {
+    if (button.dataset.deleteRequestPending === "true") {
         return;
     }
 
-    button.disabled = true;
-    button.setAttribute("aria-busy", "true");
+    button.dataset.deleteRequestPending = "true";
 
     try {
 
@@ -952,8 +841,7 @@ async function deleteCartItem(cartItem, itemId, button) {
     }
 
     finally {
-        button.disabled = false;
-        button.removeAttribute("aria-busy");
+        delete button.dataset.deleteRequestPending;
     }
 }
 
@@ -1088,7 +976,7 @@ loadCart();
 </script>
 {% else %}
 <div class="mx-auto max-w-2xl px-6 py-20 text-center">
-    <div class="mb-5 text-5xl text-gray-400" aria-hidden="true">
+    <div class="mb-5 text-5xl text-gray-400 dark:text-gray-500" aria-hidden="true">
         🛒
     </div>
     <h1 class="text-2xl font-serif font-bold 	text-gray-900 dark:text-white">
@@ -1099,7 +987,7 @@ loadCart();
     </p>
     <a
         href="{% url 'login-page' %}?next={% url 'cart' %}"
-        class="mt-6 inline-block bg-slate-800 px-6 py-3 text-sm text-white transition hover:bg-slate-700"
+        class="mt-6 inline-block rounded-md border border-slate-800 dark:border-red-800 bg-slate-800 dark:bg-red-800 px-6 py-3 text-sm text-white transition hover:border-slate-700 dark:hover:border-red-700 hover:bg-slate-700 dark:hover:bg-red-700"
     >
         Log in
     </a>

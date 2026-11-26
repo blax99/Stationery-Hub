@@ -20,6 +20,7 @@ Stationery Hub{% endblock %} {% block content %}
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: #374151;
   }
 
   .profile-control {
@@ -41,10 +42,14 @@ Stationery Hub{% endblock %} {% block content %}
     border-color: #9ca3af;
   }
 
+  .profile-control::placeholder {
+    color: #9ca3af;
+  }
+
   .profile-control:focus {
-    border-color: #b45309;
+    border-color: #8b2d2d;
     outline: none;
-    box-shadow: 0 0 0 3px rgb(180 83 9 / 15%);
+    box-shadow: 0 0 0 2px rgb(139 45 45 / 12%);
   }
 
   .profile-control:disabled {
@@ -102,8 +107,7 @@ Stationery Hub{% endblock %} {% block content %}
 
   .profile-save {
     grid-column: 1 / -1;
-    justify-self: center;
-    width: min(100%, 20rem);
+    width: 100%;
     margin-block: 0.75rem;
   }
 
@@ -130,27 +134,33 @@ Stationery Hub{% endblock %} {% block content %}
   border-color: #6b7280;
 }
 .dark .profile-control:focus {
-  border-color: #d97706;
-  box-shadow: 0 0 0 3px rgb(217 119 6 / 20%);
+  border-color: #dc2626;
+  box-shadow: 0 0 0 2px rgb(220 38 38 / 15%);
 }
 .dark .profile-control:disabled {
   border-color: #374151;
   background: #1f2937;
   color: #9ca3af;
-}   
+}
+.dark .profile-control::placeholder {
+  color: #6b7280;
+}
+.dark .profile-field label {
+  color: #d1d5db;
+}
 </style>
 
 <div
-  class="bg-[#f5ede0] dark:bg-gray-900 px-4 py-12"
+  class="bg-[#f5ede0] dark:bg-gray-950 px-4 py-12"
   style="min-height: calc(100vh - 4rem); margin-bottom: -3rem"
 >
-  <div class="w-full max-w-4xl mx-auto 	bg-white dark:bg-gray-800 rounded-lg shadow-md p-5 md:p-7">
+  <div class="w-full max-w-4xl mx-auto border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-md p-5 md:p-7">
     <div class="mb-6 px-4">
-      <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">
+      <p class="text-xs tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">
         Your account
       </p>
-      <h1 class="text-4xl font-serif">My Profile</h1>
-      <p class="text-sm text-gray-500 mt-2">
+      <h1 class="text-4xl font-serif text-gray-900 dark:text-gray-50">My Profile</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
         Save your contact and delivery details for a faster checkout.
       </p>
     </div>
@@ -159,31 +169,31 @@ Stationery Hub{% endblock %} {% block content %}
 
     <form id="profile-form" class="profile-form">
       <div class="profile-field">
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-2"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
           >Username</label
         >
         <input
           type="text"
           id="username"
-          class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
         />
       </div>
 
       <div class="profile-field">
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-2"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
           >Full Name</label
         >
         <input
           type="text"
           id="full_name"
           autocomplete="name"
-          class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           placeholder="Your full name"
         />
       </div>
 
       <div class="profile-field">
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-2"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
           >Email Address</label
         >
         <div class="flex max-w-[24rem] items-center gap-2">
@@ -191,7 +201,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="email"
             id="email"
             disabled
-            class="profile-control min-w-0 flex-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            class="profile-control min-w-0 flex-1 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           />
           <button
             type="button"
@@ -223,14 +233,14 @@ Stationery Hub{% endblock %} {% block content %}
       </div>
 
       <div class="profile-field">
-        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase mb-2"
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
           >Phone Number</label
         >
         <input
           type="text"
           id="phone_number"
           autocomplete="tel"
-          class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           placeholder="98XXXXXXXX"
         />
       </div>
@@ -242,7 +252,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="text"
             id="city"
             autocomplete="address-level2"
-            class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
             placeholder="City"
           />
         </div>
@@ -252,7 +262,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="text"
             id="address"
             autocomplete="street-address"
-            class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
             placeholder="Street address"
           />
         </div>
@@ -262,7 +272,7 @@ Stationery Hub{% endblock %} {% block content %}
             type="text"
             id="postal_code"
             autocomplete="postal-code"
-            class="profile-control bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
             placeholder="Postal code"
           />
         </div>
@@ -270,7 +280,7 @@ Stationery Hub{% endblock %} {% block content %}
 
       <button
         type="submit"
-        class="profile-save bg-gray-900 text-white py-2.5 rounded font-semibold hover:bg-gray-800 transition"
+        class="profile-save bg-gray-900 text-white py-2.5 rounded-md font-semibold hover:bg-gray-800 dark:bg-red-800 dark:hover:bg-red-700 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
       >
         Save Changes
       </button>
@@ -279,23 +289,19 @@ Stationery Hub{% endblock %} {% block content %}
 </div>
 
 <script>
-  const token = localStorage.getItem("access_token");
   const msgBox = document.getElementById("message-box");
   const profileSaveButton = document.querySelector(
     '#profile-form button[type="submit"]',
   );
 
-  if (!token) {
-    window.location.href = "{% url 'login-page' %}";
-  }
-
   async function loadProfile() {
-    const response = await fetch("{% url 'profile' %}", {
-      headers: { Authorization: "Bearer " + token },
-    });
-    if (!response.ok) {
-      window.location.href = "{% url 'login-page' %}";
+    const response = await window.stationeryApiFetch("{% url 'profile' %}");
+    if (response.status === 401) {
+      window.stationeryLoginRedirect();
       return;
+    }
+    if (!response.ok) {
+      throw new Error(`Could not load profile: ${response.status}`);
     }
     const data = await response.json();
     document.getElementById("username").value = data.username;
@@ -305,7 +311,7 @@ Stationery Hub{% endblock %} {% block content %}
     );
     if (data.is_email_verified) {
       verificationStatus.className =
-        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-600/20";
+        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/30";
       verificationStatus.dataset.tooltip = "Verified";
       verificationStatus.setAttribute("aria-label", "Email verified");
       document
@@ -313,7 +319,7 @@ Stationery Hub{% endblock %} {% block content %}
         .classList.remove("hidden");
     } else {
       verificationStatus.className =
-        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-600/20";
+        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-400/30";
       verificationStatus.dataset.tooltip = "Not verified";
       verificationStatus.setAttribute("aria-label", "Email not verified");
       document
@@ -345,10 +351,9 @@ Stationery Hub{% endblock %} {% block content %}
           .split(/\s+/)
           .filter(Boolean);
 
-        const response = await fetch("{% url 'profile' %}", {
+        const response = await window.stationeryApiFetch("{% url 'profile' %}", {
           method: "PATCH",
           headers: {
-            Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -362,6 +367,11 @@ Stationery Hub{% endblock %} {% block content %}
           }),
         });
 
+        if (response.status === 401) {
+          window.stationeryLoginRedirect();
+          return;
+        }
+
         if (response.ok) {
           sessionStorage.setItem(
             "stationery-notification",
@@ -372,14 +382,14 @@ Stationery Hub{% endblock %} {% block content %}
           msgBox.textContent =
             "Could not update profile. Please check your details.";
           msgBox.className =
-            "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200";
+            "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
         }
       } catch (error) {
         console.error("Profile update failed:", error);
         msgBox.textContent =
           "Unable to update your profile. Please check your connection and try again.";
         msgBox.className =
-          "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200";
+          "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
       } finally {
         profileSaveButton.disabled = false;
         profileSaveButton.removeAttribute("aria-busy");
@@ -387,6 +397,12 @@ Stationery Hub{% endblock %} {% block content %}
       msgBox.classList.remove("hidden");
     });
 
-  loadProfile();
+  loadProfile().catch((error) => {
+    console.error("Profile could not be loaded.", error);
+    msgBox.textContent =
+      "Unable to load your profile. Please refresh the page.";
+    msgBox.className =
+      "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
+  });
 </script>
 {% endblock %}

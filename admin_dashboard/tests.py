@@ -210,6 +210,15 @@ class DashboardUserRoleTests(TestCase):
         )
         self.client.force_login(self.admin)
 
+    def test_admin_dashboard_uses_light_theme(self):
+        dashboard_response = self.client.get("/admin/")
+        orders_response = self.client.get("/admin/orders/")
+
+        self.assertContains(dashboard_response, 'class="bg-gray-100 text-gray-800"')
+        self.assertContains(dashboard_response, 'style="color-scheme: light"')
+        self.assertNotContains(dashboard_response, "dark:bg-")
+        self.assertNotContains(orders_response, "dark:bg-")
+
     def test_user_module_lists_only_admins_and_customers(self):
         response = self.client.get("/admin/users/")
 
@@ -248,6 +257,7 @@ class DashboardUserRoleTests(TestCase):
             get_user_model().objects.filter(email="new-vendor@example.com").exists()
         )
         self.assertContains(response, "Choose either Admin or Customer.")
+        self.assertContains(response, "border-red-200 bg-red-100 text-red-700")
 
     def test_user_module_notifies_when_admin_or_customer_account_is_created(self):
         for role, message in (
