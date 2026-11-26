@@ -138,6 +138,70 @@ Hub{% endblock %} {% block content %}
       box-sizing: border-box;
     }
   }
+  /* ===== DARK MODE ===== */
+.dark .payment-result-page {
+  background: #1c1917;
+}
+
+.dark .payment-result-card {
+  border-color: #44403c;
+  background: #292524;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+.dark .payment-result-success {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+
+.dark .payment-result-failed,
+.dark .payment-result-error {
+  background: #450a0a;
+  color: #fca5a5;
+}
+
+.dark .payment-result-pending {
+  background: #451a03;
+  color: #fcd34d;
+}
+
+.dark .payment-result-title {
+  color: #f5f5f4;
+}
+
+.dark .payment-result-message {
+  color: #a8a29e;
+}
+
+.dark .payment-order-reference {
+  border-color: #44403c;
+  background: #1c1917;
+  color: #d6d3d1;
+}
+
+.dark .payment-result-button {
+  border-color: #991b1b;
+  background: #991b1b;
+  color: #fff;
+}
+
+.dark .payment-result-button:hover {
+  border-color: #b91c1c;
+  background: #b91c1c;
+  color: #fff;
+}
+
+.dark .payment-result-button-secondary {
+  border-color: #57534e;
+  background: #292524;
+  color: #e7e5e4;
+}
+
+.dark .payment-result-button-secondary:hover {
+  border-color: #78716c;
+  background: #44403c;
+  color: #fff;
+}   
 </style>
 
 <main class="payment-result-page">

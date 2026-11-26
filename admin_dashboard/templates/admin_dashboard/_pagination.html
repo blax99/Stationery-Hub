@@ -10,27 +10,27 @@
     {% if page_obj.has_previous %}
     <a
       href="{% querystring page=page_obj.previous_page_number %}"
-      class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+      class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium 	text-gray-700  hover:bg-gray-50 "
     >
       Previous
     </a>
     {% else %}
-    <span class="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-400">
+    <span class="rounded-lg border 	border-gray-200  px-3 py-2 text-sm text-gray-400">
       Previous
     </span>
     {% endif %}
-    <span class="px-2 text-sm text-gray-600">
+    <span class="px-2 text-sm 	text-gray-600 ">
       Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
     </span>
     {% if page_obj.has_next %}
     <a
       href="{% querystring page=page_obj.next_page_number %}"
-      class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+      class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium 	text-gray-700  hover:bg-gray-50 "
     >
       Next
     </a>
     {% else %}
-    <span class="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-400">
+    <span class="rounded-lg border 	border-gray-200 px-3 py-2 text-sm text-gray-400">
       Next
     </span>
     {% endif %}

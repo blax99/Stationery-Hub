@@ -1,64 +1,58 @@
 {% extends "base.html" %} {% load static %} {% block title %}Create Account -
 Stationery Hub{% endblock %} {% block content %}
-<style>
-  body {
-    background-color: #f5ede0;
-  }
-</style>
-
 <div
-  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] px-4 py-12"
+  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] dark:bg-gray-900 px-4 py-12"
 >
-  <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+  <div class="w-full max-w-md 	bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
     <p class="text-xs tracking-widest text-gray-500 uppercase mb-2">Join us</p>
     <h1 class="text-4xl font-serif mb-8">Create Account</h1>
 
     <div
       id="error-message"
-      class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2"
+      class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
     ></div>
 
     <form id="register-form" class="space-y-5">
       <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
           >Username</label
         >
         <input
           type="text"
           id="username"
           required
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           placeholder="yourname"
         />
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
           >Email Address</label
         >
         <input
           type="email"
           id="email"
           required
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
           >Phone Number</label
         >
         <input
           type="text"
           id="phone_number"
-          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
+          class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
           placeholder="98XXXXXXXX"
         />
       </div>
 
       <div>
-        <label class="block text-xs tracking-wider text-gray-600 uppercase mb-1"
+        <label class="block text-xs tracking-wider 	text-gray-600 dark:text-gray-400 uppercase mb-1"
           >Password</label
         >
         <div class="relative">
@@ -67,13 +61,13 @@ Stationery Hub{% endblock %} {% block content %}
             id="password"
             required
             minlength="8"
-            class="w-full border border-gray-300 rounded px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600"
+            class="w-full border border-gray-300 rounded px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
             placeholder="••••••••"
           />
           <button
             type="button"
             id="toggle-password"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-300 text-sm"
           >
             Show
           </button>
@@ -90,7 +84,7 @@ Stationery Hub{% endblock %} {% block content %}
       </button>
     </form>
 
-    <p class="text-center text-sm text-gray-600 mt-6">
+    <p class="text-center text-sm 	text-gray-600 dark:text-gray-400 mt-6">
       Already have an account?
       <a
         href="{% url 'login-page' %}"
