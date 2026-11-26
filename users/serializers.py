@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
+from django.contrib.auth.password_validation import validate_password as django_validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+
 User = get_user_model()
 
 
@@ -40,8 +43,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Password must contain at least one number."
             )
+        try:
+            django_validate_password(value)
+        except DjangoValidationError as error:
+            raise serializers.ValidationError(list(error.messages))
         return value
-
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
