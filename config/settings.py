@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "payments",
     "home",
     "admin_dashboard.apps.AdminConfig",
+    "chatbot"
 ]
 
 AUTH_USER_MODEL = "users.User"
