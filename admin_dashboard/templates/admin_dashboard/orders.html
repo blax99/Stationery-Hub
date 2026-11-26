@@ -10,7 +10,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
-  <body class="	bg-gray-100 dark:bg-gray-800 text-gray-800">
+  <body class="	bg-gray-100 text-gray-800">
     <div class="flex min-h-screen flex-col md:flex-row">
       {% include "admin_dashboard/_sidebar.html" with active_page="orders" %}
 
@@ -28,42 +28,42 @@
 
         <!-- Order Statistics -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
-          <div class="	bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <p class="text-sm text-gray-500">Total Orders</p>
             <h3 class="text-3xl font-bold mt-2 text-gray-800">
               {{ total_orders }}
             </h3>
           </div>
 
-          <div class="	bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <p class="text-sm text-gray-500">Pending</p>
             <h3 class="text-3xl font-bold mt-2 text-yellow-600">
               {{ pending_orders }}
             </h3>
           </div>
 
-          <div class="	bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <p class="text-sm text-gray-500">Confirmed</p>
             <h3 class="text-3xl font-bold mt-2 text-blue-600">
               {{ confirmed_orders }}
             </h3>
           </div>
 
-          <div class="	bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <p class="text-sm text-gray-500">Shipped</p>
             <h3 class="text-3xl font-bold mt-2 text-purple-600">
               {{ shipped_orders }}
             </h3>
           </div>
 
-          <div class="	bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <p class="text-sm text-gray-500">Delivered</p>
             <h3 class="text-3xl font-bold mt-2 text-green-600">
               {{ delivered_orders }}
             </h3>
           </div>
 
-          <div class="	bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <p class="text-sm text-gray-500">Cancelled</p>
             <h3 class="text-3xl font-bold mt-2 text-red-600">
               {{ cancelled_orders }}
@@ -73,7 +73,7 @@
 
         <!-- Search & Filter -->
         <div
-          class="	bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
+          class="	bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
         >
           <form method="get" class="flex flex-col gap-3 lg:flex-row lg:gap-4">
             <input
@@ -89,7 +89,7 @@
               id="orderStatusFilter"
               name="status"
               onchange="this.form.submit()"
-              class="w-full rounded-lg border border-gray-300 	bg-white dark:bg-gray-800 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 lg:w-auto"
+              class="w-full rounded-lg border border-gray-300 	bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 lg:w-auto"
             >
               <option value="">All Status</option>
               <option value="pending" {% if selected_order_status == "pending" %}selected{% endif %}>Pending</option>
@@ -111,7 +111,7 @@
 
         <!-- Orders Table -->
         <div
-          class="	bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          class="	bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
         >
           <div class="p-5 border-b border-gray-100">
             <h3 class="text-xl font-semibold">Recent Orders</h3>
@@ -122,29 +122,29 @@
 
           <div class="overflow-x-auto">
             <table class="w-full min-w-[760px] text-left">
-              <thead class="bg-gray-50 dark:bg-gray-900">
+              <thead class="bg-gray-50 ">
                 <tr>
-                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
                     Order ID
                   </th>
 
-                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
                     Customer
                   </th>
 
-                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
                     Date
                   </th>
 
-                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
                     Total
                   </th>
 
-                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
                     Status
                   </th>
 
-                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
                     Actions
                   </th>
                 </tr>
@@ -154,7 +154,7 @@
                 {% for order in orders %}
 
                 <tr
-                  class="border-t border-gray-100 order-row hover:bg-gray-50 dark:bg-gray-900 transition"
+                  class="border-t border-gray-100 order-row hover:bg-gray-50  transition"
                   data-order-id="{{ order.id }}"
                   data-customer="{{ order.user.username|lower }}"
                   data-status="{{ order.get_status_display|lower }}"
@@ -163,11 +163,11 @@
                     #ORD-{{ order.id }}
                   </td>
 
-                  <td class="px-6 py-4 	text-gray-700 dark:text-gray-300 dark:text-gray-300">
+                  <td class="px-6 py-4 	text-gray-700 ">
                     {{ order.user.username }}
                   </td>
 
-                  <td class="px-6 py-4 	text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <td class="px-6 py-4 	text-gray-600 ">
                     {{ order.created_at|date:"M d, Y" }}
                   </td>
 
@@ -307,7 +307,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"
       >
         <div
-          class="	bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+          class="	bg-white  rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         >
           <div
             class="flex justify-between items-center p-6 border-b border-gray-100"
@@ -322,7 +322,7 @@
             <button
               type="button"
               id="closeViewOrderModal"
-              class="text-gray-400 hover:	text-gray-700 dark:text-gray-300 dark:text-gray-300 text-2xl transition"
+              class="text-gray-400 hover:	text-gray-700 text-2xl transition"
             >
               &times;
             </button>
@@ -331,22 +331,22 @@
           <div class="p-6">
             <!-- Order Information -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
-              <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+              <div class="bg-gray-50  rounded-lg p-4">
                 <p class="text-sm text-gray-500">Order ID</p>
                 <p id="viewOrderId" class="font-semibold mt-1"></p>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+              <div class="bg-gray-50  rounded-lg p-4">
                 <p class="text-sm text-gray-500">Customer</p>
                 <p id="viewOrderCustomer" class="font-semibold mt-1"></p>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+              <div class="bg-gray-50  rounded-lg p-4">
                 <p class="text-sm text-gray-500">Date</p>
                 <p id="viewOrderDate" class="font-semibold mt-1"></p>
               </div>
 
-              <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+              <div class="bg-gray-50  rounded-lg p-4">
                 <p class="text-sm text-gray-500">Status</p>
                 <p id="viewOrderStatus" class="font-semibold mt-1"></p>
               </div>
@@ -365,7 +365,7 @@
 
               <div
                 id="viewShippingAddress"
-                class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 	text-gray-600 dark:text-gray-400 dark:text-gray-400"
+                class="bg-gray-50  rounded-lg p-4 	text-gray-600 "
               ></div>
             </div>
 
