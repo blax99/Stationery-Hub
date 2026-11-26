@@ -57,9 +57,13 @@ Shopping Cart
                     id="api-cart-items"
                     class="space-y-0"
                 >
-                    <p class="text-gray-500 dark:text-gray-400">
-                        Loading cart...
-                    </p>
+                    <div class="flex items-center gap-3 py-8 text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
+                        <svg class="page-loading-spinner h-5 w-5 shrink-0 text-slate-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+                            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                        <span>Loading cart...</span>
+                    </div>
                 </div>
 
             </div>
@@ -93,9 +97,13 @@ Shopping Cart
                     id="order-summary-items"
                     class="space-y-4 pb-5 border-b 	border-gray-200 dark:border-gray-700 dark:border-gray-700"
                 >
-                    <p class="text-sm text-gray-400 dark:text-gray-500">
-                        Loading...
-                    </p>
+                    <div class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500" role="status" aria-live="polite">
+                        <svg class="page-loading-spinner h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+                            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                        <span>Loading...</span>
+                    </div>
                 </div>
 
 
