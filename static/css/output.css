@@ -2247,6 +2247,9 @@
         background-color: color-mix(in oklab, var(--color-red-900) 30%, transparent);
       }
     }
+    .dark\:hover\:text-blue-300:where(.dark, .dark *):hover {
+      color: var(--color-blue-300);
+    }
     .dark\:hover\:text-gray-300:where(.dark, .dark *):hover {
       color: var(--color-gray-300);
     }

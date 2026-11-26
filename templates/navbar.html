@@ -54,7 +54,7 @@
             <div class="	bg-white dark:bg-gray-800 rounded-md shadow-lg py-2">
               <a
                 href="{% url 'products:product_list' %}"
-                class="block px-4 py-2 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600"
+                class="block px-4 py-2 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300"
               >
                 All Categories
               </a>
@@ -62,7 +62,7 @@
               {% for cat in nav_categories %}
               <a
                 href="{% url 'products:product_list_by_category' cat.slug %}"
-                class="block px-4 py-2 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600"
+                class="block px-4 py-2 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300"
               >
                 {{ cat.name }}
               </a>
@@ -168,7 +168,7 @@
           >
             <a
               href="{% url 'profile-page' %}"
-              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:bg-gray-900 hover:text-blue-700"
+              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
               role="menuitem"
             >
               <i class="fa-regular fa-user w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -177,7 +177,7 @@
 
             <a
               href="{% url 'order_history' %}"
-              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:bg-gray-900 hover:text-blue-700"
+              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
               role="menuitem"
             >
               <i class="fa-solid fa-box w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -188,7 +188,7 @@
               id="logoutButton"
               type="button"
               role="menuitem"
-              class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-red-50 hover:text-red-700"
+              class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
             >
               <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center text-gray-400" aria-hidden="true"></i>
               Logout
@@ -251,7 +251,7 @@
           >
             <a
               href="{% url 'products:product_list' %}"
-              class="hover:text-blue-600 transition"
+              class="block rounded px-2 py-1 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300 transition"
             >
               All Products
             </a>
@@ -259,7 +259,7 @@
             {% for cat in nav_categories %}
             <a
               href="{% url 'products:product_list_by_category' cat.slug %}"
-              class="hover:text-blue-600 transition"
+              class="block rounded px-2 py-1 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300 transition"
             >
               {{ cat.name }}
             </a>
@@ -323,7 +323,7 @@
             >
               <a
                 href="{% url 'profile-page' %}"
-                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:bg-gray-900 hover:text-blue-700"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
                 role="menuitem"
               >
                 <i class="fa-regular fa-user w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -331,7 +331,7 @@
               </a>
               <a
                 href="{% url 'order_history' %}"
-                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:bg-gray-900 hover:text-blue-700"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
                 role="menuitem"
               >
                 <i class="fa-solid fa-box w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -340,7 +340,7 @@
               <button
                 type="button"
                 role="menuitem"
-                class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-red-50 hover:text-red-700"
+                class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
               >
                 <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center text-gray-400" aria-hidden="true"></i>
                 Logout
