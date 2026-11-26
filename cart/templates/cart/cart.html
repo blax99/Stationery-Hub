@@ -4,6 +4,10 @@
 Shopping Cart
 {% endblock %}
 
+{% block extra_head %}
+<meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
 {% block content %}
 {% if user.is_authenticated %}
 
@@ -776,12 +780,11 @@ async function updateQuantity(
 ========================================================= */
 
 async function deleteCartItem(cartItem, itemId, button) {
-    if (button.disabled) {
+    if (button.dataset.deleteRequestPending === "true") {
         return;
     }
 
-    button.disabled = true;
-    button.setAttribute("aria-busy", "true");
+    button.dataset.deleteRequestPending = "true";
 
     try {
 
@@ -838,8 +841,7 @@ async function deleteCartItem(cartItem, itemId, button) {
     }
 
     finally {
-        button.disabled = false;
-        button.removeAttribute("aria-busy");
+        delete button.dataset.deleteRequestPending;
     }
 }
 

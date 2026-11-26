@@ -5,6 +5,10 @@
 Wishlist
 {% endblock %}
 
+{% block extra_head %}
+<meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
 {% block content %}
 {% if user.is_authenticated %}
 <div class="max-w-7xl mx-auto px-6 py-10">
@@ -653,16 +657,7 @@ Wishlist
         loadWishlist();
     }
 
-    if (window.Turbo) {
-        document.addEventListener("turbo:load", startWishlistLoad);
-        startWishlistLoad();
-    } else if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", startWishlistLoad, {
-            once: true
-        });
-    } else {
-        startWishlistLoad();
-    }
+    startWishlistLoad();
 
 })();
 </script>

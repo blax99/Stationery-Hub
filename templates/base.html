@@ -70,6 +70,7 @@
     <!-- Your Compiled CSS -->
     <link rel="stylesheet" href="{% static 'css/output.css' %}?v=34" />
     <script src="{% static 'js/turbo.js' %}" defer></script>
+    {% block extra_head %}{% endblock %}
   </head>
 
  <body class="min-h-screen flex flex-col {% block page_background %}bg-gray-50 dark:bg-gray-950{% endblock %}">
