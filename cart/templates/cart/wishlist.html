@@ -141,11 +141,20 @@ Wishlist
     ========================================
     */
 
-    function loadWishlist() {
+    let wishlistLoadPending = false;
 
-        Promise.resolve()
+    function loadWishlist() {
+        if (wishlistLoadPending) {
+            return;
+        }
+
+        wishlistLoadPending = true;
+
+        return Promise.resolve()
         .then(function () {
-            return window.stationeryApiFetch("/wishlist/api/");
+            return window.stationeryApiFetch("/wishlist/api/", {
+                cache: "no-store"
+            });
         })
 
         .then(function (response) {
@@ -202,6 +211,9 @@ Wishlist
                     Failed to load wishlist.
                 </p>
             `;
+        })
+        .finally(function () {
+            wishlistLoadPending = false;
         });
     }
 
@@ -334,15 +346,14 @@ Wishlist
                 button.addEventListener(
                     "click",
                     function () {
-                        if (button.disabled) {
+                        if (button.dataset.removePending === "true") {
                             return;
                         }
 
                         const itemId =
                             this.dataset.itemId;
 
-                        button.disabled = true;
-                        button.setAttribute("aria-busy", "true");
+                        button.dataset.removePending = "true";
 
                         window.stationeryApiFetch("/wishlist/api/", {
                             method: "DELETE",
@@ -414,8 +425,7 @@ Wishlist
 
                         })
                         .finally(function () {
-                            button.disabled = false;
-                            button.removeAttribute("aria-busy");
+                            delete button.dataset.removePending;
                         });
                     }
                 );
@@ -631,15 +641,18 @@ Wishlist
     */
 
     function startWishlistLoad() {
+        if (document.getElementById("wishlist-items") !== wishlistItems) {
+            return;
+        }
+
         loadWishlist();
     }
 
-    if (document.readyState === "loading") {
+    if (window.Turbo) {
+        document.addEventListener("turbo:load", startWishlistLoad);
+        startWishlistLoad();
+    } else if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", startWishlistLoad, {
-            once: true
-        });
-    } else if (window.Turbo) {
-        document.addEventListener("turbo:load", startWishlistLoad, {
             once: true
         });
     } else {

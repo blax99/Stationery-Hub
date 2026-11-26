@@ -586,12 +586,15 @@ document.addEventListener("turbo:load", function () {
 
     wishlistButtons.forEach(function (button) {
       button.addEventListener("click", async function () {
+        if (this.dataset.wishlistRequestPending === "true") {
+          return;
+        }
+
         const productId = String(this.dataset.productId);
 
         const wishlistItemId = wishlistMap.get(productId);
 
-        this.disabled = true;
-        this.setAttribute("aria-busy", "true");
+        this.dataset.wishlistRequestPending = "true";
 
         try {
           // =========================
@@ -683,8 +686,7 @@ document.addEventListener("turbo:load", function () {
 
           alert("Unable to update wishlist.");
         } finally {
-          this.disabled = false;
-          this.removeAttribute("aria-busy");
+          delete this.dataset.wishlistRequestPending;
         }
       });
     });
