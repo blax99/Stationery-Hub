@@ -60,11 +60,11 @@
     </style>
 
     <!-- Your Compiled CSS -->
-    <link rel="stylesheet" href="{% static 'css/output.css' %}?v=16" />
+    <link rel="stylesheet" href="{% static 'css/output.css' %}?v=34" />
     <script src="{% static 'js/turbo.js' %}" defer></script>
   </head>
 
- <body class="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">  
+ <body class="min-h-screen flex flex-col {% block page_background %}bg-gray-50 dark:bg-gray-950{% endblock %}">
     {% include "navbar.html" %}
 
     <main class="grow">{% block content %} {% endblock %}</main>
@@ -74,7 +74,9 @@
     <script src="{% static 'js/main.js' %}?v=12" data-turbo-eval="false"></script>
     <script src="{% static 'js/navbar.js' %}?v=12"></script>
     <script>
-  const toggleBtn = document.getElementById('theme-toggle');
+    (() => {
+      const toggleBtn = document.getElementById("theme-toggle");
+      if (!toggleBtn) return;
 
   function updateThemeToggleLabel() {
     const targetTheme = document.documentElement.classList.contains('dark')
@@ -84,14 +86,18 @@
     toggleBtn.title = label;
   }
 
-  updateThemeToggleLabel();
+  if (toggleBtn.dataset.themeToggleInitialized !== "true") {
+    toggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark')
+        ? 'dark' : 'light';
+      updateThemeToggleLabel();
+    });
+    toggleBtn.dataset.themeToggleInitialized = "true";
+  }
 
-  toggleBtn.addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark');
-    localStorage.theme = document.documentElement.classList.contains('dark')
-      ? 'dark' : 'light';
-    updateThemeToggleLabel();
-  });
-</script>   
+  updateThemeToggleLabel();
+})();
+</script>
   </body>
 </html>

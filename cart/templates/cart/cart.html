@@ -148,7 +148,7 @@ Shopping Cart
                 <!-- CHECKOUT -->
                 <a
                     href="{% url 'checkout' %}"
-                    class="block w-full rounded-md bg-slate-800 dark:bg-red-800 text-white py-3 mt-6 text-center text-sm font-medium hover:bg-slate-700 dark:hover:bg-red-700 transition"
+                    class="block w-full rounded-md border border-slate-800 dark:border-red-800 bg-slate-800 dark:bg-red-800 text-white py-3 mt-6 text-center text-sm font-medium hover:border-slate-700 dark:hover:border-red-700 hover:bg-slate-700 dark:hover:bg-red-700 transition"
                 >
                     Proceed to Checkout
                 </a>
@@ -977,7 +977,7 @@ loadCart();
     </p>
     <a
         href="{% url 'login-page' %}?next={% url 'cart' %}"
-        class="mt-6 inline-block bg-slate-800 px-6 py-3 text-sm text-white transition hover:bg-slate-700"
+        class="mt-6 inline-block rounded-md border border-slate-800 dark:border-red-800 bg-slate-800 dark:bg-red-800 px-6 py-3 text-sm text-white transition hover:border-slate-700 dark:hover:border-red-700 hover:bg-slate-700 dark:hover:bg-red-700"
     >
         Log in
     </a>

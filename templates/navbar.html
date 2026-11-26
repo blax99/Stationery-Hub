@@ -124,7 +124,7 @@
 
           <span
             id="cart-count"
-            class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+            class="absolute -top-2 -right-2 min-w-4 h-4 px-1 bg-blue-600 text-white rounded-full text-[10px] flex items-center justify-center"
           >
             0
           </span>
@@ -145,7 +145,7 @@
           <button
             id="accountButton"
             type="button"
-            class="hidden items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm font-medium text-gray-800 dark:text-gray-200 transition hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800"   
+            class="hidden items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm font-medium text-gray-800 dark:text-gray-100 transition hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800"
             aria-expanded="false"
             aria-controls="userDropdown"
             aria-haspopup="menu"
@@ -154,9 +154,9 @@
               class="account-avatar flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
               aria-hidden="true"
             ></span>
-            <span class="account-name overflow-hidden min-w-0 max-w-32 truncate"></span>
+            <span class="account-name overflow-hidden min-w-0 max-w-32 truncate text-gray-800 dark:text-gray-100"></span>
             <i
-              class="account-chevron fa-solid fa-chevron-down text-xs transition-transform"
+              class="account-chevron fa-solid fa-chevron-down text-xs text-gray-500 dark:text-gray-300 transition-transform"
               aria-hidden="true"
             ></i>
           </button>
@@ -168,7 +168,7 @@
           >
             <a
               href="{% url 'profile-page' %}"
-              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
               role="menuitem"
             >
               <i class="fa-regular fa-user w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -177,7 +177,7 @@
 
             <a
               href="{% url 'order_history' %}"
-              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
               role="menuitem"
             >
               <i class="fa-solid fa-box w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -188,7 +188,7 @@
               id="logoutButton"
               type="button"
               role="menuitem"
-              class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
+              class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-700 dark:text-gray-100 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
             >
               <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center text-gray-400" aria-hidden="true"></i>
               Logout
@@ -300,7 +300,7 @@
             <button
               id="mobileAccountButton"
               type="button"
-              class="hidden w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 text-left text-sm font-medium text-gray-800 transition hover:	bg-gray-100 dark:bg-gray-800"
+              class="hidden w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 text-left text-sm font-medium text-gray-800 dark:text-gray-100 transition hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800"
               aria-expanded="false"
               aria-controls="mobileUserDropdown"
               aria-haspopup="menu"
@@ -309,9 +309,9 @@
                 class="account-avatar flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
                 aria-hidden="true"
               ></span>
-              <span class="account-name overflow-hidden min-w-0 max-w-32 truncate"></span>
+              <span class="account-name overflow-hidden min-w-0 max-w-32 truncate text-gray-800 dark:text-gray-100"></span>
               <i
-                class="account-chevron fa-solid fa-chevron-down text-xs transition-transform"
+                class="account-chevron fa-solid fa-chevron-down text-xs text-gray-500 dark:text-gray-300 transition-transform"
                 aria-hidden="true"
               ></i>
             </button>
@@ -323,7 +323,7 @@
             >
               <a
                 href="{% url 'profile-page' %}"
-                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
                 role="menuitem"
               >
                 <i class="fa-regular fa-user w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -331,7 +331,7 @@
               </a>
               <a
                 href="{% url 'order_history' %}"
-                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
                 role="menuitem"
               >
                 <i class="fa-solid fa-box w-4 text-center text-gray-400" aria-hidden="true"></i>
@@ -340,7 +340,7 @@
               <button
                 type="button"
                 role="menuitem"
-                class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
+                class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-700 dark:text-gray-100 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
               >
                 <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center text-gray-400" aria-hidden="true"></i>
                 Logout

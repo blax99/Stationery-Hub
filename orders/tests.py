@@ -2,7 +2,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -62,6 +62,46 @@ class CheckoutFlowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f"Order #{order.id:04d}")
+
+    @override_settings(
+        STORAGES={
+            "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+            "staticfiles": {
+                "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+            },
+        }
+    )
+    def test_empty_order_history_links_to_products(self):
+        self.user.is_email_verified = True
+        self.user.save(update_fields=["is_email_verified"])
+
+        response = self.client.get(reverse("order_history"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No orders yet")
+        self.assertContains(response, "Browse our stationery collection")
+        self.assertContains(response, reverse("products:product_list"))
+        self.assertContains(response, "order-action order-action-primary")
+
+    @override_settings(
+        STORAGES={
+            "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+            "staticfiles": {
+                "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+            },
+        }
+    )
+    def test_active_order_progress_step_is_green_in_dark_mode(self):
+        self.user.is_email_verified = True
+        self.user.save(update_fields=["is_email_verified"])
+        Order.objects.create(user=self.user, total_amount=Decimal("50.00"))
+
+        response = self.client.get(reverse("order_history"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "order-progress-step-active")
+        self.assertContains(response, ".dark .order-progress-step-active")
+        self.assertContains(response, "background: #16a34a;")
 
     def test_place_order_creates_order_and_clears_cart(self):
         response = self.client.post(
