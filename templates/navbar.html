@@ -78,29 +78,23 @@
 
       <!-- Right Section -->
       <div class="flex items-center gap-3 sm:gap-5">
-        <!-- Search -->
-        <div class="hidden sm:block relative w-8 h-8">
-          <button
-            id="searchButton"
-            type="button"
-            class="absolute inset-0 flex items-center justify-center 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-blue-600 transition cursor-pointer"
-            aria-label="Search"
-          >
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-
-          <div
-            id="searchBox"
-            class="hidden absolute right-0 top-1/2 -translate-y-1/2 z-50"
-          >
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Search..."
-             class="sm:w-[4vw] md:w-[12vw] lg:w-[22vw] h-9 text-sm px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"   
-            />
-          </div>
-        </div>
+        <button
+          id="theme-toggle"
+          type="button"
+          class="text-gray-700 dark:text-gray-300 hover:text-blue-600 transition cursor-pointer"
+          aria-label="Switch to dark mode"
+          title="Switch to dark mode"
+        >
+          <span class="relative flex h-5 w-5 items-center justify-center" aria-hidden="true">
+            <svg class="absolute hidden h-5 w-5 text-amber-400 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+            </svg>
+            <svg class="absolute block h-5 w-5 text-indigo-400 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"></path>
+            </svg>
+          </span>
+        </button>
 
         <!-- Wishlist -->
         <a
@@ -135,15 +129,6 @@
             0
           </span>
         </a>
-         <button
-          id="theme-toggle"
-          type="button"
-          class="	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-blue-600 transition cursor-pointer"
-          aria-label="Toggle dark mode"
-          title="Toggle dark mode"
-        >
-          <i class="fa-solid fa-moon"></i>
-        </button>
         <!-- User Menu -->
         <div id="userMenu" class="relative hidden sm:block">
           <a

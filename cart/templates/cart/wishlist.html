@@ -15,12 +15,12 @@ Wishlist
                 My Wishlist
             </h1>
 
-            <p id="wishlist-subtitle" class="text-xs text-gray-500 mt-1">
+            <p id="wishlist-subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 0 saved items
             </p>
         </div>
 
-        <span id="wishlist-count" class="text-xs text-gray-500">
+        <span id="wishlist-count" class="text-xs text-gray-500 dark:text-gray-400">
             0 items
         </span>
     </div>
@@ -31,7 +31,7 @@ Wishlist
         id="wishlist-items"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
     >
-        <p class="col-span-full text-center text-gray-500 py-20">
+        <p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-20">
             Loading wishlist...
         </p>
     </section>
@@ -44,11 +44,11 @@ Wishlist
             ♡
         </div>
 
-        <h2 class="text-2xl font-normal">
+        <h2 class="text-2xl font-normal text-gray-900 dark:text-white">
             Your wishlist is empty
         </h2>
 
-        <p class="text-gray-500 mt-3">
+        <p class="text-gray-500 dark:text-gray-400 mt-3">
             Save products you love and find them here later.
         </p>
 
@@ -66,8 +66,6 @@ Wishlist
 
 <script>
 (function initializeWishlistPage() {
-
-    const token = localStorage.getItem("access_token");
 
     const wishlistItems =
         document.getElementById("wishlist-items");
@@ -134,12 +132,7 @@ Wishlist
 
     function loadWishlist() {
 
-        fetch("/wishlist/api/", {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        })
+        window.stationeryApiFetch("/wishlist/api/")
 
         .then(function (response) {
 
@@ -191,7 +184,7 @@ Wishlist
             );
 
             wishlistItems.innerHTML = `
-                <p class="col-span-full text-center text-red-500 py-20">
+                <p class="col-span-full text-center text-red-500 dark:text-red-400 py-20">
                     Failed to load wishlist.
                 </p>
             `;
@@ -238,7 +231,7 @@ Wishlist
         const categoryHTML = item.category
             ?
             `
-                <p class="text-sm text-gray-500 mt-1">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     ${item.category}
                 </p>
             `
@@ -252,13 +245,13 @@ Wishlist
 
                 ${imageHTML}
 
-                <h3 class="text-lg font-normal">
+                <h3 class="text-lg font-normal text-gray-900 dark:text-white">
                     ${item.product}
                 </h3>
 
                 ${categoryHTML}
 
-                <p class="text-lg mt-3">
+                <p class="text-lg mt-3 text-gray-900 dark:text-gray-100">
                     Rs. ${item.price}
                 </p>
 
@@ -266,7 +259,7 @@ Wishlist
 
                     <button
                         type="button"
-                        class="add-to-cart w-full bg-slate-800 text-white py-2 text-sm hover:bg-slate-700 transition"
+                        class="add-to-cart w-full rounded-md bg-slate-800 dark:bg-red-800 text-white py-2 text-sm hover:bg-slate-700 dark:hover:bg-red-700 transition"
                         data-product-id="${item.product_id}"
                     >
                         Move to Cart
@@ -284,8 +277,8 @@ Wishlist
     class="remove-wishlist absolute top-3 right-3
            w-8 h-8 rounded-full
            flex items-center justify-center
-           	bg-gray-100 dark:bg-gray-800 text-gray-500
-           hover:bg-red-50 hover:text-red-600
+           bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300
+           hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-300
            transition duration-200
            text-lg font-medium"
     data-item-id="${item.id}"
@@ -325,15 +318,11 @@ Wishlist
                         button.disabled = true;
                         button.setAttribute("aria-busy", "true");
 
-                        fetch("/wishlist/api/", {
+                        window.stationeryApiFetch("/wishlist/api/", {
                             method: "DELETE",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json",
-
-                                "Authorization":
-                                    "Bearer " + token
+                                "Content-Type": "application/json"
                             },
 
                             body: JSON.stringify({
@@ -451,17 +440,13 @@ Wishlist
                         ========================= */
 
                         const cartResponse =
-                            await fetch(
+                            await window.stationeryApiFetch(
                                 "/cart/items/",
                                 {
                                     method: "POST",
 
                                     headers: {
-                                        "Content-Type":
-                                            "application/json",
-
-                                        "Authorization":
-                                            "Bearer " + token
+                                        "Content-Type": "application/json"
                                     },
 
                                     body: JSON.stringify({
@@ -494,17 +479,13 @@ Wishlist
                         ========================= */
 
                         const wishlistResponse =
-                            await fetch(
+                            await window.stationeryApiFetch(
                                 "/wishlist/api/",
                                 {
                                     method: "DELETE",
 
                                     headers: {
-                                        "Content-Type":
-                                            "application/json",
-
-                                        "Authorization":
-                                            "Bearer " + token
+                                        "Content-Type": "application/json"
                                     },
 
                                     body: JSON.stringify({
@@ -617,18 +598,6 @@ Wishlist
     ========================================
     */
 
-    if (!token) {
-
-        wishlistItems.innerHTML = "";
-
-        updateWishlistCount(0);
-
-        showEmptyWishlist();
-
-        return;
-    }
-
-
     /*
     ========================================
     START
@@ -641,7 +610,7 @@ Wishlist
 </script>
 {% else %}
 <div class="mx-auto max-w-2xl px-6 py-20 text-center">
-    <div class="mb-5 text-5xl text-gray-400" aria-hidden="true">♡</div>
+    <div class="mb-5 text-5xl text-gray-400 dark:text-gray-500" aria-hidden="true">♡</div>
     <h1 class="text-2xl font-serif font-bold 	text-gray-900 dark:text-white">
         Log in to view your wishlist
     </h1>

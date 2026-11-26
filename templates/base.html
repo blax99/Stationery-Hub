@@ -60,7 +60,7 @@
     </style>
 
     <!-- Your Compiled CSS -->
-    <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/output.css' %}?v=15" />
     <script src="{% static 'js/turbo.js' %}" defer></script>
   </head>
 
@@ -75,20 +75,22 @@
     <script src="{% static 'js/navbar.js' %}?v=12"></script>
     <script>
   const toggleBtn = document.getElementById('theme-toggle');
-  const icon = toggleBtn.querySelector('i');
 
-  function updateIcon() {
-    const isDark = document.documentElement.classList.contains('dark');
-    icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  function updateThemeToggleLabel() {
+    const targetTheme = document.documentElement.classList.contains('dark')
+      ? 'light' : 'dark';
+    const label = `Switch to ${targetTheme} mode`;
+    toggleBtn.setAttribute('aria-label', label);
+    toggleBtn.title = label;
   }
 
-  updateIcon();
+  updateThemeToggleLabel();
 
   toggleBtn.addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
     localStorage.theme = document.documentElement.classList.contains('dark')
       ? 'dark' : 'light';
-    updateIcon();
+    updateThemeToggleLabel();
   });
 </script>   
   </body>
