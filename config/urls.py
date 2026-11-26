@@ -20,6 +20,7 @@ urlpatterns = [
     ),
     path("wishlist/", views.wishlist, name="wishlist"),
     path("wishlist/api/", include("cart.wishlist_api_urls")),
+    path("chatbot/", include("chatbot.urls"))
 ]
 
 

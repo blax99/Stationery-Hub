@@ -1,0 +1,66 @@
+<style>
+    #cb-toggle { position: fixed; right: 20px; bottom: 20px; width: 56px; height: 56px;
+        border: none; border-radius: 50%; background: #2563eb; color: white;
+        font-size: 26px; cursor: pointer; z-index: 9999; }
+    #cb-box { position: fixed; right: 20px; bottom: 88px; width: 300px; max-width: calc(100vw - 40px);
+        background: white; color: black; border: 1px solid #ccc; border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999; overflow: hidden; }
+    #cb-box[hidden] { display: none; }
+    #cb-header { background: #2563eb; color: white; padding: 10px; font-weight: bold; }
+    #cb-messages { height: 250px; overflow-y: auto; padding: 10px; font-size: 14px; }
+    #cb-messages p { margin-bottom: 8px; }
+    #cb-form { display: flex; gap: 6px; padding: 8px; border-top: 1px solid #ccc; }
+    #cb-input { flex: 1; min-width: 0; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+    #cb-send { padding: 6px 12px; border: none; border-radius: 4px; background: #2563eb; color: white; }
+</style>
+
+<div id="cb-box" hidden>
+    <div id="cb-header">Stationery Hub Chat</div>
+    <div id="cb-messages">
+        <p>Bot: Hello! How can I help?</p>
+    </div>
+    <form id="cb-form" method="post" action="{% url 'chat_reply' %}">
+        {% csrf_token %}
+        <input id="cb-input" type="text" name="message" placeholder="Type a message..." required>
+        <button id="cb-send" type="submit">Send</button>
+    </form>
+</div>
+
+<button id="cb-toggle" type="button" aria-label="Open or close chat">&#128172;</button>
+
+<script>
+(() => {
+    const box = document.getElementById("cb-box");
+    const form = document.getElementById("cb-form");
+    const input = document.getElementById("cb-input");
+    const messages = document.getElementById("cb-messages");
+
+    document.getElementById("cb-toggle").addEventListener("click", () => {
+        box.hidden = !box.hidden;
+        if (!box.hidden) input.focus();
+    });
+
+    function addMessage(sender, text) {
+        const p = document.createElement("p");
+        p.textContent = sender + ": " + text;
+        messages.appendChild(p);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        addMessage("You", input.value);
+        form.reset();
+
+        try {
+            const response = await fetch(form.action, { method: "POST", body: data });
+            if (!response.ok) throw new Error();
+            const result = await response.json();
+            addMessage("Bot", result.reply);
+        } catch {
+            addMessage("Bot", "Something went wrong. Please try again.");
+        }
+    });
+})();
+</script>
