@@ -1,0 +1,354 @@
+<nav
+  id="site-navbar"
+  data-turbo-permanent
+  class="	bg-white dark:bg-gray-800 shadow-md px-4 py-4 sm:px-6 font-navbar"
+>
+  <div class="max-w-7xl mx-auto">
+    <!-- Main Navbar -->
+    <div class="flex items-center justify-between gap-3">
+      <!-- Logo -->
+      <a
+  href="/"
+ class="text-xl sm:text-2xl font-bold tracking-tight text-gray-800 dark:text-white whitespace-nowrap"   
+>
+  StationeryHub<span class="text-blue-600 dark:text-blue-400">.</span>
+</a>   
+
+      <!-- Desktop Nav Links -->
+      <ul class="hidden md:flex items-center gap-8 	text-gray-700 dark:text-gray-300 dark:text-gray-300 font-medium">
+        <li>
+          <a
+            href="/"
+            class="text-lg hover:text-blue-600 transition font-semibold"
+          >
+            Home
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% url 'products:product_list' %}"
+            class="text-lg hover:text-blue-600 transition font-semibold"
+          >
+            Products
+          </a>
+        </li>
+
+        <!-- Categories -->
+        <li class="relative">
+          <button
+            id="categoriesButton"
+            type="button"
+            class="text-lg hover:text-blue-600 transition flex items-center gap-1 font-semibold"
+            aria-expanded="false"
+            aria-controls="categoriesDropdown"
+          >
+            Categories
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </button>
+
+          <div
+            id="categoriesDropdown"
+            class="absolute left-0 top-full w-48 pt-2 hidden z-50"
+          >
+            <div class="	bg-white dark:bg-gray-800 rounded-md shadow-lg py-2">
+              <a
+                href="{% url 'products:product_list' %}"
+                class="block px-4 py-2 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300"
+              >
+                All Categories
+              </a>
+
+              {% for cat in nav_categories %}
+              <a
+                href="{% url 'products:product_list_by_category' cat.slug %}"
+                class="block px-4 py-2 text-sm 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300"
+              >
+                {{ cat.name }}
+              </a>
+              {% empty %}
+              <span class="block px-4 py-2 text-sm text-gray-400">
+                No categories
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Right Section -->
+      <div class="flex items-center gap-3 sm:gap-5">
+        <button
+          id="theme-toggle"
+          type="button"
+          class="text-gray-700 dark:text-gray-300 hover:text-blue-600 transition cursor-pointer"
+          aria-label="Switch to dark mode"
+          title="Switch to dark mode"
+        >
+          <span class="relative flex h-5 w-5 items-center justify-center" aria-hidden="true">
+            <svg class="absolute hidden h-5 w-5 text-amber-400 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+            </svg>
+            <svg class="absolute block h-5 w-5 text-indigo-400 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"></path>
+            </svg>
+          </span>
+        </button>
+
+        <!-- Wishlist -->
+        <a
+          href="{% url 'wishlist' %}"
+          class="relative 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-red-500 transition cursor-pointer"
+          aria-label="Wishlist"
+          title="Wishlist"
+        >
+          <i class="fa-regular fa-heart"></i>
+
+          <span
+            id="wishlist-nav-count"
+            class="absolute -top-2 -right-2 min-w-4 h-4 px-1 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center"
+          >
+            0
+          </span>
+        </a>
+
+        <!-- Cart -->
+        <a
+          href="{% url 'cart' %}"
+          class="relative 	text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-blue-600 transition cursor-pointer"
+          aria-label="Cart"
+          title="Cart"
+        >
+          <i class="fa-solid fa-cart-shopping"></i>
+
+          <span
+            id="cart-count"
+            class="absolute -top-2 -right-2 min-w-4 h-4 px-1 bg-blue-600 text-white rounded-full text-[10px] flex items-center justify-center"
+          >
+            0
+          </span>
+        </a>
+        <!-- User Menu -->
+        <div id="userMenu" class="relative hidden sm:block">
+          <a
+            id="authLink"
+            href="{% url 'login-page' %}"
+            data-profile-url="{% url 'profile' %}"
+            data-profile-page="{% url 'profile-page' %}"
+            data-login-page="{% url 'login-page' %}"
+            data-logout-url="{% url 'logout' %}"
+            class="border border-black dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white px-3 sm:px-4 py-1.5 rounded-lg hover:bg-black hover:text-white dark:hover:bg-gray-700 transition text-sm font-medium cursor-pointer text-center"   
+           > Sign In
+          </a>
+
+          <button
+            id="accountButton"
+            type="button"
+            class="hidden items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm font-medium text-gray-800 dark:text-gray-100 transition hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800"
+            aria-expanded="false"
+            aria-controls="userDropdown"
+            aria-haspopup="menu"
+          >
+            <span
+              class="account-avatar flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
+              aria-hidden="true"
+            ></span>
+            <span class="account-name overflow-hidden min-w-0 max-w-32 truncate text-gray-800 dark:text-gray-100"></span>
+            <i
+              class="account-chevron fa-solid fa-chevron-down text-xs text-gray-500 dark:text-gray-300 transition-transform"
+              aria-hidden="true"
+            ></i>
+          </button>
+
+          <div
+            id="userDropdown"
+            class="hidden absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	bg-white dark:bg-gray-800 p-2 shadow-lg"
+            role="menu"
+          >
+            <a
+              href="{% url 'profile-page' %}"
+              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+              role="menuitem"
+            >
+              <i class="fa-regular fa-user w-4 text-center text-gray-400" aria-hidden="true"></i>
+              Profile
+            </a>
+
+            <a
+              href="{% url 'order_history' %}"
+              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+              role="menuitem"
+            >
+              <i class="fa-solid fa-box w-4 text-center text-gray-400" aria-hidden="true"></i>
+              Orders
+            </a>
+
+            <button
+              id="logoutButton"
+              type="button"
+              role="menuitem"
+              class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-700 dark:text-gray-100 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
+            >
+              <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center text-gray-400" aria-hidden="true"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <form id="logout-csrf-form" class="hidden">{% csrf_token %}</form>
+
+        <!-- Mobile Hamburger -->
+        <button
+          id="menuButton"
+          type="button"
+          class="md:hidden 	text-gray-700 dark:text-gray-300 dark:text-gray-300 text-xl ml-1"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+          aria-controls="mobileMenu"
+        >
+          <i id="menuIcon" class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div id="mobileMenu" class="hidden md:hidden mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">   
+      <ul class="flex flex-col gap-4 	text-gray-700 dark:text-gray-300 dark:text-gray-300 font-medium">
+        <li>
+          <a
+            href="/"
+            class="block text-lg hover:text-blue-600 transition font-semibold"
+          >
+            Home
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% url 'products:product_list' %}"
+            class="block text-lg hover:text-blue-600 transition font-semibold"
+          >
+            Products
+          </a>
+        </li>
+
+        <li>
+          <button
+            id="mobileCategoriesButton"
+            type="button"
+            class="flex w-full items-center justify-between text-lg font-semibold"
+            aria-expanded="false"
+            aria-controls="mobileCategoriesDropdown"
+          >
+            Categories
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </button>
+
+          <div
+            id="mobileCategoriesDropdown"
+            class="hidden pl-4 pt-2 flex-col gap-2 text-sm"
+          >
+            <a
+              href="{% url 'products:product_list' %}"
+              class="block rounded px-2 py-1 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300 transition"
+            >
+              All Products
+            </a>
+
+            {% for cat in nav_categories %}
+            <a
+              href="{% url 'products:product_list_by_category' cat.slug %}"
+              class="block rounded px-2 py-1 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-300 transition"
+            >
+              {{ cat.name }}
+            </a>
+            {% empty %}
+            <span class="text-gray-400"> No categories </span>
+            {% endfor %}
+          </div>
+        </li>
+
+        <li>
+          <a
+            href="{% url 'wishlist' %}"
+            class="block hover:text-blue-600 transition"
+          >
+            Wishlist
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% url 'cart' %}"
+            class="block hover:text-blue-600 transition"
+          >
+            Cart
+          </a>
+        </li>
+
+        <li>
+          <div id="mobileUserMenu" class="relative">
+            <a
+              id="mobileAuthLink"
+              href="{% url 'login-page' %}"
+              class="block hover:text-blue-600 transition cursor-pointer"
+            >
+              Sign In
+            </a>
+
+            <button
+              id="mobileAccountButton"
+              type="button"
+              class="hidden w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 text-left text-sm font-medium text-gray-800 dark:text-gray-100 transition hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800"
+              aria-expanded="false"
+              aria-controls="mobileUserDropdown"
+              aria-haspopup="menu"
+            >
+              <span
+                class="account-avatar flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
+                aria-hidden="true"
+              ></span>
+              <span class="account-name overflow-hidden min-w-0 max-w-32 truncate text-gray-800 dark:text-gray-100"></span>
+              <i
+                class="account-chevron fa-solid fa-chevron-down text-xs text-gray-500 dark:text-gray-300 transition-transform"
+                aria-hidden="true"
+              ></i>
+            </button>
+
+            <div
+              id="mobileUserDropdown"
+              class="hidden mt-2 w-full flex-col rounded-xl border 	border-gray-200 dark:border-gray-700 dark:border-gray-700 	bg-white dark:bg-gray-800 p-2 shadow-sm"
+              role="menu"
+            >
+              <a
+                href="{% url 'profile-page' %}"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+                role="menuitem"
+              >
+                <i class="fa-regular fa-user w-4 text-center text-gray-400" aria-hidden="true"></i>
+                Profile
+              </a>
+              <a
+                href="{% url 'order_history' %}"
+                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300"
+                role="menuitem"
+              >
+                <i class="fa-solid fa-box w-4 text-center text-gray-400" aria-hidden="true"></i>
+                Orders
+              </a>
+              <button
+                type="button"
+                role="menuitem"
+                class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-700 dark:text-gray-100 transition hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
+              >
+                <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center text-gray-400" aria-hidden="true"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

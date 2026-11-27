@@ -1,0 +1,298 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stationery Hub - Admin</title>
+    <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="	bg-gray-100">
+    <div class="flex min-h-screen flex-col md:flex-row">
+      {% include "admin_dashboard/_sidebar.html" with active_page="inventory" %}
+
+      <!-- Main Content -->
+      <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
+        <form id="csrfForm" class="hidden">{% csrf_token %}</form>
+
+        <!-- Header -->
+        <div class="mb-8">
+          <h2 class="text-3xl font-bold text-gray-800">Inventory</h2>
+
+          <p class="text-gray-500 mt-1">Monitor and manage product stock</p>
+        </div>
+
+        <!-- Inventory Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="	bg-white  p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Total Products</p>
+
+            <h3
+              id="totalProducts"
+              class="text-3xl font-bold text-gray-800 mt-2"
+            >
+              {{ total_products }}
+            </h3>
+          </div>
+
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Low Stock</p>
+
+            <h3 id="lowStock" class="text-3xl font-bold text-gray-800 mt-2">
+              {{ low_stock_count }}
+            </h3>
+          </div>
+
+          <div class="	bg-white  p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm">Out of Stock</p>
+
+            <h3 id="outOfStock" class="text-3xl font-bold text-gray-800 mt-2">
+              {{ out_of_stock_count }}
+            </h3>
+          </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div
+          class="	bg-white  p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
+        >
+          <form method="get" class="flex flex-col gap-3 sm:flex-row sm:gap-4">
+            <input
+              id="inventorySearch"
+              type="text"
+              name="q"
+              value="{{ search_query }}"
+              placeholder="Search products..."
+              class="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+            />
+
+            <select
+              id="stockFilter"
+              name="status"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 sm:w-auto"
+            >
+              <option value="">All Stock Status</option>
+              <option value="in_stock" {% if selected_stock_status == "in_stock" %}selected{% endif %}>In Stock</option>
+              <option value="low_stock" {% if selected_stock_status == "low_stock" %}selected{% endif %}>Low Stock</option>
+              <option value="out_of_stock" {% if selected_stock_status == "out_of_stock" %}selected{% endif %}>Out of Stock</option>
+            </select>
+
+            <button
+              id="inventorySearchBtn"
+              type="submit"
+              class="w-full rounded-lg bg-gray-800 px-6 py-3 text-white transition hover:bg-gray-700 sm:w-auto"
+            >
+              Search
+            </button>
+          </form>
+        </div>
+
+        <!-- Inventory Table -->
+        <div
+          class="	bg-white  rounded-xl shadow-sm overflow-hidden border border-gray-100"
+        >
+          <div class="p-5 border-b">
+            <h3 class="text-xl font-semibold text-gray-800">Stock Overview</h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+              Monitor current stock levels of products
+            </p>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[600px] text-left">
+              <thead class="bg-gray-50 border-b">
+                <tr>
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600">
+                    Product
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600">
+                    Category
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Stock
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Status
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody id="inventoryTableBody">
+                {% for product in products %}
+
+                <tr
+                  class="border-t hover:bg-gray-50  transition"
+                  data-id="{{ product.id }}"
+                  data-name="{{ product.name }}"
+                >
+                  <td class="px-6 py-4 font-medium text-gray-800">
+                    {{ product.name }}
+                  </td>
+
+                  <td class="px-6 py-4 	text-gray-600 ">
+                    {{ product.category.name }}
+                  </td>
+
+                  <td class="px-6 py-4 	text-gray-700 font-medium">
+                    <span class="stock-quantity"> {{ product.stock }} </span>
+                  </td>
+
+                  <td class="px-6 py-4">
+                    <span
+                      class="stock-status px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                    </span>
+                  </td>
+
+                  <td class="px-6 py-4">
+                    <button
+                      type="button"
+                      class="update-stock-btn text-blue-600 hover:text-blue-800 font-medium transition"
+                    >
+                      Update Stock
+                    </button>
+                  </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                  <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                    No products found.
+                  </td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% include "admin_dashboard/_pagination.html" %}
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const inventoryTableBody = document.getElementById("inventoryTableBody");
+
+      /* Update stock status */
+
+      function updateAllStockStatuses() {
+        const products = inventoryTableBody.querySelectorAll("tr[data-id]");
+
+        products.forEach(function (product) {
+          const quantityElement = product.querySelector(".stock-quantity");
+
+          const statusElement = product.querySelector(".stock-status");
+
+          const quantity = parseInt(quantityElement.textContent.trim());
+
+          if (isNaN(quantity)) {
+            return;
+          }
+
+          if (quantity === 0) {
+            statusElement.textContent = "Out of Stock";
+
+            statusElement.className =
+              "stock-status bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium";
+          } else if (quantity <= 10) {
+            statusElement.textContent = "Low Stock";
+
+            statusElement.className =
+              "stock-status bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium";
+          } else {
+            statusElement.textContent = "In Stock";
+
+            statusElement.className =
+              "stock-status bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium";
+          }
+        });
+      }
+
+      /* Update stock buttons */
+
+      const updateStockButtons = document.querySelectorAll(".update-stock-btn");
+
+      updateStockButtons.forEach(function (button) {
+        button.addEventListener("click", async function () {
+          const productRow = button.closest("tr");
+
+          const productName = productRow.cells[0].textContent.trim();
+          const quantityElement = productRow.querySelector(".stock-quantity");
+          const currentQuantity = parseInt(quantityElement.textContent.trim());
+          const result = await window.showAdminConfirmation({
+            title: "Update stock quantity",
+            message: `Set a new stock quantity for ${productName}.`,
+            confirmLabel: "Update stock",
+            inputLabel: "New stock quantity",
+            inputValue: currentQuantity,
+          });
+          if (!result?.confirmed) return;
+
+          const quantity = Number(result.value);
+          if (!Number.isInteger(quantity) || quantity < 0) {
+            window.showAdminConfirmation({
+              title: "Invalid quantity",
+              message: "Enter a whole number that is zero or greater.",
+              confirmLabel: "Close",
+              showCancel: false,
+            });
+            return;
+          }
+
+          const form = document.createElement("form");
+
+          form.method = "POST";
+          form.action = "";
+
+          const csrfToken = document.querySelector(
+            "[name=csrfmiddlewaretoken]",
+          ).value;
+
+          const csrfInput = document.createElement("input");
+
+          csrfInput.type = "hidden";
+          csrfInput.name = "csrfmiddlewaretoken";
+          csrfInput.value = csrfToken;
+
+          const productIdInput = document.createElement("input");
+
+          productIdInput.type = "hidden";
+          productIdInput.name = "product_id";
+          productIdInput.value = productRow.dataset.id;
+
+          const stockInput = document.createElement("input");
+
+          stockInput.type = "hidden";
+          stockInput.name = "stock";
+          stockInput.value = quantity;
+
+          form.appendChild(csrfInput);
+          form.appendChild(productIdInput);
+          form.appendChild(stockInput);
+
+          document.body.appendChild(form);
+
+          button.disabled = true;
+          button.setAttribute("aria-busy", "true");
+          form.submit();
+        });
+      });
+
+      /* Initial page load */
+
+      updateAllStockStatuses();
+    </script>
+  </body>
+</html>

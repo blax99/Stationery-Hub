@@ -1,0 +1,586 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stationery Hub - Admin</title>
+    <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="	bg-gray-100 text-gray-800">
+    <div class="flex min-h-screen flex-col md:flex-row">
+      {% include "admin_dashboard/_sidebar.html" with active_page="orders" %}
+
+      <!-- Main Content -->
+      <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
+        <form id="csrfForm" class="hidden">{% csrf_token %}</form>
+
+        <!-- Header -->
+        <div class="mb-8">
+          <h2 class="text-3xl font-bold text-gray-800">Orders</h2>
+          <p class="text-gray-500 mt-1">
+            Manage customer orders and track their status
+          </p>
+        </div>
+
+        <!-- Order Statistics -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Total Orders</p>
+            <h3 class="text-3xl font-bold mt-2 text-gray-800">
+              {{ total_orders }}
+            </h3>
+          </div>
+
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Pending</p>
+            <h3 class="text-3xl font-bold mt-2 text-yellow-600">
+              {{ pending_orders }}
+            </h3>
+          </div>
+
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Confirmed</p>
+            <h3 class="text-3xl font-bold mt-2 text-blue-600">
+              {{ confirmed_orders }}
+            </h3>
+          </div>
+
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Shipped</p>
+            <h3 class="text-3xl font-bold mt-2 text-purple-600">
+              {{ shipped_orders }}
+            </h3>
+          </div>
+
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Delivered</p>
+            <h3 class="text-3xl font-bold mt-2 text-green-600">
+              {{ delivered_orders }}
+            </h3>
+          </div>
+
+          <div class="	bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Cancelled</p>
+            <h3 class="text-3xl font-bold mt-2 text-red-600">
+              {{ cancelled_orders }}
+            </h3>
+          </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div
+          class="	bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6"
+        >
+          <form method="get" class="flex flex-col gap-3 lg:flex-row lg:gap-4">
+            <input
+              id="orderSearch"
+              type="text"
+              name="q"
+              value="{{ search_query }}"
+              placeholder="Search by order ID or customer..."
+              class="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+            />
+
+            <select
+              id="orderStatusFilter"
+              name="status"
+              onchange="this.form.submit()"
+              class="w-full rounded-lg border border-gray-300 	bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 lg:w-auto"
+            >
+              <option value="">All Status</option>
+              <option value="pending" {% if selected_order_status == "pending" %}selected{% endif %}>Pending</option>
+              <option value="confirmed" {% if selected_order_status == "confirmed" %}selected{% endif %}>Confirmed</option>
+              <option value="shipped" {% if selected_order_status == "shipped" %}selected{% endif %}>Shipped</option>
+              <option value="delivered" {% if selected_order_status == "delivered" %}selected{% endif %}>Delivered</option>
+              <option value="cancelled" {% if selected_order_status == "cancelled" %}selected{% endif %}>Cancelled</option>
+            </select>
+
+            <button
+              id="orderSearchBtn"
+              type="submit"
+              class="w-full rounded-lg bg-gray-800 px-6 py-3 text-white transition hover:bg-gray-700 lg:w-auto"
+            >
+              Search
+            </button>
+          </form>
+        </div>
+
+        <!-- Orders Table -->
+        <div
+          class="	bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+        >
+          <div class="p-5 border-b border-gray-100">
+            <h3 class="text-xl font-semibold">Recent Orders</h3>
+            <p class="text-sm text-gray-500 mt-1">
+              View and manage customer orders
+            </p>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[760px] text-left">
+              <thead class="bg-gray-50 ">
+                <tr>
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Order ID
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Customer
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Date
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Total
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Status
+                  </th>
+
+                  <th class="px-6 py-4 text-sm font-semibold 	text-gray-600 ">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody id="ordersTableBody">
+                {% for order in orders %}
+
+                <tr
+                  class="border-t border-gray-100 order-row hover:bg-gray-50  transition"
+                  data-order-id="{{ order.id }}"
+                  data-customer="{{ order.user.username|lower }}"
+                  data-status="{{ order.get_status_display|lower }}"
+                >
+                  <td class="px-6 py-4 font-semibold text-gray-800">
+                    #ORD-{{ order.id }}
+                  </td>
+
+                  <td class="px-6 py-4 	text-gray-700 ">
+                    {{ order.user.username }}
+                  </td>
+
+                  <td class="px-6 py-4 	text-gray-600 ">
+                    {{ order.created_at|date:"M d, Y" }}
+                  </td>
+
+                  <td class="px-6 py-4 font-medium text-gray-800">
+                    Rs. {{ order.total_amount }}
+                  </td>
+
+                  <td class="px-6 py-4">
+                    {% if order.status == "pending" %}
+
+                    <span
+                      class="inline-flex bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      Pending
+                    </span>
+
+                    {% elif order.status == "confirmed" %}
+
+                    <span
+                      class="inline-flex bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      Confirmed
+                    </span>
+
+                    {% elif order.status == "shipped" %}
+
+                    <span
+                      class="inline-flex bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      Shipped
+                    </span>
+
+                    {% elif order.status == "delivered" %}
+
+                    <span
+                      class="inline-flex bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      Delivered
+                    </span>
+
+                    {% elif order.status == "cancelled" %}
+
+                    <span
+                      class="inline-flex bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      Cancelled
+                    </span>
+
+                    {% endif %}
+                  </td>
+
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3 whitespace-nowrap">
+                      <button
+                        type="button"
+                        class="view-order-btn text-blue-600 hover:text-blue-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                        data-customer="{{ order.user.username }}"
+                        data-date="{{ order.created_at|date:'M d, Y' }}"
+                        data-total="{{ order.total_amount }}"
+                        data-status="{{ order.get_status_display }}"
+                        data-items='[
+                      {% for item in order.items.all %}
+                      {
+                        "name": "{{ item.product_name|escapejs }}",
+                        "quantity": {{ item.quantity }},
+                        "price": "{{ item.price }}"
+                      }{% if not forloop.last %},{% endif %}
+                      {% endfor %}
+                    ]'
+                        data-full-name="{{ order.shipping_address.full_name|default:''|escapejs }}"
+                        data-address="{{ order.shipping_address.address|default:''|escapejs }}"
+                        data-city="{{ order.shipping_address.city|default:''|escapejs }}"
+                        data-phone="{{ order.shipping_address.phone|default:''|escapejs }}"
+                      >
+                        View
+                      </button>
+
+                      {% if order.status == "pending" %}
+
+                      <button
+                        type="button"
+                        class="approve-order-btn text-green-600 hover:text-green-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                      >
+                        Approve
+                      </button>
+
+                      {% elif order.status == "confirmed" %}
+
+                      <button
+                        type="button"
+                        class="ship-order-btn text-blue-600 hover:text-blue-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                      >
+                        Ship
+                      </button>
+
+                      {% elif order.status == "shipped" %}
+
+                      <button
+                        type="button"
+                        class="deliver-order-btn text-green-600 hover:text-green-800 font-medium"
+                        data-order-id="{{ order.id }}"
+                      >
+                        Deliver
+                      </button>
+
+                      {% elif order.status == "delivered" %}
+
+                      <span class="text-gray-400 font-medium"> Delivered </span>
+
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                  <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                    No orders found.
+                  </td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% include "admin_dashboard/_pagination.html" %}
+        </div>
+      </main>
+
+      <!-- View Order Modal -->
+      <div
+        id="viewOrderModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"
+      >
+        <div
+          class="	bg-white  rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        >
+          <div
+            class="flex justify-between items-center p-6 border-b border-gray-100"
+          >
+            <div>
+              <h2 class="text-2xl font-bold text-gray-800">Order Details</h2>
+              <p class="text-sm text-gray-500 mt-1">
+                Review customer order information
+              </p>
+            </div>
+
+            <button
+              type="button"
+              id="closeViewOrderModal"
+              class="text-gray-400 hover:	text-gray-700 text-2xl transition"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div class="p-6">
+            <!-- Order Information -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
+              <div class="bg-gray-50  rounded-lg p-4">
+                <p class="text-sm text-gray-500">Order ID</p>
+                <p id="viewOrderId" class="font-semibold mt-1"></p>
+              </div>
+
+              <div class="bg-gray-50  rounded-lg p-4">
+                <p class="text-sm text-gray-500">Customer</p>
+                <p id="viewOrderCustomer" class="font-semibold mt-1"></p>
+              </div>
+
+              <div class="bg-gray-50  rounded-lg p-4">
+                <p class="text-sm text-gray-500">Date</p>
+                <p id="viewOrderDate" class="font-semibold mt-1"></p>
+              </div>
+
+              <div class="bg-gray-50  rounded-lg p-4">
+                <p class="text-sm text-gray-500">Status</p>
+                <p id="viewOrderStatus" class="font-semibold mt-1"></p>
+              </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="border-t border-gray-100 pt-5">
+              <h3 class="text-lg font-semibold mb-4">Order Items</h3>
+
+              <div id="viewOrderItems" class="space-y-3"></div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="border-t border-gray-100 mt-6 pt-5">
+              <h3 class="text-lg font-semibold mb-3">Shipping Address</h3>
+
+              <div
+                id="viewShippingAddress"
+                class="bg-gray-50  rounded-lg p-4 	text-gray-600 "
+              ></div>
+            </div>
+
+            <!-- Total -->
+            <div
+              class="border-t border-gray-100 mt-6 pt-5 flex justify-between items-center"
+            >
+              <p class="text-gray-500">Total Amount</p>
+
+              <p
+                id="viewOrderTotal"
+                class="text-2xl font-bold text-gray-800"
+              ></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* Submit order action */
+      function submitOrderAction(orderId, action, button) {
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = "";
+
+        const csrfToken = document.querySelector(
+          "[name=csrfmiddlewaretoken]",
+        ).value;
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrfmiddlewaretoken";
+        csrfInput.value = csrfToken;
+
+        const orderIdInput = document.createElement("input");
+        orderIdInput.type = "hidden";
+        orderIdInput.name = "order_id";
+        orderIdInput.value = orderId;
+
+        const actionInput = document.createElement("input");
+        actionInput.type = "hidden";
+        actionInput.name = "action";
+        actionInput.value = action;
+
+        form.appendChild(csrfInput);
+        form.appendChild(orderIdInput);
+        form.appendChild(actionInput);
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      /* Approve order */
+      const approveButtons = document.querySelectorAll(".approve-order-btn");
+
+      approveButtons.forEach(function (button) {
+        button.addEventListener("click", async function () {
+          const orderId = this.dataset.orderId;
+          const result = await window.showAdminConfirmation({
+            title: "Approve order?",
+            message: "This order will move to confirmed status.",
+            confirmLabel: "Approve order",
+          });
+          if (result?.confirmed) submitOrderAction(orderId, "approve", this);
+        });
+      });
+
+      /* Ship order */
+      const shipButtons = document.querySelectorAll(".ship-order-btn");
+
+      shipButtons.forEach(function (button) {
+        button.addEventListener("click", async function () {
+          const orderId = this.dataset.orderId;
+          const result = await window.showAdminConfirmation({
+            title: "Ship order?",
+            message: "Confirm that this order is ready to ship.",
+            confirmLabel: "Ship order",
+          });
+          if (result?.confirmed) submitOrderAction(orderId, "ship", this);
+        });
+      });
+
+      /* Deliver order */
+      const deliverButtons = document.querySelectorAll(".deliver-order-btn");
+
+      deliverButtons.forEach(function (button) {
+        button.addEventListener("click", async function () {
+          const orderId = this.dataset.orderId;
+          const result = await window.showAdminConfirmation({
+            title: "Mark order as delivered?",
+            message: "Confirm that this order has been delivered.",
+            confirmLabel: "Mark delivered",
+          });
+          if (result?.confirmed) submitOrderAction(orderId, "deliver", this);
+        });
+      });
+
+      /* View order */
+      const viewButtons = document.querySelectorAll(".view-order-btn");
+
+      const viewOrderModal = document.getElementById("viewOrderModal");
+
+      const closeViewOrderModal = document.getElementById(
+        "closeViewOrderModal",
+      );
+
+      viewButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const orderId = this.dataset.orderId;
+          const customer = this.dataset.customer;
+          const date = this.dataset.date;
+          const total = this.dataset.total;
+          const status = this.dataset.status;
+
+          const items = JSON.parse(this.dataset.items);
+
+          const fullName = this.dataset.fullName;
+          const address = this.dataset.address;
+          const city = this.dataset.city;
+          const phone = this.dataset.phone;
+
+          document.getElementById("viewOrderId").textContent =
+            "#ORD-" + orderId;
+
+          document.getElementById("viewOrderCustomer").textContent = customer;
+
+          document.getElementById("viewOrderDate").textContent = date;
+
+          document.getElementById("viewOrderStatus").textContent = status;
+
+          document.getElementById("viewOrderTotal").textContent =
+            "Rs. " + total;
+
+          const itemsContainer = document.getElementById("viewOrderItems");
+
+          itemsContainer.innerHTML = "";
+
+          items.forEach(function (item) {
+            const itemDiv = document.createElement("div");
+
+            itemDiv.className =
+              "flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100";
+
+            const itemInfo = document.createElement("div");
+
+            const itemName = document.createElement("p");
+            itemName.className = "font-medium text-gray-800";
+            itemName.textContent = item.name;
+
+            const itemDetails = document.createElement("p");
+            itemDetails.className = "text-sm text-gray-500 mt-1";
+            itemDetails.textContent = item.quantity + " × Rs. " + item.price;
+
+            itemInfo.appendChild(itemName);
+            itemInfo.appendChild(itemDetails);
+
+            const itemTotal = document.createElement("p");
+            itemTotal.className = "font-semibold text-gray-800";
+            itemTotal.textContent =
+              "Rs. " + (item.quantity * parseFloat(item.price)).toFixed(2);
+
+            itemDiv.appendChild(itemInfo);
+            itemDiv.appendChild(itemTotal);
+
+            itemsContainer.appendChild(itemDiv);
+          });
+
+          const shippingContainer = document.getElementById(
+            "viewShippingAddress",
+          );
+
+          shippingContainer.innerHTML = "";
+
+          const nameElement = document.createElement("p");
+          nameElement.className = "font-medium text-gray-800";
+          nameElement.textContent = fullName || "N/A";
+
+          const addressElement = document.createElement("p");
+          addressElement.textContent = address || "N/A";
+
+          const cityElement = document.createElement("p");
+          cityElement.textContent = city || "N/A";
+
+          const phoneElement = document.createElement("p");
+          phoneElement.textContent = phone || "N/A";
+
+          shippingContainer.appendChild(nameElement);
+          shippingContainer.appendChild(addressElement);
+          shippingContainer.appendChild(cityElement);
+          shippingContainer.appendChild(phoneElement);
+
+          viewOrderModal.classList.remove("hidden");
+          viewOrderModal.classList.add("flex");
+        });
+      });
+
+      /* Close modal */
+      function closeOrderModal() {
+        viewOrderModal.classList.add("hidden");
+        viewOrderModal.classList.remove("flex");
+      }
+
+      closeViewOrderModal.addEventListener("click", closeOrderModal);
+
+      viewOrderModal.addEventListener("click", function (event) {
+        if (event.target === viewOrderModal) {
+          closeOrderModal();
+        }
+      });
+
+    </script>
+  </body>
+</html>

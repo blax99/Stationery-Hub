@@ -1,0 +1,116 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %}Stationery Hub{% endblock %}</title>
+<script>
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  }
+</script>   
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="https://img.icons8.com/clouds/100/stationery.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"
+    />
+    <style>
+      button:not(:disabled),
+      input[type="button"]:not(:disabled),
+      input[type="submit"]:not(:disabled),
+      input[type="reset"]:not(:disabled) {
+        cursor: pointer;
+      }
+
+      @keyframes stationery-button-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .page-loading-spinner {
+        animation: stationery-button-spin 0.8s linear infinite;
+      }
+
+      button[aria-busy="true"]::before,
+      input[type="submit"][aria-busy="true"]::before {
+        content: "";
+        display: inline-block;
+        width: 0.9rem;
+        height: 0.9rem;
+        margin-right: 0.5rem;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        vertical-align: -0.1em;
+        animation: stationery-button-spin 0.7s linear infinite;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .page-loading-spinner {
+          animation-duration: 1.5s;
+        }
+
+        button[aria-busy="true"]::before,
+        input[type="submit"][aria-busy="true"]::before {
+          animation-duration: 1.5s;
+        }
+      }
+    </style>
+
+    <!-- Your Compiled CSS -->
+    <link rel="stylesheet" href="{% static 'css/output.css' %}?v=34" />
+    <script src="{% static 'js/turbo.js' %}" defer></script>
+    {% block extra_head %}{% endblock %}
+  </head>
+
+ <body class="min-h-screen flex flex-col {% block page_background %}bg-gray-50 dark:bg-gray-950{% endblock %}">
+    {% include "navbar.html" %}
+
+    <main class="grow">{% block content %} {% endblock %}</main>
+
+    {% include "footer.html" %}
+
+     {% include "chatbot/widget.html" %}
+    <script src="{% static 'js/main.js' %}?v=12" data-turbo-eval="false"></script>
+
+    <script src="{% static 'js/main.js' %}?v=13" data-turbo-eval="false"></script>
+
+    <script src="{% static 'js/navbar.js' %}?v=12"></script>
+    <script>
+    (() => {
+      const toggleBtn = document.getElementById("theme-toggle");
+      if (!toggleBtn) return;
+
+  function updateThemeToggleLabel() {
+    const targetTheme = document.documentElement.classList.contains('dark')
+      ? 'light' : 'dark';
+    const label = `Switch to ${targetTheme} mode`;
+    toggleBtn.setAttribute('aria-label', label);
+    toggleBtn.title = label;
+  }
+
+  if (toggleBtn.dataset.themeToggleInitialized !== "true") {
+    toggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark')
+        ? 'dark' : 'light';
+      updateThemeToggleLabel();
+    });
+    toggleBtn.dataset.themeToggleInitialized = "true";
+  }
+
+  updateThemeToggleLabel();
+})();
+</script>
+  </body>
+</html>

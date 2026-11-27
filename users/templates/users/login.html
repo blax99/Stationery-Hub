@@ -1,0 +1,252 @@
+{% extends "base.html" %} {% load static %} {% block title %}Sign In -
+Stationery Hub{% endblock %}
+{% block page_background %}bg-[#f5ede0] dark:bg-gray-950{% endblock %}
+{% block content %}
+<style>
+
+  #account-created-toast {
+    position: fixed;
+    top: 5rem;
+    right: 1rem;
+    left: auto;
+    z-index: 1000;
+    max-width: min(24rem, calc(100vw - 2rem));
+    border: 1px solid #15803d;
+    border-radius: 0.5rem;
+    background-color: #15803d;
+    padding: 1rem 1.25rem;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+</style>
+
+<div
+  id="account-created-toast"
+  role="status"
+  aria-live="polite"
+  class="hidden"
+>
+</div>
+
+<div
+  class="min-h-[80vh] flex flex-col items-center justify-center bg-[#f5ede0] dark:bg-gray-950 px-4 py-12"
+>
+  <div class="w-full max-w-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl shadow-md p-8">
+    <p class="text-xs tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">Welcome</p>
+    <h1 class="text-4xl font-serif mb-8 text-gray-900 dark:text-gray-50">Sign In</h1>
+
+    <div
+      id="error-message"
+      class="hidden mb-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded px-4 py-2"
+    ></div>
+
+    <form id="login-form" class="space-y-5">
+      <div>
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-1"
+          >Email Address</label
+        >
+        <input
+          type="email"
+          id="email"
+          required
+          class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-red-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+          placeholder="you@example.com"
+        />
+      </div>
+
+      <div>
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-1"
+          >Password</label
+        >
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            required
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-red-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            id="toggle-password"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-300 text-sm"
+          >
+            Show
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-sm">
+        <label class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+          <input type="checkbox" class="rounded" />
+          Remember me
+        </label>
+        <a
+          href="{% url 'forgot-password' %}"
+          class="text-amber-700 dark:text-red-300"
+          >Forgot password?</a
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-md border border-gray-900 dark:border-red-800 bg-gray-900 dark:bg-red-800 text-white py-3 font-semibold hover:border-gray-800 dark:hover:border-red-700 hover:bg-gray-800 dark:hover:bg-red-700 transition cursor-pointer"
+      >
+        Sign In
+      </button>
+    </form>
+
+    <div class="flex items-center gap-4 my-6">
+      <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+      <span class="text-sm text-gray-400 dark:text-gray-500">or</span>
+      <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+    </div>
+
+    <button
+      id="admin-sign-in"
+      type="button"
+      class="w-full rounded-md border border-amber-700 dark:border-red-700 text-amber-700 dark:text-red-300 py-3 font-semibold hover:bg-amber-50 dark:hover:bg-red-900/30 transition cursor-pointer"
+    >
+      Sign in as Admin
+    </button>
+    <p class="text-center text-sm text-gray-600 dark:text-gray-300 mt-6">
+      Don't have an account?
+      <a
+        href="{% url 'register-page' %}"
+        class="text-[#7a4b2a] dark:text-[#d6a77a] font-semibold"
+        >Create one</a
+      >
+    </p>
+
+  </div>
+</div>
+
+<script>
+  const adminSignInButton = document.getElementById("admin-sign-in");
+  const loginForm = document.getElementById("login-form");
+  const loginSubmitButton = loginForm.querySelector('button[type="submit"]');
+  const loginParams = new URLSearchParams(window.location.search);
+  const toastMessages = {
+    account_created:
+      "Account created. Check your email and verify your address before signing in.",
+  };
+  const toast = document.getElementById("account-created-toast");
+  const toastMessage = Object.entries(toastMessages).find(
+    ([parameter]) => loginParams.get(parameter) === "1",
+  );
+  if (toastMessage) {
+    toast.textContent = toastMessage[1];
+    toast.classList.remove("hidden");
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete(toastMessage[0]);
+    window.history.replaceState({}, "", cleanUrl);
+    window.setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 6000);
+  }
+
+  let adminOnly = loginParams.get("admin_only") === "1";
+  let loginInProgress = false;
+  let requestedLoginButton = null;
+
+  function resetLoginButtons() {
+    loginInProgress = false;
+    loginSubmitButton.disabled = false;
+    loginSubmitButton.textContent = "Sign In";
+    loginSubmitButton.setAttribute("aria-busy", "false");
+    adminSignInButton.disabled = false;
+    adminSignInButton.textContent = "Sign in as Admin";
+    adminSignInButton.setAttribute("aria-busy", "false");
+  }
+
+  function setButtonLoading(button, label) {
+    button.setAttribute("aria-busy", "true");
+    button.textContent = label;
+  }
+
+  function signInAsAdmin() {
+    adminOnly = true;
+    requestedLoginButton = adminSignInButton;
+    loginForm.requestSubmit();
+    requestedLoginButton = null;
+  }
+
+  adminSignInButton.addEventListener("click", signInAsAdmin);
+  document
+    .getElementById("toggle-password")
+    .addEventListener("click", function () {
+      const passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        this.textContent = "Hide";
+      } else {
+        passwordInput.type = "password";
+        this.textContent = "Show";
+      }
+    });
+
+  document
+    .getElementById("login-form")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+      if (loginInProgress) return;
+
+      const activeButton =
+        requestedLoginButton || e.submitter || loginSubmitButton;
+      requestedLoginButton = null;
+      loginInProgress = true;
+      loginSubmitButton.disabled = true;
+      adminSignInButton.disabled = true;
+      activeButton.disabled = true;
+      setButtonLoading(activeButton, "Signing in...");
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const errorBox = document.getElementById("error-message");
+      errorBox.classList.add("hidden");
+
+      try {
+        const response = await fetch("{% url 'login' %}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, admin_only: adminOnly }),
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem("access_token", data.access);
+          localStorage.setItem("refresh_token", data.refresh);
+          sessionStorage.setItem(
+            "stationery-notification",
+            data.role === "admin"
+              ? "Admin login successful."
+              : "Login successful.",
+          );
+          const next = adminOnly
+            ? "{% url 'dashboard' %}"
+            : loginParams.get("next");
+          const destination = next
+            ? new URL(next, window.location.origin)
+            : new URL("/", window.location.origin);
+          window.stationeryNavigate(
+            destination.origin === window.location.origin
+              ? destination.href
+              : "/",
+            { reload: true },
+          );
+        } else {
+          errorBox.textContent = data.detail || "Invalid email or password.";
+          errorBox.classList.remove("hidden");
+          resetLoginButtons();
+        }
+      } catch (err) {
+        errorBox.textContent = "Something went wrong. Please try again.";
+        errorBox.classList.remove("hidden");
+        resetLoginButtons();
+      }
+    });
+</script>
+{% endblock %}

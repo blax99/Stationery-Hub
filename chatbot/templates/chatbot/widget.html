@@ -1,0 +1,315 @@
+<style>
+    #cb-toggle {
+        position: fixed;
+        right: 18px;
+        bottom: 30px;
+        z-index: 9999;
+        display: grid;
+        width: 46px;
+        height: 46px;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background: #2563eb;
+        color: #fff;
+        box-shadow: 0 5px 16px rgba(37, 99, 235, 0.34);
+        cursor: pointer;
+        transition: background-color 160ms ease, transform 160ms ease;
+    }
+    #cb-toggle:hover { background: #1d4ed8; transform: translateY(-2px); }
+    #cb-toggle:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+    #cb-toggle svg { width: 20px; height: 20px; }
+    #cb-toggle .cb-icon-close { display: none; }
+    #cb-toggle[aria-expanded="true"] .cb-icon-bot { display: none; }
+    #cb-toggle[aria-expanded="true"] .cb-icon-close { display: block; }
+    #cb-box {
+        position: fixed;
+        right: 18px;
+        bottom: 88px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        width: 340px;
+        height: min(460px, calc(100vh - 104px));
+        height: min(460px, calc(100dvh - 104px));
+        max-width: calc(100vw - 36px);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        background: #fff;
+        color: #111827;
+        box-shadow: 0 16px 44px rgba(15, 23, 42, 0.2);
+        font-family: inherit;
+    }
+    #cb-box[hidden] { display: none; }
+    #cb-header {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 11px;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fff;
+    }
+    .cb-header-avatar {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        place-items: center;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+    .cb-header-avatar svg { width: 21px; height: 21px; }
+    .cb-header-copy { display: flex; flex: 1; flex-direction: column; gap: 2px; }
+    .cb-header-copy strong { color: #111827; font-size: 14px; font-weight: 650; }
+    .cb-header-copy span { color: #6b7280; font-size: 12px; }
+    .cb-status {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 0 3px #dcfce7;
+    }
+    #cb-messages {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: 0;
+        gap: 10px;
+        overflow-y: auto;
+        padding: 16px 12px;
+        background: #f8fafc;
+        font-size: 13px;
+        line-height: 1.5;
+        overscroll-behavior-y: contain;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+    }
+    #cb-messages .cb-message {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: flex-end;
+        gap: 8px;
+    }
+    #cb-messages .cb-message-user { flex-direction: row-reverse; }
+    #cb-messages .cb-avatar {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        place-items: center;
+        border-radius: 50%;
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+    #cb-messages .cb-avatar-user { background: #e5e7eb; color: #374151; }
+    #cb-messages .cb-avatar svg { width: 16px; height: 16px; }
+    #cb-messages .cb-message p {
+        max-width: 84%;
+        min-width: 0;
+        margin: 0;
+        padding: 8px 10px;
+        border-radius: 14px 14px 14px 4px;
+        background: #fff;
+        color: #374151;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+        overflow-wrap: anywhere;
+    }
+    #cb-messages .cb-message-user p {
+        border-radius: 14px 14px 4px 14px;
+        background: #2563eb;
+        color: #fff;
+    }
+    #cb-messages .cb-message-bot p { white-space: pre-line; }
+    #cb-form {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 12px;
+        border-top: 1px solid #e5e7eb;
+        background: #fff;
+    }
+    #cb-input {
+        flex: 1;
+        min-width: 0;
+        height: 42px;
+        padding: 0 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        background: #f8fafc;
+        color: #111827;
+        font: inherit;
+        font-size: 13px;
+    }
+    #cb-input::placeholder { color: #9ca3af; }
+    #cb-input:focus { border-color: #93c5fd; outline: 3px solid rgba(147, 197, 253, 0.3); }
+    #cb-send {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background: #2563eb;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 160ms ease, transform 160ms ease;
+    }
+    #cb-send:hover { background: #1d4ed8; transform: translateY(-1px); }
+    #cb-send:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+    #cb-send svg { width: 18px; height: 18px; }
+    .dark #cb-toggle { background: #4f46e5; box-shadow: 0 5px 16px rgba(79, 70, 229, 0.4); }
+    .dark #cb-toggle:hover, .dark #cb-send:hover { background: #6366f1; }
+    .dark #cb-toggle:focus-visible, .dark #cb-send:focus-visible { outline-color: #a5b4fc; }
+    .dark #cb-box { border-color: #374151; background: #111827; color: #e5e7eb; }
+    .dark #cb-header, .dark #cb-form { border-color: #374151; background: #111827; }
+    .dark .cb-header-avatar { background: #312e81; color: #c7d2fe; }
+    .dark .cb-header-copy strong { color: #f9fafb; }
+    .dark .cb-header-copy span { color: #9ca3af; }
+    .dark .cb-status { box-shadow: 0 0 0 3px #14532d; }
+    .dark #cb-messages { background: #0b1220; scrollbar-color: #4b5563 transparent; }
+    .dark #cb-messages .cb-avatar { background: #312e81; color: #c7d2fe; }
+    .dark #cb-messages .cb-avatar-user { background: #374151; color: #e5e7eb; }
+    .dark #cb-messages .cb-message-bot p { background: #1f2937; color: #e5e7eb; box-shadow: none; }
+    .dark #cb-messages .cb-message-user p, .dark #cb-send { background: #4f46e5; color: #fff; }
+    .dark #cb-input { border-color: #374151; background: #1f2937; color: #f9fafb; }
+    .dark #cb-input::placeholder { color: #9ca3af; }
+    .dark #cb-input:focus { border-color: #818cf8; outline-color: rgba(129, 140, 248, 0.3); }
+    @media (max-width: 480px) {
+        #cb-box { right: 12px; bottom: 84px; max-width: calc(100vw - 24px); }
+        #cb-toggle { right: 16px; bottom: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #cb-toggle, #cb-send { transition: none; }
+    }
+</style>
+
+<div id="cb-box" hidden>
+    <div id="cb-header">
+        <span class="cb-header-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 4v3M5 10a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/>
+                <path d="M9 13h.01M15 13h.01M9 17h6M2.5 12v4M21.5 12v4"/>
+                <circle cx="12" cy="3" r="1"/>
+            </svg>
+        </span>
+        <span class="cb-header-copy">
+            <strong>Stationery Hub</strong>
+            <span>Here to help</span>
+        </span>
+        <span class="cb-status" aria-label="Online"></span>
+    </div>
+    <div id="cb-messages">
+        <div class="cb-message cb-message-bot">
+            <span class="cb-avatar" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 4v3M5 10a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/>
+                    <path d="M9 13h.01M15 13h.01M9 17h6M2.5 12v4M21.5 12v4"/>
+                    <circle cx="12" cy="3" r="1"/>
+                </svg>
+            </span>
+            <p>Ask about the website, products, orders, payment, or your cart.</p>
+        </div>
+    </div>
+    <form id="cb-form" method="post" action="{% url 'chat_reply' %}">
+        {% csrf_token %}
+        <input id="cb-input" type="text" name="message" placeholder="Type a message..." required>
+        <button id="cb-send" type="submit" aria-label="Send message">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+        </button>
+    </form>
+</div>
+
+<button id="cb-toggle" type="button" aria-label="Open chat" aria-expanded="false" aria-controls="cb-box">
+    <svg class="cb-icon-bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 4v3M5 10a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/>
+        <path d="M9 13h.01M15 13h.01M9 17h6M2.5 12v4M21.5 12v4"/>
+        <circle cx="12" cy="3" r="1"/>
+    </svg>
+    <svg class="cb-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="m18 6-12 12M6 6l12 12"/>
+    </svg>
+</button>
+
+<script>
+(() => {
+    const box = document.getElementById("cb-box");
+    const form = document.getElementById("cb-form");
+    const input = document.getElementById("cb-input");
+    const messages = document.getElementById("cb-messages");
+    const toggle = document.getElementById("cb-toggle");
+
+    toggle.addEventListener("click", () => {
+        box.hidden = !box.hidden;
+        toggle.setAttribute("aria-expanded", String(!box.hidden));
+        toggle.setAttribute("aria-label", box.hidden ? "Open chat" : "Close chat");
+        if (!box.hidden) input.focus();
+    });
+
+    function addMessage(sender, text) {
+        const isUser = sender === "You";
+        const row = document.createElement("div");
+        row.className = "cb-message " + (isUser ? "cb-message-user" : "cb-message-bot");
+
+        const avatar = document.createElement("span");
+        avatar.className = "cb-avatar" + (isUser ? " cb-avatar-user" : "");
+        avatar.setAttribute("aria-hidden", "true");
+
+        const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        icon.setAttribute("viewBox", "0 0 24 24");
+        icon.setAttribute("fill", "none");
+        icon.setAttribute("stroke", "currentColor");
+        icon.setAttribute("stroke-width", "1.8");
+        icon.setAttribute("stroke-linecap", "round");
+        icon.setAttribute("stroke-linejoin", "round");
+
+        const iconParts = isUser
+            ? [
+                ["circle", { cx: "12", cy: "8", r: "3.25" }],
+                ["path", { d: "M5 20a7 7 0 0 1 14 0" }],
+            ]
+            : [
+                ["path", { d: "M12 4v3M5 10a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z" }],
+                ["path", { d: "M9 13h.01M15 13h.01M9 17h6M2.5 12v4M21.5 12v4" }],
+                ["circle", { cx: "12", cy: "3", r: "1" }],
+            ];
+        for (const [tag, attributes] of iconParts) {
+            const part = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            for (const [name, value] of Object.entries(attributes)) {
+                part.setAttribute(name, value);
+            }
+            icon.appendChild(part);
+        }
+        avatar.appendChild(icon);
+
+        const p = document.createElement("p");
+        p.textContent = text;
+        row.append(avatar, p);
+        messages.appendChild(row);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        addMessage("You", input.value);
+        form.reset();
+
+        try {
+            const response = await fetch(form.action, { method: "POST", body: data });
+            if (!response.ok) throw new Error();
+            const result = await response.json();
+            addMessage("Bot", result.reply);
+        } catch {
+            addMessage("Bot", "Something went wrong. Please try again.");
+        }
+    });
+})();
+</script>

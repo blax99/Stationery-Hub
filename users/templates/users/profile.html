@@ -1,0 +1,408 @@
+{% extends "base.html" %} {% load static %} {% block title %}My Profile -
+Stationery Hub{% endblock %} {% block content %}
+<style>
+  .profile-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    row-gap: 1.25rem;
+    padding-inline: 1rem;
+  }
+
+  .profile-field {
+    min-width: 0;
+  }
+
+  .profile-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #374151;
+  }
+
+  .profile-control {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    border: 1px solid #d1d5db;   
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.875rem;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .profile-control:hover {
+    border-color: #9ca3af;
+  }
+
+  .profile-control::placeholder {
+    color: #9ca3af;
+  }
+
+  .profile-control:focus {
+    border-color: #8b2d2d;
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(139 45 45 / 12%);
+  }
+
+  .profile-control:disabled {
+    border-color: #e5e7eb;
+    background: #f9fafb;
+    color: #6b7280;
+  }
+
+  .profile-field--address-details {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  #email-verification-status {
+    position: relative;
+    overflow: visible;
+  }
+
+  #email-verification-status::after {
+    position: absolute;
+    z-index: 20;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    width: max-content;
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.375rem;
+    background: #111827;
+    color: #fff;
+    content: attr(data-tooltip);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 0.25rem);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+    visibility: hidden;
+  }
+
+  #email-verification-status:hover::after,
+  #email-verification-status:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    visibility: visible;
+  }
+
+  #email-verification-status:focus-visible {
+    outline: 2px solid #92400e;
+    outline-offset: 3px;
+  }
+
+  .profile-save {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-block: 0.75rem;
+  }
+
+  @media (max-width: 767px) {
+    .profile-form {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 1.25rem;
+    }
+
+    .profile-field--address-details,
+    .profile-save {
+      grid-column: auto;
+    }
+
+    .profile-field--address-details {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
+    }
+  }
+  .dark .profile-control {
+  border-color: #4b5563;
+}
+.dark .profile-control:hover {
+  border-color: #6b7280;
+}
+.dark .profile-control:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 2px rgb(220 38 38 / 15%);
+}
+.dark .profile-control:disabled {
+  border-color: #374151;
+  background: #1f2937;
+  color: #9ca3af;
+}
+.dark .profile-control::placeholder {
+  color: #6b7280;
+}
+.dark .profile-field label {
+  color: #d1d5db;
+}
+</style>
+
+<div
+  class="bg-[#f5ede0] dark:bg-gray-950 px-4 py-12"
+  style="min-height: calc(100vh - 4rem); margin-bottom: -3rem"
+>
+  <div class="w-full max-w-4xl mx-auto border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-md p-5 md:p-7">
+    <div class="mb-6 px-4">
+      <p class="text-xs tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">
+        Your account
+      </p>
+      <h1 class="text-4xl font-serif text-gray-900 dark:text-gray-50">My Profile</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+        Save your contact and delivery details for a faster checkout.
+      </p>
+    </div>
+
+    <div id="message-box" class="hidden mb-4 text-sm rounded px-4 py-2"></div>
+
+    <form id="profile-form" class="profile-form">
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
+          >Username</label
+        >
+        <input
+          type="text"
+          id="username"
+          class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+        />
+      </div>
+
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
+          >Full Name</label
+        >
+        <input
+          type="text"
+          id="full_name"
+          autocomplete="name"
+          class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          placeholder="Your full name"
+        />
+      </div>
+
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
+          >Email Address</label
+        >
+        <div class="flex max-w-[24rem] items-center gap-2">
+          <input
+            type="email"
+            id="email"
+            disabled
+            class="profile-control min-w-0 flex-1 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          />
+          <button
+            type="button"
+            id="email-verification-status"
+            class="hidden h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
+            aria-label="Email verification status"
+          >
+            <svg
+              id="email-verified-icon"
+              class="hidden h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="m5 10.5 3.25 3.25L15.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <svg
+              id="email-unverified-icon"
+              class="hidden h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.7" />
+              <path d="M10 6.5v4.25m0 2.75h.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-field">
+        <label class="block text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase mb-2"
+          >Phone Number</label
+        >
+        <input
+          type="text"
+          id="phone_number"
+          autocomplete="tel"
+          class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          placeholder="98XXXXXXXX"
+        />
+      </div>
+
+      <div class="profile-field profile-field--address-details">
+        <div class="profile-field">
+          <label for="city">City</label>
+          <input
+            type="text"
+            id="city"
+            autocomplete="address-level2"
+            class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            placeholder="City"
+          />
+        </div>
+        <div class="profile-field">
+          <label for="address">Street Address</label>
+          <input
+            type="text"
+            id="address"
+            autocomplete="street-address"
+            class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            placeholder="Street address"
+          />
+        </div>
+        <div class="profile-field">
+          <label for="postal_code">Postal Code</label>
+          <input
+            type="text"
+            id="postal_code"
+            autocomplete="postal-code"
+            class="profile-control bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            placeholder="Postal code"
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="profile-save bg-gray-900 text-white py-2.5 rounded-md font-semibold hover:bg-gray-800 dark:bg-red-800 dark:hover:bg-red-700 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+      >
+        Save Changes
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const msgBox = document.getElementById("message-box");
+  const profileSaveButton = document.querySelector(
+    '#profile-form button[type="submit"]',
+  );
+
+  async function loadProfile() {
+    const response = await window.stationeryApiFetch("{% url 'profile' %}");
+    if (response.status === 401) {
+      window.stationeryLoginRedirect();
+      return;
+    }
+    if (!response.ok) {
+      throw new Error(`Could not load profile: ${response.status}`);
+    }
+    const data = await response.json();
+    document.getElementById("username").value = data.username;
+    document.getElementById("email").value = data.email;
+    const verificationStatus = document.getElementById(
+      "email-verification-status",
+    );
+    if (data.is_email_verified) {
+      verificationStatus.className =
+        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/30";
+      verificationStatus.dataset.tooltip = "Verified";
+      verificationStatus.setAttribute("aria-label", "Email verified");
+      document
+        .getElementById("email-verified-icon")
+        .classList.remove("hidden");
+    } else {
+      verificationStatus.className =
+        "inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-400/30";
+      verificationStatus.dataset.tooltip = "Not verified";
+      verificationStatus.setAttribute("aria-label", "Email not verified");
+      document
+        .getElementById("email-unverified-icon")
+        .classList.remove("hidden");
+    }
+    document.getElementById("full_name").value =
+      [data.first_name, data.last_name].filter(Boolean).join(" ");
+    document.getElementById("phone_number").value = data.phone_number || "";
+    document.getElementById("address").value = data.address || "";
+    document.getElementById("city").value = data.city || "";
+    document.getElementById("postal_code").value = data.postal_code || "";
+  }
+
+  document
+    .getElementById("profile-form")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+      if (profileSaveButton.disabled) return;
+
+      profileSaveButton.disabled = true;
+      profileSaveButton.setAttribute("aria-busy", "true");
+      msgBox.classList.add("hidden");
+
+      try {
+        const nameParts = document
+          .getElementById("full_name")
+          .value.trim()
+          .split(/\s+/)
+          .filter(Boolean);
+
+        const response = await window.stationeryApiFetch("{% url 'profile' %}", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: document.getElementById("username").value,
+            first_name: nameParts[0] || "",
+            last_name: nameParts.slice(1).join(" "),
+            phone_number: document.getElementById("phone_number").value,
+            address: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            postal_code: document.getElementById("postal_code").value,
+          }),
+        });
+
+        if (response.status === 401) {
+          window.stationeryLoginRedirect();
+          return;
+        }
+
+        if (response.ok) {
+          sessionStorage.setItem(
+            "stationery-notification",
+            "Profile updated successfully."
+          );
+          window.location.reload();
+        } else {
+          msgBox.textContent =
+            "Could not update profile. Please check your details.";
+          msgBox.className =
+            "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
+        }
+      } catch (error) {
+        console.error("Profile update failed:", error);
+        msgBox.textContent =
+          "Unable to update your profile. Please check your connection and try again.";
+        msgBox.className =
+          "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
+      } finally {
+        profileSaveButton.disabled = false;
+        profileSaveButton.removeAttribute("aria-busy");
+      }
+      msgBox.classList.remove("hidden");
+    });
+
+  loadProfile().catch((error) => {
+    console.error("Profile could not be loaded.", error);
+    msgBox.textContent =
+      "Unable to load your profile. Please refresh the page.";
+    msgBox.className =
+      "mb-4 text-sm rounded px-4 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
+  });
+</script>
+{% endblock %}

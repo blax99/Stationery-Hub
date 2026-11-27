@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .order-card {
+    border: 1px solid #e5dfd5;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(41, 37, 36, 0.05);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .order-card:hover {
+    box-shadow: 0 8px 22px rgba(41, 37, 36, 0.09);
+    transform: translateY(-1px);
+  }
+  .dark .order-card {
+    background: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  .dark .order-card:hover {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  }
+
+  .order-action {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    padding: 0 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .order-action:hover {
+    transform: translateY(-1px);
+  }
+  .order-action:focus-visible {
+    outline: 3px solid rgba(122, 40, 40, 0.2);
+    outline-offset: 2px;
+  }
+  .order-action-primary {
+    background: #7a2828;
+    border-color: #7a2828;
+    color: #fff;
+  }
+  .order-action-primary:hover {
+    background: #5e1f1f;
+    border-color: #5e1f1f;
+    color: #fff;
+  }
+  .order-action-danger {
+    background: #fff;
+    border-color: #e6caca;
+    color: #7a2828;
+  }
+  .order-action-danger:hover {
+    background: #fbf2f2;
+    border-color: #7a2828;
+    color: #5e1f1f;
+  }
+  .dark .order-action-danger {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #fca5a5;
+  }
+  .dark .order-action-danger:hover {
+    background: #374151;
+    border-color: #f87171;
+    color: #fecaca;
+  }
+
+  .order-status-pending {
+    background: #f0fdf4;
+    color: #15803d;
+  }
+  .dark .order-status-pending {
+    background: #052e16;
+    color: #4ade80;
+  }
+
+  .order-progress-step {
+    background: #e5e7eb;
+    color: #6b7280;
+  }
+  .dark .order-progress-step {
+    background: #374151;
+    color: #9ca3af;
+  }
+  .dark .order-progress-step-active {
+    background: #16a34a;
+    color: #ffffff;
+  }
+  .order-progress-step-active,
+  .order-progress-line-active {
+    background: #16a34a;
+  }
+  .order-progress-step-active {
+    color: #ffffff;
+  }
+  .order-progress-label {
+    color: #6b7280;
+  }
+  .dark .order-progress-label {
+    color: #9ca3af;
+  }
+  .order-progress-label-active {
+    color: #15803d;
+    font-weight: 600;
+  }
+  .dark .order-progress-label-active {
+    color: #4ade80;
+  }
+
+  @media (max-width: 640px) {
+    .order-action {
+      flex: 1 1 auto;
+    }
+  }
+</style>
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+  <div class="mb-8 border-b border-gray-200 dark:border-gray-700 pb-4">
+    <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 dark:text-white tracking-tight">
+      My Orders
+    </h1>
+  </div>
+
+  {% if orders %}
+  <div class="space-y-4">
+    {% for order in orders %}
+    <div class="order-card p-5 sm:p-6">
+      <div class="flex justify-between items-center gap-3 mb-5">
+        <div class="min-w-0">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+            Order #{{ order.id|stringformat:"04d" }}
+          </h2>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Placed {{ order.created_at|date:"M d, Y" }}
+          </p>
+        </div>
+
+        <span class="inline-flex w-fit shrink-0 whitespace-nowrap items-center rounded-md px-2 py-0.5 text-[11px] font-semibold {% if order.status == 'cancelled' or order.status == 'returned' %}bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300{% elif order.status == 'return_requested' %}bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300{% elif order.status == 'delivered' %}bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300{% elif order.status == 'shipped' %}bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300{% elif order.status == 'pending' %}order-status-pending{% else %}bg-[#7A2828]/10 text-[#7A2828] dark:bg-[#7A2828]/20 dark:text-[#c97070]{% endif %}">
+          {{ order.get_status_display }}
+        </span>
+      </div>
+
+      {% if order.status == 'cancelled' %}
+      <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 mb-4">
+        <p class="font-semibold text-gray-700 dark:text-gray-300">Order Cancelled</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">This order has been cancelled.</p>
+      </div>
+
+      {% elif order.status == 'return_requested' %}
+      <div class="border border-amber-200 dark:border-amber-800 rounded-lg p-4 bg-amber-50 dark:bg-amber-900/20 mb-4">
+        <p class="font-semibold text-gray-700 dark:text-gray-300">Return Requested</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Your return request has been submitted.</p>
+      </div>
+
+      {% elif order.status == 'returned' %}
+      <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 mb-4">
+        <p class="font-semibold text-gray-700 dark:text-gray-300">Order Returned</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">This order has been returned.</p>
+      </div>
+
+      {% else %}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div class="md:col-span-3 rounded-lg bg-[#faf8f5] dark:bg-gray-800 border border-[#e5dfd5] dark:border-gray-700 p-4">
+          <strong class="text-sm text-gray-700 dark:text-gray-300">Order Status</strong>
+
+          <div class="flex items-center justify-between mt-4 text-xs sm:text-sm">
+            <div class="text-center">
+              <div class="order-progress-step w-8 h-8 mx-auto rounded-full {% if order.status == 'pending' or order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}order-progress-step-active{% endif %} flex items-center justify-center">✓</div>
+              <p class="order-progress-label mt-1 {% if order.status == 'pending' or order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}order-progress-label-active{% endif %}">Pending</p>
+            </div>
+
+            <div class="flex-1 h-1 mx-2 {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}order-progress-line-active{% else %}bg-gray-200 dark:bg-gray-700{% endif %}"></div>
+
+            <div class="text-center">
+              <div class="order-progress-step w-8 h-8 mx-auto rounded-full {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}order-progress-step-active{% endif %} flex items-center justify-center">✓</div>
+              <p class="order-progress-label mt-1 {% if order.status == 'confirmed' or order.status == 'shipped' or order.status == 'delivered' %}order-progress-label-active{% endif %}">Confirmed</p>
+            </div>
+
+            <div class="flex-1 h-1 mx-2 {% if order.status == 'shipped' or order.status == 'delivered' %}order-progress-line-active{% else %}bg-gray-200 dark:bg-gray-700{% endif %}"></div>
+
+            <div class="text-center">
+              <div class="order-progress-step w-8 h-8 mx-auto rounded-full {% if order.status == 'shipped' or order.status == 'delivered' %}order-progress-step-active{% endif %} flex items-center justify-center">✓</div>
+              <p class="order-progress-label mt-1 {% if order.status == 'shipped' or order.status == 'delivered' %}order-progress-label-active{% endif %}">Shipped</p>
+            </div>
+
+            <div class="flex-1 h-1 mx-2 {% if order.status == 'delivered' %}order-progress-line-active{% else %}bg-gray-200 dark:bg-gray-700{% endif %}"></div>
+
+            <div class="text-center">
+              <div class="order-progress-step w-8 h-8 mx-auto rounded-full {% if order.status == 'delivered' %}order-progress-step-active{% endif %} flex items-center justify-center">✓</div>
+              <p class="order-progress-label mt-1 {% if order.status == 'delivered' %}order-progress-label-active{% endif %}">Delivered</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 p-4">
+          <strong class="block text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Payment</strong>
+          <span class="font-semibold text-gray-900 dark:text-white">{{ order.get_payment_status_display }}</span>
+        </div>
+
+        <div class="rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 p-4">
+          <strong class="block text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Total</strong>
+          <span class="font-semibold text-gray-900 dark:text-white">Rs. {{ order.total_amount }}</span>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-3">
+        <a href="{% url 'order_confirmation' order.id %}" class="order-action order-action-primary">View Order</a>
+
+        {% if order.payment_status != 'paid' and order.status == 'pending' or order.payment_status != 'paid' and order.status == 'confirmed' %}
+        <form method="POST" action="{% url 'cancel_order' order.id %}" onsubmit="return confirm('Are you sure you want to cancel this order?');" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="order-action order-action-danger">Cancel Order</button>
+        </form>
+        {% endif %}
+
+        {% if order.status == 'delivered' %}
+        <form method="POST" action="{% url 'request_return' order.id %}" onsubmit="return confirm('Are you sure you want to request a return?');" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="order-action order-action-danger">Return Order</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="order-card mx-auto max-w-2xl p-8 text-center sm:p-10">
+    <div class="mb-5 flex justify-center">
+      <div class="flex h-14 w-14 items-center justify-center rounded-full bg-[#faf8f5] text-[#7a2828] dark:bg-gray-800 dark:text-red-300">
+        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 2-1.6L22 7H6" />
+          <circle cx="10" cy="20" r="1" />
+          <circle cx="18" cy="20" r="1" />
+        </svg>
+      </div>
+    </div>
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+      No orders yet
+    </h2>
+    <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-600 dark:text-gray-400">
+      Browse our stationery collection and place your first order. Your orders will appear here.
+    </p>
+    <a href="{% url 'products:product_list' %}" class="order-action order-action-primary mt-6">
+      Browse Products
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}   

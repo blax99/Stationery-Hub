@@ -1,0 +1,765 @@
+window.stationeryApiFetch = async function (url, options = {}) {
+  const accessToken = localStorage.getItem("access_token");
+  const sendRequest = (token) => {
+    const headers = new Headers(options.headers || {});
+    const method = (options.method || "GET").toUpperCase();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
+      const csrfToken = document.querySelector(
+        "#logout-csrf-form input[name=csrfmiddlewaretoken]",
+      )?.value;
+      if (csrfToken) {
+        headers.set("X-CSRFToken", csrfToken);
+      }
+    }
+
+    return fetch(url, { ...options, headers });
+  };
+
+  const response = await sendRequest(accessToken);
+  if (response.status !== 401) {
+    return response;
+  }
+
+  const refreshToken = localStorage.getItem("refresh_token");
+  if (!refreshToken) {
+    localStorage.removeItem("access_token");
+    if (!accessToken) {
+      return response;
+    }
+    return sendRequest(null);
+  }
+
+  const refreshResponse = await fetch("/users/login/refresh/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh: refreshToken }),
+  });
+
+  if (!refreshResponse.ok) {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    return sendRequest(null);
+  }
+
+  const refreshType = refreshResponse.headers.get("content-type") || "";
+  if (!refreshType.includes("json")) {
+    throw new Error(
+      "The session refresh endpoint returned an unexpected response.",
+    );
+  }
+
+  const refreshData = await refreshResponse.json();
+  if (!refreshData.access) {
+    throw new Error(
+      "The session refresh response did not include an access token.",
+    );
+  }
+
+  localStorage.setItem("access_token", refreshData.access);
+  return sendRequest(refreshData.access);
+};
+
+window.stationeryLoginRedirect = function () {
+  const next = encodeURIComponent(
+    window.location.pathname + window.location.search,
+  );
+  window.stationeryNavigate(`/users/login-page/?next=${next}`);
+};
+
+window.stationeryNavigate = function (url, { reload = false } = {}) {
+  const destination = new URL(url, window.location.origin);
+  if (
+    destination.origin === window.location.origin &&
+    window.Turbo &&
+    !reload
+  ) {
+    window.Turbo.visit(destination.href);
+    return;
+  }
+
+  window.location.href = destination.href;
+};
+
+function showPendingNotification() {
+  const message = sessionStorage.getItem("stationery-notification");
+  if (!message) return;
+
+  sessionStorage.removeItem("stationery-notification");
+
+  let notification = document.getElementById("stationery-notification");
+  if (!notification) {
+    notification = document.createElement("div");
+    notification.id = "stationery-notification";
+    notification.setAttribute("role", "status");
+    notification.setAttribute("aria-live", "polite");
+    notification.style.cssText = [
+      "position: fixed",
+      "top: 5rem",
+      "right: 1rem",
+      "z-index: 10000",
+      "width: max-content",
+      "max-width: min(24rem, calc(100vw - 2rem))",
+      "border: 1px solid #15803d",
+      "border-radius: 0.5rem",
+      "background: #15803d",
+      "padding: 1rem 1.25rem",
+      "color: #fff",
+      "font-size: 0.875rem",
+      "font-weight: 500",
+      "box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    ].join(";");
+    document.body.appendChild(notification);
+  }
+
+  notification.textContent = message;
+  window.clearTimeout(notification.dismissTimer);
+  notification.dismissTimer = window.setTimeout(
+    () => notification.remove(),
+    6000,
+  );
+}
+
+document.addEventListener("turbo:load", showPendingNotification);
+showPendingNotification();
+
+document.addEventListener("submit", (event) => {
+  if (event.defaultPrevented) return;
+
+  const submitter = event.submitter;
+  if (!(submitter instanceof HTMLButtonElement)) return;
+
+  submitter.disabled = true;
+  submitter.setAttribute("aria-busy", "true");
+});
+
+document.addEventListener("turbo:submit-start", (event) => {
+  const submitter = event.detail.formSubmission.submitter;
+  if (!(submitter instanceof HTMLButtonElement)) return;
+
+  submitter.disabled = true;
+  submitter.setAttribute("aria-busy", "true");
+});
+
+document.addEventListener("turbo:submit-end", (event) => {
+  if (event.detail.success) return;
+
+  const submitter = event.detail.formSubmission.submitter;
+  if (!(submitter instanceof HTMLButtonElement)) return;
+
+  submitter.disabled = false;
+  submitter.removeAttribute("aria-busy");
+});
+
+window.stationeryApiJson = async function (response, fallbackMessage) {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("json")) {
+    if (response.redirected || contentType.includes("text/html")) {
+      const html = await response.clone().text();
+      const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+      const pageTitle = titleMatch
+        ? titleMatch[1].replace(/<[^>]*>/g, "").trim()
+        : "";
+      const responseUrl = new URL(response.url).pathname;
+      const details = [`HTTP ${response.status}`, responseUrl, pageTitle]
+        .filter(Boolean)
+        .join(" — ");
+
+      throw new Error(
+        `${fallbackMessage} The server returned an HTML page instead of API data (${details}).`,
+      );
+    }
+    throw new Error(
+      `${fallbackMessage} The server returned HTTP ${response.status} with an unexpected response type.`,
+    );
+  }
+
+  return response.json();
+};
+
+document.addEventListener("turbo:before-render", function (event) {
+  event.detail.newBody
+    .querySelectorAll("main script:not([src])")
+    .forEach((script) => {
+      if (script.type && script.type !== "text/javascript") {
+        return;
+      }
+      script.dataset.turboOriginalType = script.type;
+      script.type = "text/x-turbo-inert";
+      script.dataset.turboEval = "false";
+    });
+});
+
+document.addEventListener("turbo:load", function () {
+  document
+    .querySelectorAll("main script[type='text/x-turbo-inert']")
+    .forEach((script) => {
+      const replacement = document.createElement("script");
+      for (const attribute of script.attributes) {
+        if (
+          attribute.name !== "type" &&
+          attribute.name !== "data-turbo-eval" &&
+          attribute.name !== "data-turbo-original-type"
+        ) {
+          replacement.setAttribute(attribute.name, attribute.value);
+        }
+      }
+      if (script.dataset.turboOriginalType) {
+        replacement.type = script.dataset.turboOriginalType;
+      }
+
+      replacement.textContent = `(function () {\n${script.textContent}\n}).call(window);`;
+      script.replaceWith(replacement);
+    });
+});
+
+if (window.stationeryProductCartInitializer) {
+  document.removeEventListener(
+    "turbo:load",
+    window.stationeryProductCartInitializer,
+  );
+}
+window.stationeryProductCartInitializer = function () {
+  // Product Detail - Add to Cart
+  const productAddToCartButtons = document.querySelectorAll(
+    ".product-add-to-cart",
+  );
+  const boundCartForms =
+    window.stationeryBoundCartForms ||
+    (window.stationeryBoundCartForms = new WeakSet());
+
+  productAddToCartButtons.forEach((button) => {
+    const form = button.closest("form");
+    if (!form || boundCartForms.has(form)) return;
+    boundCartForms.add(form);
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      if (form.dataset.cartRequestPending === "true") return;
+
+      const productId = button.dataset.productId;
+      const quantityInput = form.querySelector("#quantity");
+      const quantity = Number(quantityInput.value);
+      const maxQuantity = Number(quantityInput.max);
+
+      if (!quantity || quantity < 1) {
+        alert("Please enter a valid quantity.");
+        return;
+      }
+
+      if (quantity > maxQuantity) {
+        alert(`Only ${maxQuantity} items are available.`);
+        return;
+      }
+
+      form.dataset.cartRequestPending = "true";
+      const originalButtonHTML = button.innerHTML;
+
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      button.innerHTML = "Adding...";
+
+      try {
+        const response = await window.stationeryApiFetch("/cart/items/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            product_id: productId,
+            quantity: quantity,
+          }),
+        });
+
+        if (response.status === 401) {
+          delete form.dataset.cartRequestPending;
+          window.stationeryLoginRedirect();
+          return;
+        }
+
+        const data = await window.stationeryApiJson(
+          response,
+          "Failed to add product to cart.",
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+              data.detail ||
+              data.message ||
+              "Failed to add product to cart.",
+          );
+        }
+
+        button.innerHTML = "Added to Cart";
+        button.removeAttribute("aria-busy");
+
+        updateCartCount();
+
+        setTimeout(() => {
+          delete form.dataset.cartRequestPending;
+          button.innerHTML = originalButtonHTML;
+          button.disabled = false;
+          button.removeAttribute("aria-busy");
+        }, 1200);
+      } catch (error) {
+        console.error("Add to cart error:", error);
+
+        alert(error.message);
+
+        delete form.dataset.cartRequestPending;
+        button.innerHTML = originalButtonHTML;
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
+      }
+    });
+  });
+};
+document.addEventListener("turbo:load", window.stationeryProductCartInitializer);
+
+document.addEventListener("turbo:load", function () {
+  // =========================
+  // MOBILE MENU
+  // =========================
+
+  const menuBtn = document.getElementById("menu-btn");
+  const mobileMenu = document.getElementById("mobile-menu");
+
+  if (menuBtn && mobileMenu) {
+    menuBtn.addEventListener("click", function () {
+      mobileMenu.classList.toggle("hidden");
+    });
+  }
+
+  // =========================
+  // CART
+  // =========================
+
+  const cartItems = document.querySelectorAll(".cart-item");
+  const subtotalElement = document.getElementById("subtotal");
+  const totalElement = document.getElementById("total");
+  const summaryPrices = document.querySelectorAll(".summary-price");
+
+  function updateCartTotal() {
+    let subtotal = 0;
+
+    cartItems.forEach(function (item, index) {
+      const price = Number(item.dataset.price);
+
+      const quantityElement = item.querySelector(".quantity");
+
+      if (!quantityElement) {
+        return;
+      }
+
+      const quantity = Number(quantityElement.textContent.trim());
+
+      const itemTotal = price * quantity;
+
+      subtotal += itemTotal;
+
+      const priceElement = item.querySelector(".price");
+
+      if (priceElement) {
+        priceElement.textContent = "$" + itemTotal.toFixed(2);
+      }
+
+      if (summaryPrices[index]) {
+        summaryPrices[index].textContent = "$" + itemTotal.toFixed(2);
+      }
+    });
+
+    if (subtotalElement) {
+      subtotalElement.textContent = "$" + subtotal.toFixed(2);
+    }
+
+    if (totalElement) {
+      totalElement.textContent = "$" + subtotal.toFixed(2);
+    }
+  }
+
+  // =========================
+  // UPDATE CART QUANTITY
+  // =========================
+
+  const csrfToken = document.querySelector(
+    "#cart-csrf-form input[name=csrfmiddlewaretoken]",
+  )?.value;
+
+  function updateCartQuantity(cartItem, quantity) {
+    const itemId = cartItem.dataset.itemId;
+    const updateUrl = cartItem.dataset.updateUrl;
+
+    fetch(updateUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRFToken": csrfToken,
+      },
+      body: `quantity=${quantity}`,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update cart");
+        }
+
+        return response.text();
+      })
+      .then(() => {
+        console.log("Cart updated:", itemId, "Quantity:", quantity);
+
+        updateCartCount();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  // =========================
+  // INCREASE QUANTITY
+  // =========================
+
+  const increaseButtons = document.querySelectorAll(".increase");
+
+  increaseButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const cartItem = button.closest(".cart-item");
+
+      const quantityElement = cartItem.querySelector(".quantity");
+
+      let quantity = Number(quantityElement.textContent.trim());
+
+      const stock = Number(cartItem.dataset.stock);
+
+      if (quantity >= stock) {
+        return;
+      }
+
+      quantity++;
+
+      quantityElement.textContent = quantity;
+
+      updateCartTotal();
+
+      updateCartQuantity(cartItem, quantity);
+    });
+  });
+
+  // =========================
+  // DECREASE QUANTITY
+  // =========================
+
+  const decreaseButtons = document.querySelectorAll(".decrease");
+
+  decreaseButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const cartItem = button.closest(".cart-item");
+
+      const quantityElement = cartItem.querySelector(".quantity");
+
+      let quantity = Number(quantityElement.textContent.trim());
+
+      if (quantity > 1) {
+        quantity--;
+
+        quantityElement.textContent = quantity;
+
+        updateCartTotal();
+
+        updateCartQuantity(cartItem, quantity);
+      }
+    });
+  });
+
+  // =========================
+  // CART DELETE
+  // =========================
+
+  const deleteButtons = document.querySelectorAll(".delete");
+
+  deleteButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const cartItem = button.closest(".cart-item");
+
+      const deleteUrl = button.dataset.deleteUrl;
+
+      if (!cartItem || !deleteUrl) {
+        return;
+      }
+
+      fetch(deleteUrl, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to delete cart item");
+          }
+
+          cartItem.remove();
+          updateCartTotal();
+          updateCartCount();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+  });
+
+  // =========================
+  // WISHLIST
+  // =========================
+
+  const wishlistButtons = document.querySelectorAll(".wishlist-btn");
+
+  if (wishlistButtons.length > 0) {
+    const wishlistMap = new Map();
+
+    function setWishlistActive(button) {
+      button.classList.remove("text-gray-400");
+      button.classList.add("text-red-500");
+
+      const svg = button.querySelector("svg");
+
+      if (svg) {
+        svg.setAttribute("fill", "currentColor");
+        svg.setAttribute("stroke", "currentColor");
+      }
+
+      button.title = "Remove from Wishlist";
+    }
+
+    function setWishlistInactive(button) {
+      button.classList.remove("text-red-500");
+      button.classList.add("text-gray-400");
+
+      const svg = button.querySelector("svg");
+
+      if (svg) {
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", "currentColor");
+      }
+
+      button.title = "Add to Wishlist";
+    }
+
+    async function loadWishlistStatus() {
+      try {
+        const response = await window.stationeryApiFetch("/wishlist/api/", {
+          method: "GET",
+        });
+
+        const data = await window.stationeryApiJson(
+          response,
+          "Unable to load wishlist status.",
+        );
+
+        if (!response.ok) {
+          return;
+        }
+
+        wishlistMap.clear();
+
+        data.items.forEach(function (item) {
+          wishlistMap.set(String(item.product_id), item.id);
+        });
+
+        wishlistButtons.forEach(function (button) {
+          const productId = String(button.dataset.productId);
+
+          if (wishlistMap.has(productId)) {
+            setWishlistActive(button);
+          } else {
+            setWishlistInactive(button);
+          }
+        });
+
+        updateWishlistNavCount(wishlistMap.size);
+      } catch (error) {
+        console.error("Error loading wishlist:", error);
+      }
+    }
+
+    wishlistButtons.forEach(function (button) {
+      button.addEventListener("click", async function () {
+        if (this.dataset.wishlistRequestPending === "true") {
+          return;
+        }
+
+        const productId = String(this.dataset.productId);
+
+        const wishlistItemId = wishlistMap.get(productId);
+
+        this.dataset.wishlistRequestPending = "true";
+
+        try {
+          // =========================
+          // REMOVE FROM WISHLIST
+          // =========================
+
+          if (wishlistItemId) {
+            const response = await window.stationeryApiFetch("/wishlist/api/", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                item_id: wishlistItemId,
+              }),
+            });
+
+            if (response.status === 401) {
+              window.stationeryLoginRedirect();
+              return;
+            }
+
+            const data = await window.stationeryApiJson(
+              response,
+              "Unable to remove product from wishlist.",
+            );
+
+            if (response.ok && data.success) {
+              wishlistMap.delete(productId);
+
+              setWishlistInactive(this);
+
+              if (typeof updateWishlistNavCount === "function") {
+                updateWishlistNavCount(wishlistMap.size);
+              }
+            } else {
+              alert(
+                data.error ||
+                  data.message ||
+                  "Unable to remove product from wishlist.",
+              );
+            }
+          }
+
+          // =========================
+          // ADD TO WISHLIST
+          // =========================
+          else {
+            const response = await window.stationeryApiFetch("/wishlist/api/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                product_id: productId,
+              }),
+            });
+
+            if (response.status === 401) {
+              window.stationeryLoginRedirect();
+              return;
+            }
+
+            const data = await window.stationeryApiJson(
+              response,
+              "Unable to add product to wishlist.",
+            );
+
+            if (response.ok && data.success) {
+              if (data.wishlist_item_id) {
+                wishlistMap.set(productId, data.wishlist_item_id);
+              }
+
+              setWishlistActive(this);
+
+              if (typeof updateWishlistNavCount === "function") {
+                updateWishlistNavCount(wishlistMap.size);
+              }
+            } else {
+              alert(
+                data.error ||
+                  data.message ||
+                  "Unable to add product to wishlist.",
+              );
+            }
+          }
+        } catch (error) {
+          console.error("Wishlist request error:", error);
+
+          alert("Unable to update wishlist.");
+        } finally {
+          delete this.dataset.wishlistRequestPending;
+        }
+      });
+    });
+
+    loadWishlistStatus();
+  }
+});
+
+function updateCartCount() {
+  const cartCount = document.getElementById("cart-count");
+
+  if (!cartCount) {
+    return;
+  }
+
+  window
+    .stationeryApiFetch("/cart/items/")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch cart");
+      }
+
+      return window.stationeryApiJson(response, "Failed to fetch cart.");
+    })
+    .then((data) => {
+      const totalQuantity = data.items.reduce(
+        (total, item) => total + Number(item.quantity),
+        0,
+      );
+
+      cartCount.textContent = totalQuantity;
+    })
+    .catch((error) => {
+      console.error("Cart count error:", error);
+      cartCount.textContent = "0";
+    });
+}
+
+updateCartCount();
+
+function updateWishlistNavCount(count) {
+  const wishlistNavCount = document.getElementById("wishlist-nav-count");
+
+  if (!wishlistNavCount) {
+    return;
+  }
+
+  if (count !== undefined) {
+    wishlistNavCount.textContent = count;
+    return;
+  }
+
+  if (document.querySelector(".wishlist-btn")) {
+    return;
+  }
+
+  window
+    .stationeryApiFetch("/wishlist/api/")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch wishlist");
+      }
+
+      return window.stationeryApiJson(response, "Failed to fetch wishlist.");
+    })
+    .then((data) => {
+      wishlistNavCount.textContent = data.items.length;
+    })
+    .catch((error) => {
+      console.error("Wishlist count error:", error);
+
+      wishlistNavCount.textContent = "0";
+    });
+}
+
+updateWishlistNavCount();
