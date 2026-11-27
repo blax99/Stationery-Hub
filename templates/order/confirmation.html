@@ -190,6 +190,74 @@
     color: #642020;
   }
 
+  .cancel-confirmation-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(440px, calc(100% - 32px));
+    box-sizing: border-box;
+    margin: 0;
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+  }
+
+  .cancel-confirmation-dialog::backdrop {
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(3px);
+  }
+
+  .cancel-confirmation-dialog h2 {
+    margin: 0 0 10px;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .cancel-confirmation-dialog p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .cancel-confirmation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .cancel-confirmation-actions .action-button {
+    min-height: 42px;
+    padding: 0 16px;
+  }
+
+  .keep-order-button {
+    background: #ffffff;
+    border-color: #d1d5db;
+    color: #374151;
+  }
+
+  .keep-order-button:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+
+  .confirm-cancel-button {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    color: #ffffff;
+  }
+
+  .confirm-cancel-button:hover {
+    background: #991b1b;
+    border-color: #991b1b;
+    color: #ffffff;
+  }
+
   .continue-shopping {
     background-color: #faf8f5;
     border-color: #e5dfd5;
@@ -269,6 +337,27 @@
     color: #fecaca;
   }
 
+  .dark .cancel-confirmation-dialog {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  .dark .cancel-confirmation-dialog p {
+    color: #9ca3af;
+  }
+
+  .dark .keep-order-button {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .dark .keep-order-button:hover {
+    background: #374151;
+    border-color: #6b7280;
+  }
+
   .dark .continue-shopping {
     background-color: #1f2937;
     border-color: #374151;
@@ -333,6 +422,14 @@
     .confirmation-actions,
     .confirmation-actions form,
     .confirmation-actions form button {
+      width: 100%;
+    }
+
+    .cancel-confirmation-actions {
+      flex-direction: column-reverse;
+    }
+
+    .cancel-confirmation-actions .action-button {
       width: 100%;
     }
   }
@@ -506,9 +603,9 @@
 
       {% if order.payment_status != 'paid' and order.status == 'pending' or order.payment_status != 'paid' and order.status == 'confirmed' %}
 
-      <form method="POST" action="{% url 'cancel_order' order.id %}" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+      <form id="cancel-order-form" method="POST" action="{% url 'cancel_order' order.id %}">
         {% csrf_token %}
-        <button type="submit" class="action-button cancel-order-button">Cancel Order</button>
+        <button type="button" id="open-cancel-confirmation" class="action-button cancel-order-button">Cancel Order</button>
       </form>
 
       {% endif %}
@@ -529,7 +626,31 @@
   </div>
 </div>
 
+{% if order.payment_status != 'paid' and order.status == 'pending' or order.payment_status != 'paid' and order.status == 'confirmed' %}
+<dialog id="cancel-confirmation-dialog" class="cancel-confirmation-dialog" aria-labelledby="cancel-confirmation-title" aria-describedby="cancel-confirmation-description">
+  <h2 id="cancel-confirmation-title">Cancel this order?</h2>
+  <p id="cancel-confirmation-description">Are you sure you want to cancel this order? This action cannot be undone.</p>
+  <div class="cancel-confirmation-actions">
+    <button type="button" id="keep-order-button" class="action-button keep-order-button">Keep Order</button>
+    <button type="submit" form="cancel-order-form" class="action-button confirm-cancel-button">Yes, Cancel Order</button>
+  </div>
+</dialog>
+{% endif %}
+
 <script>
+  const cancelConfirmationDialog = document.getElementById("cancel-confirmation-dialog");
+  const openCancelConfirmationButton = document.getElementById("open-cancel-confirmation");
+
+  if (cancelConfirmationDialog && openCancelConfirmationButton) {
+    openCancelConfirmationButton.addEventListener("click", () => {
+      cancelConfirmationDialog.showModal();
+    });
+
+    document.getElementById("keep-order-button").addEventListener("click", () => {
+      cancelConfirmationDialog.close();
+    });
+  }
+
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);

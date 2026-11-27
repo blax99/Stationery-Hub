@@ -71,6 +71,28 @@ class CheckoutFlowTests(TestCase):
             },
         }
     )
+    def test_order_confirmation_uses_in_page_dialog_for_cancellation(self):
+        self.user.is_email_verified = True
+        self.user.save(update_fields=["is_email_verified"])
+        order = Order.objects.create(user=self.user, total_amount=Decimal("50.00"))
+
+        response = self.client.get(
+            reverse("order_confirmation", kwargs={"order_id": order.id})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="cancel-confirmation-dialog"')
+        self.assertContains(response, "Yes, Cancel Order")
+        self.assertNotContains(response, "confirm(")
+
+    @override_settings(
+        STORAGES={
+            "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+            "staticfiles": {
+                "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+            },
+        }
+    )
     def test_empty_order_history_links_to_products(self):
         self.user.is_email_verified = True
         self.user.save(update_fields=["is_email_verified"])
