@@ -71,6 +71,47 @@ class ChatbotReplyTests(TestCase):
 
                 self.assertIn("Blue ballpoint pen", response.json()["reply"])
 
+    def test_product_listing_returns_all_available_products(self):
+        products = [
+            Products.objects.create(
+                category=self.category,
+                name=f"Catalog item {number:02d}",
+                description="An available catalog item.",
+                price="5.00",
+                stock=1,
+            )
+            for number in range(17)
+        ]
+
+        response = self.ask("Show all products")
+        reply = response.json()["reply"]
+
+        self.assertIn(self.product.name, reply)
+        for product in products:
+            with self.subTest(product=product.name):
+                self.assertIn(product.name, reply)
+
+    def test_product_search_finds_named_item_after_intent_words(self):
+        for name in ("Amber Travel Mug", "Birch Travel Mug", "Cedar Travel Mug"):
+            Products.objects.create(
+                category=self.category,
+                name=name,
+                description="A travel mug.",
+                price="20.00",
+                stock=1,
+            )
+        Products.objects.create(
+            category=self.category,
+            name="Zebra Thermos",
+            description="An insulated bottle for hot drinks.",
+            price="30.00",
+            stock=1,
+        )
+
+        response = self.ask("I'm looking for the Zebra thermos.")
+
+        self.assertIn("Zebra Thermos", response.json()["reply"])
+
     def test_plural_product_search_matches_singular_catalog_names(self):
         response = self.ask("Show me pens")
 

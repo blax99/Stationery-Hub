@@ -46,6 +46,9 @@ PRODUCT_QUERY_WORDS = {
     "recommend",
     "search",
     "show",
+    "need",
+    "want",
+    "got",
 }
 PRODUCT_QUERY_STOP_WORDS = {
     "a",
@@ -56,6 +59,7 @@ PRODUCT_QUERY_STOP_WORDS = {
     "are",
     "available",
     "browse",
+    "buy",
     "can",
     "catalog",
     "catalogue",
@@ -65,6 +69,7 @@ PRODUCT_QUERY_STOP_WORDS = {
     "everything",
     "find",
     "for",
+    "got",
     "have",
     "how",
     "i",
@@ -73,21 +78,28 @@ PRODUCT_QUERY_STOP_WORDS = {
     "item",
     "items",
     "list",
+    "looking",
     "me",
+    "m",
     "much",
+    "need",
     "of",
     "please",
     "price",
     "product",
     "products",
+    "recommend",
     "search",
     "see",
     "show",
     "some",
     "stock",
+    "s",
     "tell",
     "the",
+    "t",
     "what",
+    "want",
     "where",
     "which",
     "you",
@@ -124,7 +136,7 @@ def _product_reply(message):
                 | Q(category__name__icontains=word)
                 | Q(category__description__icontains=word)
             )
-        results = list(matching_products.order_by("name")[:3])
+        results = list(matching_products.order_by("name"))
         if not results and len(query_words) > 1:
             search_terms = Q()
             for word in query_words:
@@ -134,14 +146,14 @@ def _product_reply(message):
                     | Q(category__name__icontains=word)
                     | Q(category__description__icontains=word)
                 )
-            results = list(products.filter(search_terms).order_by("name")[:3])
+            results = list(products.filter(search_terms).order_by("name"))
         if not results:
             return (
                 "I couldn't find an in-stock product matching that. "
                 "Ask for a product name or browse the Products page."
             )
     else:
-        results = list(products.order_by("name")[:3])
+        results = list(products.order_by("name"))
         if not results:
             return "There are no in-stock products to show right now."
 
